@@ -1,0 +1,14 @@
+{
+  "name": "tms-monorepo",
+  "version": "1.0.0",
+  "description": "Transportation Management System - Full Stack Monorepo",
+  "private": true,
+  "scripts": {
+    "start": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "test": "cd frontend && npm test"
+  },
+  "workspaces": [
+    "frontend"
+  ]
+}

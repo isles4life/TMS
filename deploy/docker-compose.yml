@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'YourPassword123!'
+    ports:
+      - "1433:1433"
+    volumes:
+      - tms_data:/var/opt/mssql
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  tms-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sql-server;Database=TMS;User Id=sa;Password=YourPassword123!"
+      Redis__Connection: "redis:6379"
+    ports:
+      - "5000:8080"
+    depends_on:
+      - sql-server
+      - redis
+
+  tms-web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - tms-api
+
+volumes:
+  tms_data:
+  redis_data:

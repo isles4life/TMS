@@ -1,0 +1,98 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using MediatR;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using TMS.API;
+using TMS.API.Endpoints;
+using TMS.Application.Commands.PowerOnly;
+using TMS.Application.Queries.PowerOnly;
+using TMS.Application.Commands.Equipment;
+using TMS.Application.Commands.Drivers;
+using TMS.Application.Queries.Equipment;
+using TMS.Application.Queries.Drivers;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "TMS API",
+        Version = "v1",
+        Description = "Transportation Management System API - Power Only Module"
+    });
+});
+
+// Add MediatR - register from Application assembly
+builder.Services.AddMediatR(cfg => 
+{
+    cfg.RegisterServicesFromAssembly(typeof(CreatePowerOnlyLoadHandler).Assembly);
+});
+
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
+var app = builder.Build();
+
+try
+{
+    if (app.Environment.EnvironmentName == "Development")
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "TMS API v1");
+            options.DocExpansion(DocExpansion.List);
+        });
+    }
+
+    // Skip HTTPS redirection in Development
+    if (app.Environment.EnvironmentName != "Development")
+    {
+        app.UseHttpsRedirection();
+    }
+    app.UseCors("AllowAll");
+    app.UseAuthorization();
+
+    // Add middleware to catch exceptions
+    app.Use(async (context, next) =>
+    {
+        try
+        {
+            await next(context);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"ERROR in middleware: {ex}");
+            context.Response.StatusCode = 500;
+        }
+    });
+
+    // Register minimal API endpoints
+    app.MapHealthCheck();
+    app.RegisterPowerOnlyEndpoints();
+    // Disabled for debugging
+    // app.RegisterEquipmentEndpoints();
+    // app.RegisterDriverEndpoints();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Console.Error.WriteLine($"FATAL ERROR: {ex}");
+    throw;
+}

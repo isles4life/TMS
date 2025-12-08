@@ -1,0 +1,16 @@
+using System;
+
+namespace TMS.Domain.Common;
+
+/// <summary>
+/// Base entity with common audit properties
+/// </summary>
+public abstract class BaseEntity
+{
+    public Guid Id { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string? CreatedBy { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public string? UpdatedBy { get; set; }
+    public bool IsDeleted { get; set; }
+}
