@@ -69,7 +69,8 @@
             "host": "localhost",
             "port": 4200,
             "open": false,
-            "ssl": false
+            "ssl": false,
+            "proxyConfig": "apps/web/proxy.conf.json"
           },
           "configurations": {
             "production": {
