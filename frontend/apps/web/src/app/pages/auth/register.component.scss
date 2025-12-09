@@ -1,0 +1,133 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #d71920 0%, #b01318 100%);
+  padding: 20px;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+
+  mat-card-header {
+    margin-bottom: 24px;
+
+    mat-card-title {
+      font-size: 24px;
+      font-weight: 600;
+      font-family: Montserrat, sans-serif;
+      color: #333;
+    }
+
+    mat-card-subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+  }
+
+  mat-card-content {
+    padding: 24px;
+  }
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background-color: #ffebee;
+    border: 1px solid #ef5350;
+    border-radius: 4px;
+    color: #c62828;
+    font-size: 14px;
+    margin-bottom: 8px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .submit-button {
+    height: 44px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 8px;
+    background-color: #d71920;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: #b01318;
+    }
+
+    &:disabled {
+      background-color: #ccc;
+      color: #999;
+    }
+
+    .loading-spinner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 14px;
+
+  a {
+    color: #d71920;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .register-card {
+    max-width: 100%;
+
+    mat-card-header {
+      margin-bottom: 20px;
+
+      mat-card-title {
+        font-size: 20px;
+      }
+    }
+
+    mat-card-content {
+      padding: 16px;
+    }
+  }
+
+  .register-form {
+    gap: 12px;
+
+    .submit-button {
+      height: 40px;
+      font-size: 14px;
+    }
+  }
+}

@@ -1,0 +1,107 @@
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatBadgeModule } from '@angular/material/badge';
+import { NotificationService } from '../services/notification.service';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: 'ts-navbar',
+  standalone: true,
+  imports: [CommonModule, RouterModule, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, MatBadgeModule],
+  template: `
+    <div class="ts-nav-wrapper">
+      <button mat-icon-button class="nav-toggle" (click)="menu.emit()" aria-label="Open navigation">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <img src="assets/truckstop-logo-optimized.png" alt="Truckstop" class="brand-logo" width="211" height="50" />
+      <span class="spacer"></span>
+      <button mat-icon-button routerLink="/notifications" aria-label="Notifications" class="notification-btn">
+        <mat-icon [matBadge]="(unreadCount$ | async) || 0" 
+                  [matBadgeHidden]="(unreadCount$ | async) === 0"
+                  matBadgeColor="warn"
+                  matBadgeSize="small">notifications</mat-icon>
+      </button>
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu" class="profile-btn">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item routerLink="/notifications">
+          <mat-icon>notifications</mat-icon>
+          <span>Notifications</span>
+        </button>
+        <button mat-menu-item routerLink="/profile">Profile</button>
+        <button mat-menu-item routerLink="/settings">Settings</button>
+        <button mat-menu-item>Sign out</button>
+      </mat-menu>
+    </div>
+  `,
+  styles: [`
+    .ts-nav-wrapper {
+      display: flex;
+      align-items: center;
+      gap: var(--ts-spacing-lg);
+      padding: var(--ts-spacing-md) var(--ts-spacing-lg);
+      box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+      background: #d71920;
+      color: #fff;
+      height: 64px;
+    }
+    .nav-toggle {
+      display: inline-flex;
+    }
+    .brand-logo {
+      height: 50px;
+      width: auto;
+      max-width: 200px;
+      flex-shrink: 0;
+      margin: 0;
+      object-fit: contain;
+    }
+    .spacer { flex: 1 1 auto; }
+    .primary {
+      background: #fff !important;
+      color: var(--ts-red) !important;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 8px 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      white-space: nowrap;
+      margin-right: var(--ts-spacing-sm);
+      width: auto;
+      flex-shrink: 0;
+      justify-self: end;
+    }
+    .notification-btn {
+      flex-shrink: 0;
+    }
+    .profile-btn {
+      flex-shrink: 0;
+    }
+    @media (max-width: 960px) {
+      .ts-nav-wrapper {
+        gap: var(--ts-spacing-md);
+        padding: var(--ts-spacing-sm) var(--ts-spacing-md);
+      }
+      .primary {
+        display: none;
+      }
+    }
+  `]
+})
+export class NavbarComponent implements OnInit {
+  @Output() menu = new EventEmitter<void>();
+  unreadCount$: Observable<number>;
+
+  constructor(private notificationService: NotificationService) {
+    this.unreadCount$ = this.notificationService.unreadCount$;
+  }
+
+  ngOnInit() {
+    // Subscribe to notification count updates
+  }
+}

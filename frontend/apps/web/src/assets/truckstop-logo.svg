@@ -1,0 +1,19 @@
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle -->
+  <circle cx="40" cy="35" r="25" fill="none" stroke="#d71920" stroke-width="3"/>
+  <!-- Inner circle -->
+  <circle cx="40" cy="35" r="18" fill="none" stroke="#d71920" stroke-width="2"/>
+  <!-- Pin point -->
+  <path d="M 40 65 L 60 40 Q 60 25 40 20 Q 20 25 20 40 Z" fill="#d71920"/>
+  <!-- Truck icon inside -->
+  <g fill="#fff">
+    <!-- Cab -->
+    <rect x="33" y="28" width="8" height="10" rx="1"/>
+    <!-- Trailer -->
+    <rect x="43" y="31" width="14" height="7" rx="1"/>
+    <!-- Back wheel -->
+    <circle cx="38" cy="42" r="2"/>
+    <!-- Front wheel -->
+    <circle cx="52" cy="42" r="2"/>
+  </g>
+</svg>

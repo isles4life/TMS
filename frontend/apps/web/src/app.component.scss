@@ -1,0 +1,29 @@
+  :host {
+  display: block;
+  color: var(--ts-ink);
+  background: var(--ts-page-bg);
+  min-height: 100vh;
+}
+
+.shell {
+  min-height: 100vh;
+  background: var(--ts-page-bg);
+}
+
+    .ts-sidenav {
+      width: 260px;
+      border-right: 1px solid var(--ts-border);
+      background: #fff;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.12);
+    }.content {
+  padding: var(--ts-spacing-xl) var(--ts-spacing-lg);
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 960px) {
+  .content {
+    padding: var(--ts-spacing-md);
+  }
+}
