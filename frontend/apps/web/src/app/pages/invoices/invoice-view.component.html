@@ -1,0 +1,238 @@
+<div class="invoice-view-container" *ngIf="invoice">
+  <!-- Header -->
+  <div class="invoice-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-info">
+        <h1>Invoice #{{ invoice.invoiceNumber }}</h1>
+        <span class="status-badge" [ngClass]="'status-' + invoice.status">
+          <mat-icon>{{ getStatusIcon(invoice.status) }}</mat-icon>
+          {{ invoice.status | titlecase }}
+        </span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button mat-icon-button matTooltip="Print" (click)="printInvoice()">
+        <mat-icon>print</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Download" (click)="downloadInvoice()">
+        <mat-icon>download</mat-icon>
+      </button>
+      <button mat-raised-button color="primary" (click)="sendInvoice()" *ngIf="invoice.status !== 'sent' && invoice.status !== 'paid'">
+        <mat-icon>mail</mat-icon>
+        Send
+      </button>
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="editInvoice()">
+          <mat-icon>edit</mat-icon>
+          <span>Edit</span>
+        </button>
+        <button mat-menu-item (click)="updateStatus('viewed')" [disabled]="invoice.status === 'viewed'">
+          <mat-icon>visibility</mat-icon>
+          <span>Mark as Viewed</span>
+        </button>
+        <button mat-menu-item (click)="updateStatus('paid')" [disabled]="invoice.status === 'paid'">
+          <mat-icon>check_circle</mat-icon>
+          <span>Mark as Paid</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <div class="invoice-content">
+    <!-- Main Invoice Document -->
+    <mat-card class="invoice-document">
+      <!-- Company Header -->
+      <div class="company-header">
+        <div class="company-info">
+          <h2>{{ invoice.companyName }}</h2>
+          <p>{{ invoice.companyAddress }}</p>
+          <p>{{ invoice.companyPhone }} | {{ invoice.companyEmail }}</p>
+        </div>
+        <div class="invoice-title-date">
+          <h1>INVOICE</h1>
+          <div class="invoice-meta">
+            <div class="meta-row">
+              <span class="label">Invoice #:</span>
+              <span class="value">{{ invoice.invoiceNumber }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="label">Date:</span>
+              <span class="value">{{ formatDate(invoice.date) }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="label">Due Date:</span>
+              <span class="value">{{ formatDate(invoice.dueDate) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Bill To / From -->
+      <div class="bill-to-section">
+        <div class="bill-to">
+          <h4>BILL TO:</h4>
+          <p class="client-name">{{ invoice.clientName }}</p>
+          <p>{{ invoice.clientAddress }}</p>
+          <p *ngIf="invoice.clientPhone">{{ invoice.clientPhone }}</p>
+          <p>{{ invoice.clientEmail }}</p>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Line Items Table -->
+      <div class="line-items-section">
+        <table class="line-items-table">
+          <thead>
+            <tr>
+              <th class="col-description">Description</th>
+              <th class="col-quantity">Quantity</th>
+              <th class="col-price">Unit Price</th>
+              <th class="col-amount">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of invoice.lineItems">
+              <td class="col-description">{{ item.description }}</td>
+              <td class="col-quantity">{{ item.quantity }}</td>
+              <td class="col-price">{{ formatCurrency(item.unitPrice) }}</td>
+              <td class="col-amount">{{ formatCurrency(item.amount) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Totals -->
+      <div class="totals-section">
+        <div class="totals-left">
+          <div class="payment-terms" *ngIf="invoice.paymentTerms">
+            <h4>Payment Terms</h4>
+            <p>{{ invoice.paymentTerms }}</p>
+          </div>
+          <div class="bank-details" *ngIf="invoice.bankDetails">
+            <h4>Bank Details</h4>
+            <p><strong>Bank:</strong> {{ invoice.bankDetails.bankName }}</p>
+            <p><strong>Account:</strong> {{ invoice.bankDetails.accountName }}</p>
+            <p><strong>Account #:</strong> {{ invoice.bankDetails.accountNumber }}</p>
+            <p><strong>Routing #:</strong> {{ invoice.bankDetails.routingNumber }}</p>
+          </div>
+        </div>
+
+        <div class="totals-right">
+          <div class="total-row">
+            <span class="label">Subtotal:</span>
+            <span class="value">{{ formatCurrency(invoice.subtotal) }}</span>
+          </div>
+          <div class="total-row">
+            <span class="label">Tax ({{ (invoice.taxRate * 100) }}%):</span>
+            <span class="value">{{ formatCurrency(invoice.taxAmount) }}</span>
+          </div>
+          <div class="total-row grand-total">
+            <span class="label">TOTAL DUE:</span>
+            <span class="value">{{ formatCurrency(invoice.total) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="notes-section" *ngIf="invoice.notes">
+        <h4>Notes</h4>
+        <p>{{ invoice.notes }}</p>
+      </div>
+    </mat-card>
+
+    <!-- Sidebar -->
+    <div class="invoice-sidebar">
+      <mat-card class="sidebar-card">
+        <mat-card-header>
+          <mat-card-title>Invoice Status</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="status-display" [ngClass]="'status-' + invoice.status">
+            <mat-icon>{{ getStatusIcon(invoice.status) }}</mat-icon>
+            <span>{{ invoice.status | titlecase }}</span>
+          </div>
+
+          <div class="action-buttons">
+            <button mat-stroked-button (click)="updateStatus('sent')" [disabled]="invoice.status === 'sent'">
+              <mat-icon>mail</mat-icon>
+              Send
+            </button>
+            <button mat-stroked-button (click)="updateStatus('viewed')" [disabled]="invoice.status === 'viewed'">
+              <mat-icon>visibility</mat-icon>
+              Viewed
+            </button>
+            <button mat-stroked-button (click)="updateStatus('paid')" [disabled]="invoice.status === 'paid'">
+              <mat-icon>check_circle</mat-icon>
+              Paid
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="sidebar-card">
+        <mat-card-header>
+          <mat-card-title>Client Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-item">
+            <span class="label">Client:</span>
+            <span class="value">{{ invoice.clientName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Email:</span>
+            <a [href]="'mailto:' + invoice.clientEmail">{{ invoice.clientEmail }}</a>
+          </div>
+          <div class="info-item" *ngIf="invoice.clientPhone">
+            <span class="label">Phone:</span>
+            <span class="value">{{ invoice.clientPhone }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="sidebar-card">
+        <mat-card-header>
+          <mat-card-title>Invoice Dates</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-item">
+            <span class="label">Created:</span>
+            <span class="value">{{ formatDate(invoice.createdAt) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Invoice Date:</span>
+            <span class="value">{{ formatDate(invoice.date) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Due Date:</span>
+            <span class="value">{{ formatDate(invoice.dueDate) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Last Updated:</span>
+            <span class="value">{{ formatDate(invoice.updatedAt) }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="sidebar-card total-card">
+        <mat-card-content>
+          <div class="total-amount">
+            <span class="label">Total Amount</span>
+            <span class="amount">{{ formatCurrency(invoice.total) }}</span>
+            <span class="currency">{{ invoice.currency }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

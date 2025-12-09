@@ -1,0 +1,170 @@
+<div class="invoices-container">
+  <!-- Statistics Cards -->
+  <div class="stats-section">
+    <mat-card class="stat-card">
+      <div class="stat-icon" style="background-color: #e3f2fd;">
+        <mat-icon style="color: #1976d2;">receipt</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h4>Total Invoices</h4>
+        <span class="stat-value">{{ getStats().totalInvoices }}</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-icon" style="background-color: #e8f5e9;">
+        <mat-icon style="color: #4caf50;">attach_money</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h4>Total Revenue</h4>
+        <span class="stat-value">{{ formatCurrency(getStats().totalRevenue, 'USD') }}</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-icon" style="background-color: #fff3e0;">
+        <mat-icon style="color: #ff9800;">hourglass_empty</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h4>Unpaid</h4>
+        <span class="stat-value">{{ getStats().unpaidCount }}</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-icon" style="background-color: #ffebee;">
+        <mat-icon style="color: #f44336;">error</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h4>Overdue</h4>
+        <span class="stat-value">{{ getStats().overdueCount }}</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Controls Section -->
+  <div class="controls-section">
+    <div class="left-controls">
+      <mat-form-field class="search-field">
+        <mat-label>Search invoices...</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (input)="onSearchChange()" placeholder="Search by client, number, email">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field class="status-filter">
+        <mat-label>Filter by Status</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onStatusChange()">
+          <mat-option *ngFor="let option of statusOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <button mat-raised-button color="primary" routerLink="/invoices/create">
+      <mat-icon>add</mat-icon>
+      Create New Invoice
+    </button>
+  </div>
+
+  <!-- Invoices List -->
+  <div class="invoices-list">
+    <mat-card class="invoice-card" *ngFor="let invoice of filteredInvoices">
+      <mat-card-header>
+        <div class="header-left">
+          <mat-card-title>Invoice #{{ invoice.invoiceNumber }}</mat-card-title>
+          <mat-card-subtitle>{{ invoice.clientName }}</mat-card-subtitle>
+        </div>
+        <div class="header-right">
+          <mat-chip-set>
+            <mat-chip [ngClass]="'status-' + invoice.status">
+              <mat-icon>{{ getStatusIcon(invoice.status) }}</mat-icon>
+              {{ invoice.status | titlecase }}
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="invoice-details">
+          <div class="detail-row">
+            <span class="label">Client Email:</span>
+            <span class="value">{{ invoice.clientEmail }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Invoice Date:</span>
+            <span class="value">{{ formatDate(invoice.date) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Due Date:</span>
+            <span class="value">{{ formatDate(invoice.dueDate) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Items:</span>
+            <span class="value">{{ invoice.lineItems.length }} item(s)</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Tax Rate:</span>
+            <span class="value">{{ (invoice.taxRate * 100) }}%</span>
+          </div>
+        </div>
+
+        <div class="invoice-total">
+          <span class="label">Total:</span>
+          <span class="value">{{ formatCurrency(invoice.total, invoice.currency) }}</span>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-icon-button matTooltip="View Invoice" (click)="viewInvoice(invoice.id)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Edit Invoice" (click)="editInvoice(invoice.id)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Duplicate Invoice" (click)="duplicateInvoice(invoice)">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="updateStatus(invoice.id, 'sent', invoice.invoiceNumber)" 
+                  [disabled]="invoice.status === 'sent'">
+            <mat-icon>mail</mat-icon>
+            <span>Mark as Sent</span>
+          </button>
+          <button mat-menu-item (click)="updateStatus(invoice.id, 'viewed', invoice.invoiceNumber)"
+                  [disabled]="invoice.status === 'viewed'">
+            <mat-icon>visibility</mat-icon>
+            <span>Mark as Viewed</span>
+          </button>
+          <button mat-menu-item (click)="updateStatus(invoice.id, 'paid', invoice.invoiceNumber)"
+                  [disabled]="invoice.status === 'paid'">
+            <mat-icon>check_circle</mat-icon>
+            <span>Mark as Paid</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item color="warn" (click)="deleteInvoice(invoice.id, invoice.invoiceNumber)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Empty State -->
+    <mat-card class="empty-state" *ngIf="filteredInvoices.length === 0">
+      <mat-card-content>
+        <mat-icon class="empty-icon">receipt_long</mat-icon>
+        <h3>No invoices found</h3>
+        <p>{{ searchQuery ? 'Try adjusting your search criteria' : 'Create your first invoice to get started' }}</p>
+        <button mat-raised-button color="primary" routerLink="/invoices/create" *ngIf="!searchQuery">
+          <mat-icon>add</mat-icon>
+          Create Invoice
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

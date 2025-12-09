@@ -8,6 +8,9 @@ import { SettingsPage } from './pages/settings.page';
 import { MarketplacePage } from './pages/marketplace.page';
 import { NotificationsPage } from './pages/notifications/notifications.page';
 import { DocumentsPage } from './pages/documents/documents.page';
+import { CreateInvoiceComponent } from './pages/invoices/create-invoice.component';
+import { InvoicesListComponent } from './pages/invoices/invoices-list.component';
+import { InvoiceViewComponent } from './pages/invoices/invoice-view.component';
 import { LoginComponent } from './pages/login.component';
 import { RegisterComponent } from './pages/auth/register.component';
 import { AuthGuard } from './guards/auth.guard';
@@ -25,4 +28,8 @@ export const APP_ROUTES: Routes = [
   { path: 'marketplace', component: MarketplacePage, canActivate: [AuthGuard], data: { title: 'Marketplace' } },
   { path: 'notifications', component: NotificationsPage, canActivate: [AuthGuard], data: { title: 'Notifications' } },
   { path: 'documents', component: DocumentsPage, canActivate: [AuthGuard], data: { title: 'Documents' } },
+  { path: 'invoices', component: InvoicesListComponent, canActivate: [AuthGuard], data: { title: 'Invoices' } },
+  { path: 'invoices/create', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { title: 'Create Invoice' } },
+  { path: 'invoices/view/:id', component: InvoiceViewComponent, canActivate: [AuthGuard], data: { title: 'View Invoice' } },
+  { path: 'invoices/edit/:id', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { title: 'Edit Invoice' } },
 ];

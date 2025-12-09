@@ -158,7 +158,7 @@ export class NotificationService {
           category: 'Documents',
           timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
           read: true,
-          link: '/profile'
+          link: '/documents'
         },
         {
           title: 'New Driver Onboarded',
@@ -177,6 +177,15 @@ export class NotificationService {
           timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
           read: true,
           link: '/settings'
+        },
+        {
+          title: 'Document Uploaded',
+          message: 'POD_Load_12345.pdf has been uploaded and is pending verification.',
+          type: 'success',
+          category: 'Documents',
+          timestamp: new Date(Date.now() - 1000 * 60 * 5),
+          read: false,
+          link: '/documents'
         }
       ];
 

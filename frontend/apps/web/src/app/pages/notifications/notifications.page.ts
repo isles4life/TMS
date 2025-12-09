@@ -180,6 +180,7 @@ import { Router } from '@angular/router';
       align-items: flex-start;
       gap: 16px;
       padding: 8px;
+      width: 100%;
     }
 
     .notification-icon {
@@ -219,6 +220,14 @@ import { Router } from '@angular/router';
 
     .notification-body {
       flex: 1;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
+
+    .notification-card:hover .notification-body {
+      background-color: rgba(25, 118, 210, 0.05);
     }
 
     .notification-header {
@@ -251,6 +260,12 @@ import { Router } from '@angular/router';
       display: flex;
       gap: 4px;
       flex-shrink: 0;
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    .notification-actions button {
+      pointer-events: auto;
     }
 
     .empty-state {

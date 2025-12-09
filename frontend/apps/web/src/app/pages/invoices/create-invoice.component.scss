@@ -1,0 +1,234 @@
+.invoice-form {
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+
+  .form-card {
+    max-width: 1200px;
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-sections {
+    .form-section {
+      margin: 24px 0;
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin: 16px 0;
+
+        mat-icon {
+          color: #1976d2;
+        }
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 16px;
+        margin-top: 12px;
+
+        mat-form-field {
+          width: 100%;
+
+          &.full-width {
+            grid-column: 1 / -1;
+          }
+        }
+      }
+    }
+
+    .line-items-table {
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      background: white;
+      margin: 16px 0;
+
+      .table-header {
+        display: grid;
+        grid-template-columns: 2fr 0.8fr 1fr 1fr 0.5fr;
+        gap: 12px;
+        padding: 12px 16px;
+        background-color: #f5f5f5;
+        border-bottom: 2px solid #e0e0e0;
+        font-weight: 600;
+        color: #555;
+
+        > div {
+          padding: 8px 0;
+        }
+
+        .col-description {
+          text-align: left;
+        }
+
+        .col-quantity,
+        .col-price,
+        .col-amount,
+        .col-action {
+          text-align: center;
+        }
+      }
+
+      .table-body {
+        .table-row {
+          display: grid;
+          grid-template-columns: 2fr 0.8fr 1fr 1fr 0.5fr;
+          gap: 12px;
+          padding: 12px 16px;
+          border-bottom: 1px solid #f0f0f0;
+          align-items: center;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &:hover {
+            background-color: #fafafa;
+          }
+
+          mat-form-field {
+            width: 100%;
+          }
+
+          .amount-value {
+            font-weight: 600;
+            color: #1976d2;
+            display: block;
+            padding: 8px 0;
+          }
+
+          .col-quantity,
+          .col-price,
+          .col-amount,
+          .col-action {
+            text-align: center;
+          }
+
+          .col-action {
+            button {
+              margin-left: auto;
+            }
+          }
+        }
+      }
+    }
+
+    .add-line-item-btn {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    .totals-section {
+      .totals-summary {
+        background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+        border-left: 4px solid #1976d2;
+        padding: 16px;
+        border-radius: 4px;
+        max-width: 400px;
+        margin-left: auto;
+
+        .total-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+          font-size: 14px;
+
+          .label {
+            font-weight: 500;
+            color: #555;
+          }
+
+          .value {
+            font-weight: 600;
+            color: #333;
+          }
+
+          &.grand-total {
+            padding-top: 12px;
+            margin-top: 12px;
+            border-top: 2px solid #e0e0e0;
+            font-size: 16px;
+
+            .label,
+            .value {
+              color: #1976d2;
+              font-weight: 700;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  mat-card-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+    padding: 16px;
+
+    button {
+      min-width: 140px;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .invoice-form {
+    padding: 12px;
+
+    .form-card {
+      margin: 0;
+    }
+
+    .form-sections {
+      .line-items-table {
+        .table-header,
+        .table-body .table-row {
+          grid-template-columns: 1fr;
+          gap: 8px;
+
+          > div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+
+            &::before {
+              content: attr(data-label);
+              font-weight: 600;
+              color: #555;
+              min-width: 100px;
+            }
+          }
+        }
+
+        .table-header {
+          display: none;
+        }
+      }
+
+      .totals-section {
+        .totals-summary {
+          max-width: 100%;
+        }
+      }
+    }
+
+    mat-card-actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

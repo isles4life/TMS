@@ -1,0 +1,256 @@
+<form [formGroup]="invoiceForm" class="invoice-form">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Create New Invoice</mat-card-title>
+      <mat-card-subtitle>Fill in the invoice details below</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="form-sections">
+        <!-- Client Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon>person</mat-icon>
+            Bill To (Client Information)
+          </h3>
+          <div class="form-grid">
+            <mat-form-field class="full-width">
+              <mat-label>Client Name *</mat-label>
+              <input matInput formControlName="clientName" placeholder="e.g., ABC Transport Co.">
+              <mat-error *ngIf="invoiceForm.get('clientName')?.hasError('required')">Client name is required</mat-error>
+              <mat-error *ngIf="invoiceForm.get('clientName')?.hasError('minlength')">Name must be at least 2 characters</mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+              <mat-label>Email Address *</mat-label>
+              <input matInput formControlName="clientEmail" type="email" placeholder="billing@example.com">
+              <mat-error *ngIf="invoiceForm.get('clientEmail')?.hasError('required')">Email is required</mat-error>
+              <mat-error *ngIf="invoiceForm.get('clientEmail')?.hasError('email')">Invalid email format</mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+              <mat-label>Street Address *</mat-label>
+              <input matInput formControlName="clientAddress" placeholder="123 Commerce St">
+              <mat-error *ngIf="invoiceForm.get('clientAddress')?.hasError('required')">Address is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <input matInput formControlName="clientPhone" placeholder="(555) 123-4567">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Company Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon>business</mat-icon>
+            Company Information
+          </h3>
+          <div class="form-grid">
+            <mat-form-field class="full-width">
+              <mat-label>Company Name *</mat-label>
+              <input matInput formControlName="companyName">
+              <mat-error *ngIf="invoiceForm.get('companyName')?.hasError('required')">Company name is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+              <mat-label>Company Address *</mat-label>
+              <input matInput formControlName="companyAddress">
+              <mat-error *ngIf="invoiceForm.get('companyAddress')?.hasError('required')">Company address is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Phone *</mat-label>
+              <input matInput formControlName="companyPhone">
+              <mat-error *ngIf="invoiceForm.get('companyPhone')?.hasError('required')">Phone is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Email *</mat-label>
+              <input matInput formControlName="companyEmail" type="email">
+              <mat-error *ngIf="invoiceForm.get('companyEmail')?.hasError('required')">Email is required</mat-error>
+              <mat-error *ngIf="invoiceForm.get('companyEmail')?.hasError('email')">Invalid email format</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Invoice Details Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon>event_note</mat-icon>
+            Invoice Details
+          </h3>
+          <div class="form-grid">
+            <mat-form-field>
+              <mat-label>Invoice Date *</mat-label>
+              <input matInput formControlName="date" [matDatepicker]="picker1" readonly>
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Due Date *</mat-label>
+              <input matInput formControlName="dueDate" [matDatepicker]="picker2" readonly>
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Currency *</mat-label>
+              <mat-select formControlName="currency">
+                <mat-option *ngFor="let curr of currencies" [value]="curr">{{ curr }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Tax Rate (%) *</mat-label>
+              <input matInput formControlName="taxRate" type="number" step="0.01" min="0" max="1">
+              <mat-hint>Enter as decimal (e.g., 0.08 for 8%)</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+              <mat-label>Payment Terms</mat-label>
+              <input matInput formControlName="paymentTerms" placeholder="e.g., Net 30">
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+              <mat-label>Notes</mat-label>
+              <textarea matInput formControlName="notes" placeholder="Any additional notes for the client" rows="4"></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Line Items Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon>receipt</mat-icon>
+            Line Items
+          </h3>
+          
+          <div class="line-items-table">
+            <div class="table-header">
+              <div class="col-description">Description</div>
+              <div class="col-quantity">Qty</div>
+              <div class="col-price">Unit Price</div>
+              <div class="col-amount">Amount</div>
+              <div class="col-action">Action</div>
+            </div>
+
+            <div class="table-body" formArrayName="lineItems">
+              <div class="table-row" *ngFor="let item of lineItems.controls; let i = index" [formGroupName]="i">
+                <div class="col-description">
+                  <mat-form-field>
+                    <mat-label>Description</mat-label>
+                    <input matInput formControlName="description" placeholder="e.g., Freight forwarding">
+                  </mat-form-field>
+                </div>
+
+                <div class="col-quantity">
+                  <mat-form-field>
+                    <input matInput formControlName="quantity" type="number" min="1" (change)="onLineItemChange(i)">
+                  </mat-form-field>
+                </div>
+
+                <div class="col-price">
+                  <mat-form-field>
+                    <mat-label>$ Price</mat-label>
+                    <input matInput formControlName="unitPrice" type="number" min="0" step="0.01" (change)="onLineItemChange(i)">
+                  </mat-form-field>
+                </div>
+
+                <div class="col-amount">
+                  <span class="amount-value">{{ formatCurrency(lineItems.at(i).get('amount')?.value || 0) }}</span>
+                </div>
+
+                <div class="col-action">
+                  <button type="button" mat-icon-button color="warn" (click)="removeLineItem(i)" [disabled]="lineItems.length === 1">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" mat-stroked-button color="primary" (click)="addLineItem()" class="add-line-item-btn">
+            <mat-icon>add</mat-icon>
+            Add Line Item
+          </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Totals Section -->
+        <div class="form-section totals-section">
+          <h3 class="section-title">
+            <mat-icon>calculate</mat-icon>
+            Totals
+          </h3>
+          
+          <div class="totals-summary">
+            <div class="total-row">
+              <span class="label">Subtotal:</span>
+              <span class="value">{{ formatCurrency(getCalculatedTotals().subtotal) }}</span>
+            </div>
+            <div class="total-row">
+              <span class="label">Tax ({{ (invoiceForm.get('taxRate')?.value || 0) * 100 }}%):</span>
+              <span class="value">{{ formatCurrency(getCalculatedTotals().taxAmount) }}</span>
+            </div>
+            <div class="total-row grand-total">
+              <span class="label">Total Due:</span>
+              <span class="value">{{ formatCurrency(getCalculatedTotals().total) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Bank Details Section (Optional) -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon>account_balance</mat-icon>
+            Bank Details (Optional)
+          </h3>
+          <div class="form-grid">
+            <mat-form-field>
+              <mat-label>Account Name</mat-label>
+              <input matInput formControlName="bankAccountName">
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Account Number</mat-label>
+              <input matInput formControlName="bankAccountNumber" type="password">
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Routing Number</mat-label>
+              <input matInput formControlName="bankRoutingNumber">
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Bank Name</mat-label>
+              <input matInput formControlName="bankName">
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="createInvoice()" [disabled]="!invoiceForm.valid">
+        <mat-icon>save</mat-icon>
+        Create Invoice
+      </button>
+      <button mat-stroked-button (click)="resetForm()">
+        <mat-icon>refresh</mat-icon>
+        Reset Form
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</form>
