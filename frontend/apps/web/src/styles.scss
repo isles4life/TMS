@@ -1,12 +1,134 @@
-/* Global styles */
+/* Global Truckstop-inspired styling + Angular Material theme */
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap');
+
+:root {
+  --ts-red: #d71920;
+  --ts-red-dark: #b31218;
+  --ts-ink: #0f1115;
+  --ts-stone: #2f343d;
+  --ts-green: #1ea672;
+  --ts-amber: #f5a300;
+  --ts-surface: #f7f8fa;
+  --ts-page-bg: #f2f3f5;
+  --ts-border: #e0e2e8;
+  --ts-spacing-sm: 8px;
+  --ts-spacing-md: 12px;
+  --ts-spacing-lg: 16px;
+  --ts-spacing-xl: 24px;
+  --ts-spacing-2xl: 32px;
+  --ts-spacing-3xl: 48px;
+}
+
+/* Angular Material theme (Truckstop) */
+@include mat.core();
+
+$ts-primary: mat.define-palette(mat.$red-palette, 700, 600, 800);
+$ts-accent: mat.define-palette(mat.$amber-palette, 600, 500, 700);
+$ts-warn: mat.define-palette(mat.$red-palette, 800);
+$ts-typography: mat.define-typography-config(
+  $font-family: 'Montserrat, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
+  $headline-1: mat.define-typography-level(44px, 52px, 800),
+  $headline-2: mat.define-typography-level(36px, 44px, 800),
+  $headline-3: mat.define-typography-level(28px, 34px, 700),
+  $headline-4: mat.define-typography-level(22px, 30px, 700),
+  $body-1: mat.define-typography-level(16px, 24px, 600),
+  $body-2: mat.define-typography-level(14px, 22px, 600),
+  $button: mat.define-typography-level(14px, 20px, 700)
+);
+
+$ts-theme: mat.define-light-theme((
+  color: (
+    primary: $ts-primary,
+    accent: $ts-accent,
+    warn: $ts-warn,
+  ),
+  typography: $ts-typography,
+  density: 0,
+));
+
+@include mat.all-component-themes($ts-theme);
+@include mat.all-component-typographies($ts-theme);
+
+* {
+  box-sizing: border-box;
+}
+
 html, body {
   height: 100%;
+  background: var(--ts-page-bg);
 }
+
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Montserrat', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--ts-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--ts-red);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration: underline;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--ts-amber);
+  outline-offset: 2px;
 }
 
 app-root {
   display: block;
+  min-height: 100vh;
+}
+
+/* Material Icons font configuration */
+.material-icons,
+.mat-icon,
+mat-icon {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  overflow: visible;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Layout helpers to prevent crowding/overlap */
+.page {
+  display: grid;
+  gap: var(--ts-spacing-xl);
+}
+
+.page__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ts-spacing-lg);
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.cta-group {
+  display: inline-flex;
+  gap: var(--ts-spacing-sm);
+  flex-wrap: wrap;
 }
