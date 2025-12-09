@@ -2,10 +2,8 @@ C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\bin\Debug\net10.0
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\bin\Debug\net10.0\TMS.Infrastructure.runtimeconfig.json
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\bin\Debug\net10.0\TMS.Infrastructure.dll
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\bin\Debug\net10.0\TMS.Infrastructure.pdb
-C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\bin\Debug\net10.0\TMS.Application.dll
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\bin\Debug\net10.0\TMS.Domain.dll
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\bin\Debug\net10.0\TMS.Domain.pdb
-C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\bin\Debug\net10.0\TMS.Application.pdb
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\obj\Debug\net10.0\TMS.Infrastructure.csproj.AssemblyReference.cache
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\obj\Debug\net10.0\TMS.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Infrastructure\obj\Debug\net10.0\TMS.Infrastructure.AssemblyInfoInputs.cache

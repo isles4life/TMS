@@ -7,6 +7,7 @@ using TMS.Domain.Entities.Drivers;
 using TMS.Domain.Entities.Equipment;
 using TMS.Domain.Entities.Loads;
 using TMS.Domain.Entities.Trips;
+using TMS.Domain.Entities.Users;
 
 /// <summary>
 /// Database context for TMS
@@ -24,6 +25,7 @@ public class TMSDbContext : DbContext
     public DbSet<Document> Documents { get; set; }
     public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; }
     public DbSet<ComplianceDocument> ComplianceDocuments { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -69,5 +71,32 @@ public class TMSDbContext : DbContext
 
         modelBuilder.Entity<Carrier>()
             .OwnsOne(c => c.InsuranceInfo);
+
+        // User configuration
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.Email)
+            .IsRequired()
+            .HasMaxLength(255);
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.PasswordHash)
+            .IsRequired();
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.FirstName)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.LastName)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.Role)
+            .HasMaxLength(50)
+            .HasDefaultValue("User");
     }
 }

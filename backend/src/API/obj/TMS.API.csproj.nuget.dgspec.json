@@ -528,12 +528,14 @@
             "projectReferences": {
               "C:\\Users\\cable\\OneDrive\\Desktop\\TMS\\backend\\src\\Domain\\TMS.Domain.csproj": {
                 "projectPath": "C:\\Users\\cable\\OneDrive\\Desktop\\TMS\\backend\\src\\Domain\\TMS.Domain.csproj"
+              },
+              "C:\\Users\\cable\\OneDrive\\Desktop\\TMS\\backend\\src\\Infrastructure\\TMS.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\cable\\OneDrive\\Desktop\\TMS\\backend\\src\\Infrastructure\\TMS.Infrastructure.csproj"
               }
             }
           }
         },
         "warningProperties": {
-          "allWarningsAsErrors": true,
           "warnAsError": [
             "NU1605"
           ]
@@ -552,6 +554,10 @@
             "MediatR": {
               "target": "Package",
               "version": "[12.1.1, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             }
           },
           "imports": [
@@ -1204,9 +1210,6 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\cable\\OneDrive\\Desktop\\TMS\\backend\\src\\Application\\TMS.Application.csproj": {
-                "projectPath": "C:\\Users\\cable\\OneDrive\\Desktop\\TMS\\backend\\src\\Application\\TMS.Application.csproj"
-              },
               "C:\\Users\\cable\\OneDrive\\Desktop\\TMS\\backend\\src\\Domain\\TMS.Domain.csproj": {
                 "projectPath": "C:\\Users\\cable\\OneDrive\\Desktop\\TMS\\backend\\src\\Domain\\TMS.Domain.csproj"
               }
@@ -1241,7 +1244,15 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore.Tools": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[8.0.0, )"
             },

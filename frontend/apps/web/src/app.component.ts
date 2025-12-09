@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
@@ -6,6 +6,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavbarComponent } from './app/layout/navbar.component';
 import { SidebarComponent } from './app/layout/sidebar.component';
+import { AuthService } from './app/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -30,19 +31,30 @@ import { SidebarComponent } from './app/layout/sidebar.component';
 export class AppComponent {
   @ViewChild('sidenav') sidenav?: MatSidenav;
   isMobile = false;
-  navItems = [
+  navItemsBase = [
     { label: 'Dashboard', icon: 'space_dashboard', path: '/dashboard' },
     { label: 'Load Board', icon: 'table_chart', path: '/load-board' },
     { label: 'Load Details', icon: 'description', path: '/load-details' },
-    { label: 'Settings', icon: 'settings', path: '/settings' },
-    { label: 'Login', icon: 'login', path: '/login' },
+    { label: 'Settings', icon: 'settings', path: '/settings' }
   ];
+  navItems = [...this.navItemsBase, { label: 'Login', icon: 'login', path: '/login' }];
+
+  private authService = inject(AuthService);
 
   constructor(private breakpoint: BreakpointObserver) {
     this.breakpoint
       .observe(['(max-width: 960px)'])
       .pipe(takeUntilDestroyed())
       .subscribe(result => this.isMobile = result.matches);
+
+    // Hide login link when authenticated
+    this.authService.currentUser$
+      .pipe(takeUntilDestroyed())
+      .subscribe(user => {
+        this.navItems = user
+          ? [...this.navItemsBase]
+          : [...this.navItemsBase, { label: 'Login', icon: 'login', path: '/login' }];
+      });
   }
 
   toggleNav() {
