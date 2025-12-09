@@ -13,3 +13,4 @@ C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Application\obj\Debug\net10.0\TM
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Application\obj\Debug\net10.0\refint\TMS.Application.dll
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Application\obj\Debug\net10.0\TMS.Application.pdb
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Application\obj\Debug\net10.0\ref\TMS.Application.dll
+C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Application\obj\Debug\net10.0\TMS.Application.sourcelink.json

@@ -96,9 +96,9 @@ try
 
     // Register minimal API endpoints
     app.MapHealthCheck();
-    // app.RegisterPowerOnlyEndpoints();
-    // app.RegisterEquipmentEndpoints();
-    // app.RegisterDriverEndpoints();
+    app.RegisterPowerOnlyEndpoints();
+    app.RegisterEquipmentEndpoints();
+    app.RegisterDriverEndpoints();
 
     // Lifecycle logging helpers to diagnose unexpected shutdowns
     var lifetime = app.Lifetime;
