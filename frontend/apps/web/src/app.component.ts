@@ -34,6 +34,7 @@ export class AppComponent {
   navItemsBase = [
     { label: 'Dashboard', icon: 'space_dashboard', path: '/dashboard' },
     { label: 'Load Board', icon: 'table_chart', path: '/load-board' },
+    { label: 'Documents', icon: 'description', path: '/documents' },
     { label: 'Marketplace', icon: 'store', path: '/marketplace' },
     { label: 'Settings', icon: 'settings', path: '/settings' }
   ];

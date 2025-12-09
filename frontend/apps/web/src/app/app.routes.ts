@@ -7,6 +7,7 @@ import { ProfilePage } from './pages/profile.page';
 import { SettingsPage } from './pages/settings.page';
 import { MarketplacePage } from './pages/marketplace.page';
 import { NotificationsPage } from './pages/notifications/notifications.page';
+import { DocumentsPage } from './pages/documents/documents.page';
 import { LoginComponent } from './pages/login.component';
 import { RegisterComponent } from './pages/auth/register.component';
 import { AuthGuard } from './guards/auth.guard';
@@ -23,4 +24,5 @@ export const APP_ROUTES: Routes = [
   { path: 'settings', component: SettingsPage, canActivate: [AuthGuard], data: { title: 'Settings' } },
   { path: 'marketplace', component: MarketplacePage, canActivate: [AuthGuard], data: { title: 'Marketplace' } },
   { path: 'notifications', component: NotificationsPage, canActivate: [AuthGuard], data: { title: 'Notifications' } },
+  { path: 'documents', component: DocumentsPage, canActivate: [AuthGuard], data: { title: 'Documents' } },
 ];
