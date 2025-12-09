@@ -93,27 +93,86 @@ app-root {
 .material-icons,
 .mat-icon,
 mat-icon {
-  font-family: 'Material Icons';
+  font-family: 'Material Icons' !important;
   font-weight: normal;
   font-style: normal;
   font-size: 24px;
   line-height: 1;
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   letter-spacing: normal;
   text-transform: none;
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
-  overflow: visible;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  overflow: visible !important;
+  flex-shrink: 0;
 }
 
-/* Layout helpers to prevent crowding/overlap */
+/* Material Icon sizing constraints removal */
+.mat-icon {
+  min-width: 24px !important;
+  min-height: 24px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Button styles - ensure icons display properly */
+button,
+button .mdc-button__ripple,
+button .mdc-button__focus-ring,
+.mat-mdc-button,
+.mat-mdc-stroked-button,
+.mat-mdc-flat-button,
+.mat-mdc-raised-button {
+  overflow: visible !important;
+}
+
+/* Button icon positioning */
+button .mat-icon,
+[mat-button] .mat-icon,
+.mat-mdc-button .mat-icon,
+.mat-mdc-stroked-button .mat-icon,
+.mat-mdc-flat-button .mat-icon,
+.mat-mdc-raised-button .mat-icon {
+  display: inline-block;
+  margin-right: 8px;
+  overflow: visible !important;
+}
+
+/* Menu item styles */
+.mat-mdc-menu-item,
+.mat-mdc-menu-item .mdc-list-item__content {
+  overflow: visible !important;
+}
+
+/* Menu item icon positioning */
+.mat-mdc-menu-item .mat-icon {
+  display: inline-block;
+  margin-right: 8px;
+  overflow: visible !important;
+}
+
+/* List item icon positioning */
+.mat-mdc-list-item .mat-icon,
+[mat-list-item] .mat-icon {
+  display: inline-block;
+  margin-right: 16px;
+  overflow: visible !important;
+}
+
+/* Utility classes */
+.muted {
+  color: var(--ts-stone);
+  font-weight: 600;
+}
+
+/* Layout helpers */
 .page {
   display: grid;
   gap: var(--ts-spacing-xl);
