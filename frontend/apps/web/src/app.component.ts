@@ -34,7 +34,6 @@ export class AppComponent {
   navItemsBase = [
     { label: 'Dashboard', icon: 'space_dashboard', path: '/dashboard' },
     { label: 'Load Board', icon: 'table_chart', path: '/load-board' },
-    { label: 'Load Details', icon: 'description', path: '/load-details' },
     { label: 'Settings', icon: 'settings', path: '/settings' }
   ];
   navItems = [...this.navItemsBase, { label: 'Login', icon: 'login', path: '/login' }];
