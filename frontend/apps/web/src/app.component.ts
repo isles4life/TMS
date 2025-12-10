@@ -21,7 +21,7 @@ interface NavItem {
   imports: [CommonModule, RouterOutlet, MatSidenavModule, NavbarComponent, SidebarComponent],
   template: `
     <mat-sidenav-container class="shell">
-      <mat-sidenav #sidenav class="ts-sidenav" [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
+      <mat-sidenav #sidenav class="ts-sidenav" [mode]="isMobile ? 'over' : 'side'" [opened]="isMobile ? false : sidenavOpened">
         <ts-sidebar [items]="navItems" (closed)="closeNav()"></ts-sidebar>
       </mat-sidenav>
 
@@ -38,6 +38,7 @@ interface NavItem {
 export class AppComponent {
   @ViewChild('sidenav') sidenav?: MatSidenav;
   isMobile = false;
+  sidenavOpened = false;
 
   // All available navigation items with their role restrictions
   navItemsBase: NavItem[] = [
@@ -59,7 +60,9 @@ export class AppComponent {
     this.breakpoint
       .observe(['(max-width: 960px)'])
       .pipe(takeUntilDestroyed())
-      .subscribe(result => this.isMobile = result.matches);
+      .subscribe(result => {
+        this.isMobile = result.matches;
+      });
 
     // Update nav items based on authentication and role
     this.authService.currentUser$
@@ -67,8 +70,18 @@ export class AppComponent {
       .subscribe(user => {
         if (user) {
           this.navItems = this.navItemsBase;
+          // Open sidebar by default on desktop when user is logged in
+          if (!this.isMobile && this.sidenav) {
+            this.sidenav.open();
+            this.sidenavOpened = true;
+          }
         } else {
           this.navItems = [...this.navItemsBase, { label: 'Login', icon: 'login', path: '/login' }];
+          // Close sidebar when user logs out
+          if (this.sidenav) {
+            this.sidenav.close();
+            this.sidenavOpened = false;
+          }
         }
       });
   }
@@ -76,12 +89,14 @@ export class AppComponent {
   toggleNav() {
     if (this.sidenav) {
       this.sidenav.toggle();
+      this.sidenavOpened = this.sidenav.opened;
     }
   }
 
   closeNav() {
     if (this.sidenav?.opened) {
       this.sidenav.close();
+      this.sidenavOpened = false;
     }
   }
 }

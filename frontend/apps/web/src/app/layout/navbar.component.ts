@@ -1,12 +1,13 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { NotificationService } from '../services/notification.service';
+import { AuthService } from '../services/auth.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -36,7 +37,10 @@ import { Observable } from 'rxjs';
         </button>
         <button mat-menu-item routerLink="/profile">Profile</button>
         <button mat-menu-item routerLink="/settings">Settings</button>
-        <button mat-menu-item>Sign out</button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Sign out</span>
+        </button>
       </mat-menu>
     </div>
   `,
@@ -97,11 +101,19 @@ export class NavbarComponent implements OnInit {
   @Output() menu = new EventEmitter<void>();
   unreadCount$: Observable<number>;
 
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   constructor(private notificationService: NotificationService) {
     this.unreadCount$ = this.notificationService.unreadCount$;
   }
 
   ngOnInit() {
     // Subscribe to notification count updates
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
