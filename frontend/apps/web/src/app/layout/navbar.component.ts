@@ -19,7 +19,9 @@ import { Observable } from 'rxjs';
       <button mat-icon-button class="nav-toggle" (click)="menu.emit()" aria-label="Open navigation">
         <mat-icon>menu</mat-icon>
       </button>
-      <img src="assets/truckstop-logo-optimized.png" alt="Truckstop" class="brand-logo" width="211" height="50" />
+      <button class="brand-logo-btn" routerLink="/dashboard" aria-label="Go to dashboard">
+        <img src="assets/truckstop-logo-optimized.png" alt="Truckstop" class="brand-logo" width="211" height="50" />
+      </button>
       <span class="spacer"></span>
       <button mat-icon-button routerLink="/notifications" aria-label="Notifications" class="notification-btn">
         <mat-icon [matBadge]="(unreadCount$ | async) || 0" 
@@ -75,6 +77,14 @@ import { Observable } from 'rxjs';
       flex-shrink: 0;
       margin: 0;
       object-fit: contain;
+    }
+    .brand-logo-btn {
+      border: none;
+      background: transparent;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
     }
     .spacer { flex: 1 1 auto; }
     .primary {
