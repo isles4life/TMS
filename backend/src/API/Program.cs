@@ -62,6 +62,9 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+// Add Email Service
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -147,6 +150,7 @@ try
     // Register minimal API endpoints
     app.MapHealthCheck();
     app.RegisterAuthEndpoints();
+    app.RegisterEmailEndpoints();
     app.RegisterPowerOnlyEndpoints();
     app.RegisterEquipmentEndpoints();
     app.RegisterDriverEndpoints();

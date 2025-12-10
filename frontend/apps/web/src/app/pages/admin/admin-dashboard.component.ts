@@ -16,6 +16,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { AuthService, UserRole } from '../../services/auth.service';
 import { UserDialogComponent, SystemUserPayload } from './user-dialog.component';
+import { EmailService } from '../../services/email.service';
+import { PasswordResetDialogComponent } from './password-reset-dialog.component';
 
 interface AppSettings {
   maintenanceMode: boolean;
@@ -57,7 +59,8 @@ interface SystemUser {
     MatDialogModule,
     MatSnackBarModule,
     FormsModule,
-    UserDialogComponent
+    UserDialogComponent,
+    PasswordResetDialogComponent
   ],
   template: `
     <div class="admin-container">
@@ -285,6 +288,11 @@ interface SystemUser {
                           <mat-icon>edit</mat-icon>
                           <span>Edit</span>
                         </button>
+                        <button mat-menu-item (click)="resetUserPassword(element)">
+                          <mat-icon>vpn_key</mat-icon>
+                          <span>Reset Password</span>
+                        </button>
+                        <mat-divider></mat-divider>
                         <button mat-menu-item (click)="deleteUser(element)" class="delete-action">
                           <mat-icon>delete</mat-icon>
                           <span>Delete</span>
@@ -656,6 +664,7 @@ export class AdminDashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private emailService = inject(EmailService);
 
   currentUser = this.authService.getCurrentUser();
   lastUpdated = new Date();
@@ -827,7 +836,22 @@ export class AdminDashboardComponent implements OnInit {
 
       this.systemUsers = [...this.systemUsers, newUser];
       this.saveUsers();
-      this.snackBar.open('User added successfully', 'Close', { duration: 3000 });
+
+      // Send welcome email to new user
+      const tempPassword = Math.random().toString(36).substring(2, 15);
+      this.emailService.sendWelcomeEmail(result.email, result.firstName, result.lastName, tempPassword)
+        .subscribe({
+          next: () => {
+            this.snackBar.open(
+              `User added successfully. Welcome email sent to ${result.email}`,
+              'Close',
+              { duration: 5000 }
+            );
+          },
+          error: () => {
+            this.snackBar.open('User added, but email could not be sent', 'Close', { duration: 3000 });
+          }
+        });
     });
   }
 
@@ -858,6 +882,38 @@ export class AdminDashboardComponent implements OnInit {
       this.systemUsers = updatedUsers;
       this.saveUsers();
       this.snackBar.open('User updated successfully', 'Close', { duration: 3000 });
+    });
+  }
+
+  resetUserPassword(user: SystemUser): void {
+    const dialogRef = this.dialog.open(PasswordResetDialogComponent, {
+      width: '480px',
+      data: {
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (!result || result.action !== 'send-reset') {
+        return;
+      }
+
+      const resetToken = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+      this.emailService.sendPasswordResetEmail(user.email, user.firstName, resetToken)
+        .subscribe({
+          next: () => {
+            this.snackBar.open(
+              `Password reset link sent to ${user.email}`,
+              'Close',
+              { duration: 5000 }
+            );
+          },
+          error: () => {
+            this.snackBar.open('Could not send password reset email', 'Close', { duration: 3000 });
+          }
+        });
     });
   }
 }
