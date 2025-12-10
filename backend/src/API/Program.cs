@@ -72,6 +72,10 @@ builder.Services.AddScoped<IDispatchService, DispatchService>();
 // Add Tracking Service
 builder.Services.AddScoped<ITrackingService, TrackingService>();
 
+// Add Route Optimization Service
+builder.Services.AddHttpClient(); // Required for HERE Maps API calls
+builder.Services.AddScoped<IRouteOptimizationService, RouteOptimizationService>();
+
 // Add SignalR for real-time tracking
 builder.Services.AddSignalR();
 
@@ -178,6 +182,7 @@ try
     app.RegisterDriverEndpoints();
     app.RegisterDispatchEndpoints();
     app.RegisterTrackingEndpoints();
+    app.RegisterRouteEndpoints();
 
     // Register SignalR hubs
     app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");

@@ -27,13 +27,18 @@ public class TrackingService : ITrackingService
 {
     private readonly ILogger<TrackingService> _logger;
     private readonly TMSDbContext _context;
+    private readonly IRouteOptimizationService _routeService;
     private const decimal MilesToMeters = 1609.34m;
     private const decimal EarthRadiusMiles = 3959m;
 
-    public TrackingService(ILogger<TrackingService> logger, TMSDbContext context)
+    public TrackingService(
+        ILogger<TrackingService> logger, 
+        TMSDbContext context,
+        IRouteOptimizationService routeService)
     {
         _logger = logger;
         _context = context;
+        _routeService = routeService;
     }
 
     /// <summary>
@@ -149,6 +154,27 @@ public class TrackingService : ITrackingService
             var availability = await _context.DriverAvailabilities
                 .FirstOrDefaultAsync(da => da.DriverId == location.DriverId);
 
+            // Calculate ETA if dispatch has destination
+            int etaMinutes = 0;
+            if (location.Dispatch?.Load?.DeliveryLocation != null)
+            {
+                try
+                {
+                    var eta = await _routeService.CalculateETAAsync(
+                        location.Latitude,
+                        location.Longitude,
+                        location.Dispatch.Load.DeliveryLocation.Latitude,
+                        location.Dispatch.Load.DeliveryLocation.Longitude,
+                        DateTime.UtcNow);
+                    
+                    etaMinutes = (int)(eta - DateTime.UtcNow).TotalMinutes;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to calculate ETA for driver {DriverId}", location.DriverId);
+                }
+            }
+
             trackers.Add(new ActiveTrackerResponse
             {
                 Id = location.Id,
@@ -163,7 +189,7 @@ public class TrackingService : ITrackingService
                 LoadNumber = location.Dispatch?.Load?.LoadNumber,
                 PickupLocation = location.Dispatch?.Load?.PickupLocation?.ToString() ?? "",
                 DeliveryLocation = location.Dispatch?.Load?.DeliveryLocation?.ToString() ?? "",
-                ETA_Minutes = 0, // TODO: Calculate from route
+                ETA_Minutes = etaMinutes,
                 LastUpdated = location.RecordedAt
             });
         }
