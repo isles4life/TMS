@@ -108,7 +108,7 @@ export interface SystemUserPayload {
               <div class="toggle-hint">{{ form.isActive ? 'User can access the system' : 'User cannot log in' }}</div>
             </div>
           </div>
-          <mat-slide-toggle [(ngModel)]="form.isActive" color="primary">
+      <mat-slide-toggle [(ngModel)]=\"form.isActive\" color=\"primary\" class=\"ts-toggle\">
             {{ form.isActive ? 'Active' : 'Inactive' }}
           </mat-slide-toggle>
         </div>
@@ -281,6 +281,19 @@ export interface SystemUserPayload {
       font-size: 18px;
       width: 18px;
       height: 18px;
+    }
+
+    /* Override Material toggle colors to use Truckstop red */
+    ::ng-deep .ts-toggle.mat-mdc-slide-toggle {
+      --mdc-theme-primary: #d71920;
+    }
+
+    ::ng-deep .ts-toggle.mat-mdc-slide-toggle.mat-checked .mdc-switch__thumb {
+      background-color: #d71920 !important;
+    }
+
+    ::ng-deep .ts-toggle.mat-mdc-slide-toggle.mat-checked .mdc-switch__track {
+      background-color: rgba(215, 25, 32, 0.5) !important;
     }
 
     @media (max-width: 640px) {

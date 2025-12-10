@@ -122,7 +122,7 @@ interface SystemUser {
                 <label>Maintenance Mode</label>
                 <p class="help-text">Enable to prevent users from accessing the application</p>
               </div>
-              <mat-slide-toggle [(ngModel)]="appSettings.maintenanceMode" color="warn"></mat-slide-toggle>
+              <mat-slide-toggle [(ngModel)]="appSettings.maintenanceMode" color="primary" class="ts-toggle"></mat-slide-toggle>
             </div>
 
             <mat-divider></mat-divider>
@@ -132,7 +132,7 @@ interface SystemUser {
                 <label>Enable Notifications</label>
                 <p class="help-text">Allow in-app notifications and email alerts</p>
               </div>
-              <mat-slide-toggle [(ngModel)]="appSettings.enableNotifications"></mat-slide-toggle>
+              <mat-slide-toggle [(ngModel)]="appSettings.enableNotifications" color="primary" class="ts-toggle"></mat-slide-toggle>
             </div>
           </mat-card-content>
         </mat-card>
@@ -598,6 +598,19 @@ interface SystemUser {
 
     .delete-action {
       color: #d71920 !important;
+    }
+
+    /* Override Material toggle colors to use Truckstop red */
+    ::ng-deep .ts-toggle.mat-mdc-slide-toggle {
+      --mdc-theme-primary: #d71920;
+    }
+
+    ::ng-deep .ts-toggle.mat-mdc-slide-toggle.mat-checked .mdc-switch__thumb {
+      background-color: #d71920 !important;
+    }
+
+    ::ng-deep .ts-toggle.mat-mdc-slide-toggle.mat-checked .mdc-switch__track {
+      background-color: rgba(215, 25, 32, 0.5) !important;
     }
 
     @media (max-width: 768px) {
