@@ -32,8 +32,8 @@ export const APP_ROUTES: Routes = [
   { path: 'post-load', component: PostLoadPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Post a Load', roles: ['Broker'] } },
 
   // Carrier-specific routes (Load Board)
-  { path: 'load-board', component: LoadBoardPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Board', roles: ['Carrier'] } },
-  { path: 'load-details/:id', component: LoadDetailsPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Details', roles: ['Carrier'] } },
+  { path: 'load-board', component: LoadBoardPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Board', roles: ['Carrier', 'Broker', 'SuperAdmin'] } },
+  { path: 'load-details/:id', component: LoadDetailsPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Details', roles: ['Carrier', 'Broker', 'SuperAdmin'] } },
 
   // User settings (available to all authenticated users)
   { path: 'settings', component: SettingsPage, canActivate: [AuthGuard], data: { title: 'Settings' } },
