@@ -26,6 +26,8 @@ public class TMSDbContext : DbContext
     public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; }
     public DbSet<ComplianceDocument> ComplianceDocuments { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Dispatch> Dispatches { get; set; }
+    public DbSet<DriverAvailability> DriverAvailabilities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,5 +99,40 @@ public class TMSDbContext : DbContext
         modelBuilder.Entity<User>()
             .Property(u => u.Role)
             .HasDefaultValue(UserRole.Carrier);
+
+        // Dispatch relationships
+        modelBuilder.Entity<Dispatch>()
+            .HasOne(d => d.Load)
+            .WithMany()
+            .HasForeignKey(d => d.LoadId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Dispatch>()
+            .HasOne(d => d.Driver)
+            .WithMany()
+            .HasForeignKey(d => d.DriverId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Dispatch>()
+            .HasOne(d => d.Tractor)
+            .WithMany()
+            .HasForeignKey(d => d.TractorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Dispatch>()
+            .HasOne(d => d.Trailer)
+            .WithMany()
+            .HasForeignKey(d => d.TrailerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Driver Availability relationships
+        modelBuilder.Entity<DriverAvailability>()
+            .HasOne(da => da.Driver)
+            .WithMany()
+            .HasForeignKey(da => da.DriverId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<DriverAvailability>()
+            .OwnsOne(da => da.CurrentLocation);
     }
 }

@@ -17,6 +17,7 @@ using TMS.Application.Commands.Equipment;
 using TMS.Application.Commands.Drivers;
 using TMS.Application.Queries.Equipment;
 using TMS.Application.Queries.Drivers;
+using TMS.Application.Services;
 using TMS.Infrastructure.Services;
 using TMS.Infrastructure.Persistence;
 
@@ -65,6 +66,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 // Add Email Service
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+// Add Dispatch Service
+builder.Services.AddScoped<IDispatchService, DispatchService>();
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -111,6 +115,17 @@ using (var scope = app.Services.CreateScope())
     {
         Console.Error.WriteLine($"Error seeding test user: {ex.Message}");
     }
+
+    // Seed test data (drivers, equipment, loads)
+    try
+    {
+        await SeedData.InitializeAsync(db);
+        Console.WriteLine("Seeded test data successfully");
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Error seeding test data: {ex.Message}");
+    }
 }
 
 try
@@ -154,6 +169,7 @@ try
     app.RegisterPowerOnlyEndpoints();
     app.RegisterEquipmentEndpoints();
     app.RegisterDriverEndpoints();
+    app.RegisterDispatchEndpoints();
 
     // Lifecycle logging helpers to diagnose unexpected shutdowns
     var lifetime = app.Lifetime;

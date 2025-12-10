@@ -45,6 +45,7 @@ export class AppComponent {
     { label: 'Dashboard', icon: 'space_dashboard', path: '/dashboard' },
     { label: 'Load Board', icon: 'table_chart', path: '/load-board', roles: ['Carrier'] },
     { label: 'Post Load', icon: 'upload_file', path: '/post-load', roles: ['Broker'] },
+    { label: 'Dispatch', icon: 'local_shipping', path: '/dispatch', roles: ['Broker', 'SuperAdmin'] },
     { label: 'Invoices', icon: 'receipt_long', path: '/invoices', roles: ['Broker', 'SuperAdmin'] },
     { label: 'Documents', icon: 'description', path: '/documents' },
     { label: 'Marketplace', icon: 'store', path: '/marketplace' },

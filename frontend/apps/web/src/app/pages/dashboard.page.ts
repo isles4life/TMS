@@ -49,7 +49,7 @@ import { ExportService } from '../services/export.service';
               <p class="eyebrow">Activity</p>
               <h3>Recent loads</h3>
             </div>
-            <button mat-button color="primary">View board</button>
+            <button mat-button color="primary" routerLink="/load-board">View board</button>
           </div>
           <ts-load-table [rows]="recentLoads"></ts-load-table>
         </mat-card>

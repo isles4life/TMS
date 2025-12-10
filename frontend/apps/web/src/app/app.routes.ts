@@ -14,6 +14,7 @@ import { InvoiceViewComponent } from './pages/invoices/invoice-view.component';
 import { AdminDashboardComponent } from './pages/admin/admin-dashboard.component';
 import { LoginComponent } from './pages/login.component';
 import { RegisterComponent } from './pages/auth/register.component';
+import { DispatchDashboardComponent } from './pages/dispatch-dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
 
@@ -34,6 +35,9 @@ export const APP_ROUTES: Routes = [
   // Carrier-specific routes (Load Board)
   { path: 'load-board', component: LoadBoardPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Board', roles: ['Carrier', 'Broker', 'SuperAdmin'] } },
   { path: 'load-details/:id', component: LoadDetailsPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Details', roles: ['Carrier', 'Broker', 'SuperAdmin'] } },
+
+  // Dispatch routes (Broker and SuperAdmin)
+  { path: 'dispatch', component: DispatchDashboardComponent, canActivate: [AuthGuard, RoleGuard], data: { title: 'Dispatch Management', roles: ['Broker', 'SuperAdmin'] } },
 
   // User settings (available to all authenticated users)
   { path: 'settings', component: SettingsPage, canActivate: [AuthGuard], data: { title: 'Settings' } },
