@@ -15,6 +15,7 @@ import { AdminDashboardComponent } from './pages/admin/admin-dashboard.component
 import { LoginComponent } from './pages/login.component';
 import { RegisterComponent } from './pages/auth/register.component';
 import { DispatchDashboardComponent } from './pages/dispatch-dashboard.component';
+import { LiveTrackingDashboardComponent } from './pages/live-tracking-dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
 
@@ -38,6 +39,9 @@ export const APP_ROUTES: Routes = [
 
   // Dispatch routes (Broker and SuperAdmin)
   { path: 'dispatch', component: DispatchDashboardComponent, canActivate: [AuthGuard, RoleGuard], data: { title: 'Dispatch Management', roles: ['Broker', 'SuperAdmin'] } },
+
+  // Real-time tracking (Broker, Carrier, SuperAdmin)
+  { path: 'tracking', component: LiveTrackingDashboardComponent, canActivate: [AuthGuard, RoleGuard], data: { title: 'Live Tracking', roles: ['Broker', 'Carrier', 'SuperAdmin'] } },
 
   // User settings (available to all authenticated users)
   { path: 'settings', component: SettingsPage, canActivate: [AuthGuard], data: { title: 'Settings' } },

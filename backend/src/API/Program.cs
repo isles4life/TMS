@@ -69,14 +69,21 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 // Add Dispatch Service
 builder.Services.AddScoped<IDispatchService, DispatchService>();
 
+// Add Tracking Service
+builder.Services.AddScoped<ITrackingService, TrackingService>();
+
+// Add SignalR for real-time tracking
+builder.Services.AddSignalR();
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
-        builder.AllowAnyOrigin()
+        builder.WithOrigins("http://localhost:4200", "http://localhost:3000")
                .AllowAnyMethod()
-               .AllowAnyHeader();
+               .AllowAnyHeader()
+               .AllowCredentials();
     });
 });
 
@@ -86,8 +93,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TMSDbContext>();
-    // Ensure database is created from model (for SQLite development)
-    db.Database.EnsureCreated();
+    // Apply pending migrations (creates database if needed)
+    db.Database.Migrate();
     
     // Seed test user if database is empty
     try
@@ -170,6 +177,10 @@ try
     app.RegisterEquipmentEndpoints();
     app.RegisterDriverEndpoints();
     app.RegisterDispatchEndpoints();
+    app.RegisterTrackingEndpoints();
+
+    // Register SignalR hubs
+    app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");
 
     // Lifecycle logging helpers to diagnose unexpected shutdowns
     var lifetime = app.Lifetime;

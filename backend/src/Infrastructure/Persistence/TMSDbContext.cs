@@ -8,6 +8,7 @@ using TMS.Domain.Entities.Equipment;
 using TMS.Domain.Entities.Loads;
 using TMS.Domain.Entities.Trips;
 using TMS.Domain.Entities.Users;
+using TMS.Domain.Entities.Tracking;
 
 /// <summary>
 /// Database context for TMS
@@ -28,6 +29,8 @@ public class TMSDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Dispatch> Dispatches { get; set; }
     public DbSet<DriverAvailability> DriverAvailabilities { get; set; }
+    public DbSet<DriverLocation> DriverLocations { get; set; }
+    public DbSet<GeofenceAlert> GeofenceAlerts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -134,5 +137,31 @@ public class TMSDbContext : DbContext
 
         modelBuilder.Entity<DriverAvailability>()
             .OwnsOne(da => da.CurrentLocation);
+
+        // Driver Location relationships
+        modelBuilder.Entity<DriverLocation>()
+            .HasOne(dl => dl.Driver)
+            .WithMany()
+            .HasForeignKey(dl => dl.DriverId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<DriverLocation>()
+            .HasOne(dl => dl.Dispatch)
+            .WithMany()
+            .HasForeignKey(dl => dl.DispatchId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Geofence Alert relationships
+        modelBuilder.Entity<GeofenceAlert>()
+            .HasOne(ga => ga.DriverLocation)
+            .WithMany()
+            .HasForeignKey(ga => ga.DriverLocationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<GeofenceAlert>()
+            .HasOne(ga => ga.Dispatch)
+            .WithMany()
+            .HasForeignKey(ga => ga.DispatchId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
