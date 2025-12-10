@@ -16,8 +16,8 @@
       background: #fff;
       box-shadow: 2px 0 8px rgba(0,0,0,0.12);
     }.content {
-  padding: var(--ts-spacing-xl) var(--ts-spacing-lg);
-  max-width: 1240px;
+      padding: var(--ts-spacing-lg) var(--ts-spacing-md);
+      max-width: 1180px;
   margin: 0 auto;
   width: 100%;
 }

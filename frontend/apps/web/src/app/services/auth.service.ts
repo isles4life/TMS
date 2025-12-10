@@ -22,6 +22,11 @@ export interface LoginResponse {
   user?: User;
 }
 
+export interface ImpersonationData {
+  actualUser: User;
+  impersonatedUser: User;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,6 +34,9 @@ export class AuthService {
   private apiUrl = 'http://localhost:5000/api/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
+
+  private impersonationSubject = new BehaviorSubject<ImpersonationData | null>(this.getImpersonationFromStorage());
+  public impersonation$ = this.impersonationSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -108,7 +116,39 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
+    localStorage.removeItem('impersonation');
     this.currentUserSubject.next(null);
+    this.impersonationSubject.next(null);
+  }
+
+  setCurrentUser(user: User | null): void {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+    this.currentUserSubject.next(user);
+  }
+
+  setImpersonation(data: ImpersonationData | null): void {
+    if (data) {
+      localStorage.setItem('impersonation', JSON.stringify(data));
+    } else {
+      localStorage.removeItem('impersonation');
+    }
+    this.impersonationSubject.next(data);
+  }
+
+  getImpersonation(): ImpersonationData | null {
+    return this.impersonationSubject.value;
+  }
+
+  endImpersonation(): void {
+    const data = this.getImpersonationFromStorage();
+    if (data?.actualUser) {
+      this.setCurrentUser(data.actualUser);
+    }
+    this.setImpersonation(null);
   }
 
   getToken(): string | null {
@@ -126,6 +166,11 @@ export class AuthService {
   private getUserFromStorage(): User | null {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+  }
+
+  private getImpersonationFromStorage(): ImpersonationData | null {
+    const data = localStorage.getItem('impersonation');
+    return data ? JSON.parse(data) : null;
   }
 
   getAuthHeaders(): HttpHeaders {

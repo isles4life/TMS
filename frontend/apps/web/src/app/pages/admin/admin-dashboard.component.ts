@@ -306,8 +306,16 @@ interface SystemUser {
   styles: [`
     .admin-container {
       max-width: 1200px;
+      width: 100%;
       margin: 0 auto;
-      padding: 24px;
+      padding: 16px 12px;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    /* Keep sections compact to reduce vertical overflow */
+    .admin-header {
+      margin-bottom: 20px;
     }
 
     .admin-header {
@@ -336,14 +344,15 @@ interface SystemUser {
 
     .settings-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 24px;
-      margin-bottom: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
     }
 
     .settings-card {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
+      height: 100%;
     }
 
     .settings-card mat-card-header {
@@ -457,68 +466,87 @@ interface SystemUser {
     }
 
     .users-container {
-      padding: 24px 0;
+      padding: 12px 0 8px;
     }
 
     .users-card {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
+      overflow: hidden;
     }
 
     .users-card mat-card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px;
+      padding: 12px 16px;
       border-bottom: 1px solid #f0f0f0;
-      margin: -16px -16px 0 -16px;
+      margin: 0;
     }
 
     .users-card mat-card-title {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       margin: 0;
-      font-size: 16px;
+      font-size: 14px;
       color: #333;
     }
 
     .users-card mat-card-title mat-icon {
       color: #d71920;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
     }
 
     .add-user-btn {
       display: flex;
       align-items: center;
-      gap: 8px;
-      height: 40px;
+      gap: 4px;
+      height: 36px;
+      font-size: 13px;
+    }
+
+    .add-user-btn mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
 
     .users-table {
       width: 100%;
-      margin-top: 16px;
+      margin-top: 8px;
+      table-layout: fixed;
+      word-break: break-word;
+      font-size: 13px;
     }
 
     .users-table th {
       background: #f5f5f5;
       color: #333;
       font-weight: 600;
-      padding: 12px;
+      padding: 8px 6px;
       text-align: left;
+      white-space: normal;
+      font-size: 12px;
     }
 
     .users-table td {
-      padding: 12px;
+      padding: 8px 6px;
       border-bottom: 1px solid #e0e0e0;
+      white-space: normal;
+      vertical-align: middle;
     }
 
     .role-badge {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .role-superadmin {
@@ -539,11 +567,12 @@ interface SystemUser {
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
+      gap: 3px;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 11px;
       font-weight: 600;
+      white-space: nowrap;
     }
 
     .status-badge.active {
@@ -558,6 +587,13 @@ interface SystemUser {
 
     .action-btn {
       color: #d71920;
+      padding: 4px;
+    }
+
+    .action-btn mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
     }
 
     .delete-action {
@@ -683,23 +719,6 @@ export class AdminDashboardComponent implements OnInit {
       return;
     }
 
-    const impersonationData = {
-      actualUserId: this.currentUser?.id,
-      actualUserEmail: this.currentUser?.email,
-      impersonatedUser: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        carrierId: user.id
-      }
-    };
-
-    // Store impersonation info in localStorage
-    localStorage.setItem('impersonation', JSON.stringify(impersonationData));
-
-    // Update the current auth to be the impersonated user
     const impersonatedAuthUser = {
       id: user.id,
       email: user.email,
@@ -707,39 +726,37 @@ export class AdminDashboardComponent implements OnInit {
       lastName: user.lastName,
       role: user.role,
       carrierId: user.id
+    } as const;
+
+    const actualUser = this.currentUser;
+    if (!actualUser) {
+      this.snackBar.open('No current user to impersonate from', 'Close', { duration: 3000 });
+      return;
+    }
+
+    const impersonationData = {
+      actualUser,
+      impersonatedUser: impersonatedAuthUser
     };
 
-    localStorage.setItem('user', JSON.stringify(impersonatedAuthUser));
+    this.authService.setImpersonation(impersonationData);
+    this.authService.setCurrentUser(impersonatedAuthUser);
+
     this.snackBar.open(`Now impersonating ${user.firstName} ${user.lastName}`, 'Undo', { duration: 5000 })
       .onAction()
       .subscribe(() => this.stopImpersonation());
 
-    // Refresh the page or navigate
     setTimeout(() => {
       window.location.reload();
-    }, 1000);
+    }, 500);
   }
 
   stopImpersonation(): void {
-    const impersonation = localStorage.getItem('impersonation');
-    if (impersonation) {
-      const data = JSON.parse(impersonation);
-      // Restore the actual user
-      const actualUser = {
-        id: data.actualUserId,
-        email: data.actualUserEmail,
-        firstName: this.currentUser?.firstName,
-        lastName: this.currentUser?.lastName,
-        role: this.currentUser?.role,
-        carrierId: this.currentUser?.carrierId
-      };
-      localStorage.setItem('user', JSON.stringify(actualUser));
-      localStorage.removeItem('impersonation');
-      this.snackBar.open('Impersonation ended', 'Close', { duration: 3000 });
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    }
+    this.authService.endImpersonation();
+    this.snackBar.open('Impersonation ended', 'Close', { duration: 3000 });
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   }
 
   toggleUserStatus(user: SystemUser): void {

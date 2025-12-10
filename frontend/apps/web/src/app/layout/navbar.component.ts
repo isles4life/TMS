@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { NotificationService } from '../services/notification.service';
-import { AuthService } from '../services/auth.service';
+import { AuthService, ImpersonationData } from '../services/auth.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -42,6 +42,16 @@ import { Observable } from 'rxjs';
           <span>Sign out</span>
         </button>
       </mat-menu>
+    </div>
+    <div *ngIf="impersonation$ | async as imp" class="impersonation-banner">
+      <div class="impersonation-text">
+        <mat-icon>switch_account</mat-icon>
+        <span>Impersonating {{ imp.impersonatedUser.firstName }} {{ imp.impersonatedUser.lastName }} ({{ imp.impersonatedUser.role }})</span>
+      </div>
+      <button mat-stroked-button color="accent" (click)="endImpersonation()">
+        <mat-icon>close</mat-icon>
+        End impersonation
+      </button>
     </div>
   `,
   styles: [`
@@ -86,6 +96,27 @@ import { Observable } from 'rxjs';
     .profile-btn {
       flex-shrink: 0;
     }
+    .impersonation-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--ts-spacing-md);
+      padding: 8px 16px;
+      background: #fff3e0;
+      color: #bf360c;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .impersonation-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .impersonation-banner button {
+      height: 36px;
+    }
     @media (max-width: 960px) {
       .ts-nav-wrapper {
         gap: var(--ts-spacing-md);
@@ -100,12 +131,14 @@ import { Observable } from 'rxjs';
 export class NavbarComponent implements OnInit {
   @Output() menu = new EventEmitter<void>();
   unreadCount$: Observable<number>;
+  impersonation$: Observable<ImpersonationData | null>;
 
   private authService = inject(AuthService);
   private router = inject(Router);
 
   constructor(private notificationService: NotificationService) {
     this.unreadCount$ = this.notificationService.unreadCount$;
+    this.impersonation$ = this.authService.impersonation$;
   }
 
   ngOnInit() {
@@ -115,5 +148,10 @@ export class NavbarComponent implements OnInit {
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  endImpersonation(): void {
+    this.authService.endImpersonation();
+    this.router.navigate(['/admin']);
   }
 }
