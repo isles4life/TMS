@@ -15,6 +15,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { AuthService, UserRole } from '../../services/auth.service';
+import { UserDialogComponent, SystemUserPayload } from './user-dialog.component';
 
 interface AppSettings {
   maintenanceMode: boolean;
@@ -55,7 +56,8 @@ interface SystemUser {
     MatTabsModule,
     MatDialogModule,
     MatSnackBarModule,
-    FormsModule
+    FormsModule,
+    UserDialogComponent
   ],
   template: `
     <div class="admin-container">
@@ -215,7 +217,7 @@ interface SystemUser {
                   <mat-icon>group</mat-icon>
                   System Users
                 </mat-card-title>
-                <button mat-raised-button color="primary" class="add-user-btn">
+                <button mat-raised-button color="primary" class="add-user-btn" (click)="addUser()">
                   <mat-icon>person_add</mat-icon>
                   Add User
                 </button>
@@ -604,6 +606,7 @@ interface SystemUser {
 export class AdminDashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   currentUser = this.authService.getCurrentUser();
   lastUpdated = new Date();
@@ -749,10 +752,6 @@ export class AdminDashboardComponent implements OnInit {
     );
   }
 
-  editUser(user: SystemUser): void {
-    this.snackBar.open('Edit functionality coming soon', 'Close', { duration: 3000 });
-  }
-
   deleteUser(user: SystemUser): void {
     if (confirm(`Are you sure you want to delete ${user.email}?`)) {
       this.systemUsers = this.systemUsers.filter(u => u.id !== user.id);
@@ -772,5 +771,63 @@ export class AdminDashboardComponent implements OnInit {
       this.appSettings = JSON.parse(JSON.stringify(this.defaultSettings));
       this.snackBar.open('Settings reset to defaults', 'Close', { duration: 3000 });
     }
+  }
+
+  addUser(): void {
+    const dialogRef = this.dialog.open(UserDialogComponent, {
+      width: '480px',
+      data: { mode: 'add' }
+    });
+
+    dialogRef.afterClosed().subscribe((result: SystemUserPayload | undefined) => {
+      if (!result) {
+        return;
+      }
+
+      const newUser: SystemUser = {
+        id: Date.now().toString(),
+        email: result.email,
+        firstName: result.firstName,
+        lastName: result.lastName,
+        role: result.role,
+        isActive: result.isActive,
+        lastLoginAt: undefined,
+        createdAt: new Date().toISOString()
+      };
+
+      this.systemUsers = [...this.systemUsers, newUser];
+      this.saveUsers();
+      this.snackBar.open('User added successfully', 'Close', { duration: 3000 });
+    });
+  }
+
+  editUser(user: SystemUser): void {
+    const dialogRef = this.dialog.open(UserDialogComponent, {
+      width: '480px',
+      data: { mode: 'edit', user }
+    });
+
+    dialogRef.afterClosed().subscribe((result: SystemUserPayload | undefined) => {
+      if (!result) {
+        return;
+      }
+
+      const updatedUsers = this.systemUsers.map(u =>
+        u.id === user.id
+          ? {
+              ...u,
+              email: result.email,
+              firstName: result.firstName,
+              lastName: result.lastName,
+              role: result.role,
+              isActive: result.isActive
+            }
+          : u
+      );
+
+      this.systemUsers = updatedUsers;
+      this.saveUsers();
+      this.snackBar.open('User updated successfully', 'Close', { duration: 3000 });
+    });
   }
 }
