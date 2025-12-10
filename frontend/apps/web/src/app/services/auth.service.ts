@@ -4,12 +4,14 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
+export type UserRole = 'SuperAdmin' | 'Broker' | 'Carrier';
+
 export interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
+  role: UserRole;
   carrierId?: string;
 }
 
@@ -32,21 +34,25 @@ export class AuthService {
 
   login(email: string, password: string): Observable<LoginResponse> {
     // Demo credentials for offline testing
-    const DEMO_CREDENTIALS = {
-      'test@example.com': 'password123',
-      'test@test.com': 'password123',
-      'demo@example.com': 'demo123'
+    const DEMO_CREDENTIALS: { [key: string]: { password: string; role: UserRole; firstName: string } } = {
+      'superadmin@example.com': { password: 'admin123', role: 'SuperAdmin', firstName: 'Super' },
+      'broker@example.com': { password: 'broker123', role: 'Broker', firstName: 'Broker' },
+      'carrier@example.com': { password: 'carrier123', role: 'Carrier', firstName: 'Carrier' },
+      'test@example.com': { password: 'password123', role: 'Carrier', firstName: 'Test' },
+      'test@test.com': { password: 'password123', role: 'Broker', firstName: 'Test' },
+      'demo@example.com': { password: 'demo123', role: 'Carrier', firstName: 'Demo' }
     };
 
     // Check if using demo credentials
-    if (DEMO_CREDENTIALS[email as keyof typeof DEMO_CREDENTIALS] === password) {
+    const credentials = DEMO_CREDENTIALS[email];
+    if (credentials && credentials.password === password) {
       const demoUser: User = {
-        id: '123',
+        id: Math.random().toString(36).substr(2, 9),
         email: email,
-        firstName: email === 'test@test.com' ? 'Test' : 'Demo',
+        firstName: credentials.firstName,
         lastName: 'User',
-        role: 'User',
-        carrierId: '456'
+        role: credentials.role,
+        carrierId: credentials.role !== 'SuperAdmin' ? '456' : undefined
       };
       
       const response: LoginResponse = {

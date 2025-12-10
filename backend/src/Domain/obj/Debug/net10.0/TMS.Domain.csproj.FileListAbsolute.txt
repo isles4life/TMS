@@ -5,8 +5,8 @@ C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\TMS.Dom
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\TMS.Domain.AssemblyInfoInputs.cache
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\TMS.Domain.AssemblyInfo.cs
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\TMS.Domain.csproj.CoreCompileInputs.cache
+C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\TMS.Domain.sourcelink.json
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\TMS.Domain.dll
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\refint\TMS.Domain.dll
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\TMS.Domain.pdb
 C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\ref\TMS.Domain.dll
-C:\Users\cable\OneDrive\Desktop\TMS\backend\src\Domain\obj\Debug\net10.0\TMS.Domain.sourcelink.json

@@ -95,7 +95,7 @@ using (var scope = app.Services.CreateScope())
                 PasswordHash = passwordService.HashPassword("password123"),
                 FirstName = "Test",
                 LastName = "User",
-                Role = "User",
+                Role = TMS.Domain.Entities.Users.UserRole.Carrier,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };

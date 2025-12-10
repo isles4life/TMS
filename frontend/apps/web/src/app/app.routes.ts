@@ -11,25 +11,40 @@ import { DocumentsPage } from './pages/documents/documents.page';
 import { CreateInvoiceComponent } from './pages/invoices/create-invoice.component';
 import { InvoicesListComponent } from './pages/invoices/invoices-list.component';
 import { InvoiceViewComponent } from './pages/invoices/invoice-view.component';
+import { AdminDashboardComponent } from './pages/admin/admin-dashboard.component';
 import { LoginComponent } from './pages/login.component';
 import { RegisterComponent } from './pages/auth/register.component';
 import { AuthGuard } from './guards/auth.guard';
+import { RoleGuard } from './guards/role.guard';
 
 export const APP_ROUTES: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   { path: 'login', component: LoginComponent, data: { title: 'Login' } },
   { path: 'register', component: RegisterComponent, data: { title: 'Register' } },
+  
+  // Dashboard and general routes
   { path: 'dashboard', component: DashboardPage, canActivate: [AuthGuard], data: { title: 'Dashboard' } },
-  { path: 'load-board', component: LoadBoardPage, canActivate: [AuthGuard], data: { title: 'Load Board' } },
-  { path: 'post-load', component: PostLoadPage, canActivate: [AuthGuard], data: { title: 'Post a Load' } },
-  { path: 'load-details/:id', component: LoadDetailsPage, canActivate: [AuthGuard], data: { title: 'Load Details' } },
   { path: 'profile', component: ProfilePage, canActivate: [AuthGuard], data: { title: 'Profile' } },
-  { path: 'settings', component: SettingsPage, canActivate: [AuthGuard], data: { title: 'Settings' } },
-  { path: 'marketplace', component: MarketplacePage, canActivate: [AuthGuard], data: { title: 'Marketplace' } },
   { path: 'notifications', component: NotificationsPage, canActivate: [AuthGuard], data: { title: 'Notifications' } },
   { path: 'documents', component: DocumentsPage, canActivate: [AuthGuard], data: { title: 'Documents' } },
-  { path: 'invoices', component: InvoicesListComponent, canActivate: [AuthGuard], data: { title: 'Invoices' } },
-  { path: 'invoices/create', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { title: 'Create Invoice' } },
-  { path: 'invoices/view/:id', component: InvoiceViewComponent, canActivate: [AuthGuard], data: { title: 'View Invoice' } },
-  { path: 'invoices/edit/:id', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { title: 'Edit Invoice' } },
+
+  // Broker-specific routes (Post Load)
+  { path: 'post-load', component: PostLoadPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Post a Load', roles: ['Broker'] } },
+
+  // Carrier-specific routes (Load Board)
+  { path: 'load-board', component: LoadBoardPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Board', roles: ['Carrier'] } },
+  { path: 'load-details/:id', component: LoadDetailsPage, canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Details', roles: ['Carrier'] } },
+
+  // User settings (available to all authenticated users)
+  { path: 'settings', component: SettingsPage, canActivate: [AuthGuard], data: { title: 'Settings' } },
+  { path: 'marketplace', component: MarketplacePage, canActivate: [AuthGuard], data: { title: 'Marketplace' } },
+
+  // Invoice routes (available to Broker and SuperAdmin)
+  { path: 'invoices', component: InvoicesListComponent, canActivate: [AuthGuard, RoleGuard], data: { title: 'Invoices', roles: ['Broker', 'SuperAdmin'] } },
+  { path: 'invoices/create', component: CreateInvoiceComponent, canActivate: [AuthGuard, RoleGuard], data: { title: 'Create Invoice', roles: ['Broker', 'SuperAdmin'] } },
+  { path: 'invoices/view/:id', component: InvoiceViewComponent, canActivate: [AuthGuard, RoleGuard], data: { title: 'View Invoice', roles: ['Broker', 'SuperAdmin'] } },
+  { path: 'invoices/edit/:id', component: CreateInvoiceComponent, canActivate: [AuthGuard, RoleGuard], data: { title: 'Edit Invoice', roles: ['Broker', 'SuperAdmin'] } },
+
+  // Admin routes (SuperAdmin only)
+  { path: 'admin', component: AdminDashboardComponent, canActivate: [AuthGuard, RoleGuard], data: { title: 'System Administration', roles: ['SuperAdmin'] } },
 ];

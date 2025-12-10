@@ -6,7 +6,14 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavbarComponent } from './app/layout/navbar.component';
 import { SidebarComponent } from './app/layout/sidebar.component';
-import { AuthService } from './app/services/auth.service';
+import { AuthService, UserRole } from './app/services/auth.service';
+
+interface NavItem {
+  label: string;
+  icon: string;
+  path: string;
+  roles?: UserRole[];
+}
 
 @Component({
   selector: 'app-root',
@@ -31,15 +38,20 @@ import { AuthService } from './app/services/auth.service';
 export class AppComponent {
   @ViewChild('sidenav') sidenav?: MatSidenav;
   isMobile = false;
-  navItemsBase = [
+
+  // All available navigation items with their role restrictions
+  navItemsBase: NavItem[] = [
     { label: 'Dashboard', icon: 'space_dashboard', path: '/dashboard' },
-    { label: 'Load Board', icon: 'table_chart', path: '/load-board' },
-    { label: 'Invoices', icon: 'receipt_long', path: '/invoices' },
+    { label: 'Load Board', icon: 'table_chart', path: '/load-board', roles: ['Carrier'] },
+    { label: 'Post Load', icon: 'upload_file', path: '/post-load', roles: ['Broker'] },
+    { label: 'Invoices', icon: 'receipt_long', path: '/invoices', roles: ['Broker', 'SuperAdmin'] },
     { label: 'Documents', icon: 'description', path: '/documents' },
     { label: 'Marketplace', icon: 'store', path: '/marketplace' },
-    { label: 'Settings', icon: 'settings', path: '/settings' }
+    { label: 'Settings', icon: 'settings', path: '/settings' },
+    { label: 'System Admin', icon: 'admin_panel_settings', path: '/admin', roles: ['SuperAdmin'] }
   ];
-  navItems = [...this.navItemsBase, { label: 'Login', icon: 'login', path: '/login' }];
+
+  navItems: NavItem[] = [];
 
   private authService = inject(AuthService);
 
@@ -49,13 +61,15 @@ export class AppComponent {
       .pipe(takeUntilDestroyed())
       .subscribe(result => this.isMobile = result.matches);
 
-    // Hide login link when authenticated
+    // Update nav items based on authentication and role
     this.authService.currentUser$
       .pipe(takeUntilDestroyed())
       .subscribe(user => {
-        this.navItems = user
-          ? [...this.navItemsBase]
-          : [...this.navItemsBase, { label: 'Login', icon: 'login', path: '/login' }];
+        if (user) {
+          this.navItems = this.navItemsBase;
+        } else {
+          this.navItems = [...this.navItemsBase, { label: 'Login', icon: 'login', path: '/login' }];
+        }
       });
   }
 

@@ -59,6 +59,27 @@ import { AuthService } from '../services/auth.service';
               Don't have an account? <a href="/register">Sign up here</a>
             </p>
           </form>
+
+          <div class="demo-credentials">
+            <h3>Demo Credentials</h3>
+            <div class="credentials-list">
+              <div class="credential-item">
+                <strong>Super Admin</strong>
+                <code>superadmin&#64;example.com</code>
+                <code>admin123</code>
+              </div>
+              <div class="credential-item">
+                <strong>Broker</strong>
+                <code>broker&#64;example.com</code>
+                <code>broker123</code>
+              </div>
+              <div class="credential-item">
+                <strong>Carrier</strong>
+                <code>carrier&#64;example.com</code>
+                <code>carrier123</code>
+              </div>
+            </div>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>
@@ -139,6 +160,51 @@ import { AuthService } from '../services/auth.service';
 
     .signup-link a:hover {
       text-decoration: underline;
+    }
+
+    .demo-credentials {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .demo-credentials h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 12px 0;
+    }
+
+    .credentials-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .credential-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      border-left: 3px solid #d71920;
+    }
+
+    .credential-item strong {
+      font-size: 12px;
+      color: #d71920;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .credential-item code {
+      font-size: 11px;
+      background: white;
+      padding: 2px 4px;
+      border-radius: 2px;
+      font-family: 'Courier New', monospace;
+      color: #666;
     }
   `]
 })

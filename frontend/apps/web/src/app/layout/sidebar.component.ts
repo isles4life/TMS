@@ -1,21 +1,23 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { AuthService } from '../services/auth.service';
+import { MatDividerModule } from '@angular/material/divider';
+import { AuthService, UserRole, User } from '../services/auth.service';
 
 interface NavItem {
   label: string;
   icon: string;
   path: string;
+  roles?: UserRole[];
 }
 
 @Component({
   selector: 'ts-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatListModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, RouterModule, MatListModule, MatIconModule, MatButtonModule, MatDividerModule],
   template: `
     <div class="sidebar">
       <div class="sidebar__header">
@@ -25,13 +27,14 @@ interface NavItem {
         </button>
       </div>
       <mat-nav-list class="nav-list">
-        <a mat-list-item *ngFor="let item of items" [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+        <a mat-list-item *ngFor="let item of getVisibleItems()" [routerLink]="item.path" routerLinkActive="active" class="nav-item">
           <div class="nav-content">
             <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
             <span class="nav-label">{{ item.label }}</span>
           </div>
         </a>
       </mat-nav-list>
+
       <div class="sidebar__footer">
         <a mat-stroked-button color="primary" fullWidth href="https://truckstop.com/contact-us/" target="_blank" rel="noopener noreferrer">Support</a>
         <button 
@@ -152,7 +155,7 @@ interface NavItem {
     }
   `]
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   @Input() items: NavItem[] = [];
   @Output() closed = new EventEmitter<void>();
 
@@ -160,6 +163,25 @@ export class SidebarComponent {
   private router = inject(Router);
 
   isAuthenticated$ = this.authService.currentUser$;
+  currentUser: User | null = null;
+
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+
+  getVisibleItems(): NavItem[] {
+    const user = this.authService.getCurrentUser();
+    if (!user) return [];
+
+    return this.items.filter(item => {
+      if (!item.roles || item.roles.length === 0) {
+        return true; // Show items without role restrictions
+      }
+      return item.roles.includes(user.role as UserRole);
+    });
+  }
 
   logout(): void {
     this.authService.logout();

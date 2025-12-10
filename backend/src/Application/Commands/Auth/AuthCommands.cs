@@ -77,7 +77,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         await _context.SaveChangesAsync(cancellationToken);
 
         // Generate token
-        var token = _tokenService.GenerateToken(user.Id, user.Email, user.Role);
+        var token = _tokenService.GenerateToken(user.Id, user.Email, user.Role.ToString());
 
         return new LoginResponse
         {
@@ -90,7 +90,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Role = user.Role,
+                Role = user.Role.ToString(),
                 CarrierId = user.CarrierId
             }
         };
@@ -133,7 +133,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, LoginResp
             FirstName = request.FirstName,
             LastName = request.LastName,
             PasswordHash = _passwordService.HashPassword(request.Password),
-            Role = "User",
+            Role = UserRole.Carrier, // Default to Carrier role
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -142,7 +142,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, LoginResp
         await _context.SaveChangesAsync(cancellationToken);
 
         // Generate token
-        var token = _tokenService.GenerateToken(user.Id, user.Email, user.Role);
+        var token = _tokenService.GenerateToken(user.Id, user.Email, user.Role.ToString());
 
         return new LoginResponse
         {
@@ -155,7 +155,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, LoginResp
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Role = user.Role,
+                Role = user.Role.ToString(),
                 CarrierId = user.CarrierId
             }
         };

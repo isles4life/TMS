@@ -4,6 +4,16 @@ using System;
 using TMS.Domain.Common;
 
 /// <summary>
+/// User roles in the system
+/// </summary>
+public enum UserRole
+{
+    SuperAdmin = 0,
+    Broker = 1,
+    Carrier = 2
+}
+
+/// <summary>
 /// User entity for authentication
 /// </summary>
 public class User : BaseEntity
@@ -18,6 +28,6 @@ public class User : BaseEntity
     // Foreign key to Carrier
     public Guid? CarrierId { get; set; }
     
-    // Role - can be Admin, Manager, Driver, Dispatcher, etc.
-    public string Role { get; set; } = "User";
+    // Role - SuperAdmin, Broker, or Carrier
+    public UserRole Role { get; set; } = UserRole.Carrier;
 }

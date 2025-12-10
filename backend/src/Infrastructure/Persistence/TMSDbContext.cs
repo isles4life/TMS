@@ -96,7 +96,6 @@ public class TMSDbContext : DbContext
 
         modelBuilder.Entity<User>()
             .Property(u => u.Role)
-            .HasMaxLength(50)
-            .HasDefaultValue("User");
+            .HasDefaultValue(UserRole.Carrier);
     }
 }
