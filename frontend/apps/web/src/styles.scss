@@ -4,21 +4,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap');
 
 :root {
+  /* Light Mode Colors (Default) */
   --ts-red: #d71920;
   --ts-red-dark: #b31218;
   --ts-ink: #0f1115;
+  --ts-ink-secondary: #4a4f58;
   --ts-stone: #2f343d;
   --ts-green: #1ea672;
   --ts-amber: #f5a300;
   --ts-surface: #f7f8fa;
+  --ts-surface-secondary: #ffffff;
   --ts-page-bg: #f2f3f5;
   --ts-border: #e0e2e8;
+  --ts-overlay-bg: rgba(0, 0, 0, 0.5);
   --ts-spacing-sm: 8px;
   --ts-spacing-md: 12px;
   --ts-spacing-lg: 16px;
   --ts-spacing-xl: 24px;
   --ts-spacing-2xl: 32px;
   --ts-spacing-3xl: 48px;
+}
+
+/* Dark Mode Colors */
+:root.dark-mode {
+  --ts-red: #ff4444;
+  --ts-red-dark: #dd3333;
+  --ts-ink: #e0e0e0;
+  --ts-ink-secondary: #b0b0b0;
+  --ts-stone: #707070;
+  --ts-green: #26d48e;
+  --ts-amber: #ffb84d;
+  --ts-surface: #2a2f39;
+  --ts-surface-secondary: #1e2229;
+  --ts-page-bg: #1a1f28;
+  --ts-border: #3a3f48;
+  --ts-overlay-bg: rgba(0, 0, 0, 0.7);
 }
 
 /* Angular Material theme (Truckstop) */
@@ -48,8 +68,28 @@ $ts-theme: mat.define-light-theme((
   density: 0,
 ));
 
+/* Dark theme for Material */
+$ts-dark-primary: mat.define-palette(mat.$red-palette, 500, 400, 600);
+$ts-dark-accent: mat.define-palette(mat.$amber-palette, 500, 400, 600);
+$ts-dark-warn: mat.define-palette(mat.$red-palette, 600);
+
+$ts-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $ts-dark-primary,
+    accent: $ts-dark-accent,
+    warn: $ts-dark-warn,
+  ),
+  typography: $ts-typography,
+  density: 0,
+));
+
 @include mat.all-component-themes($ts-theme);
 @include mat.all-component-typographies($ts-theme);
+
+/* Dark mode theme overrides */
+:root.dark-mode {
+  @include mat.all-component-colors($ts-dark-theme);
+}
 
 * {
   box-sizing: border-box;
@@ -87,6 +127,46 @@ a:focus-visible {
 app-root {
   display: block;
   min-height: 100vh;
+}
+
+/* Dark mode readability enhancements across common components */
+:root.dark-mode {
+  /* Base text and surfaces */
+  body { color: var(--ts-ink); background: var(--ts-page-bg); }
+  .mat-mdc-card, mat-card { background: var(--ts-surface-secondary); color: var(--ts-ink); }
+  .mat-mdc-list, mat-list { background: transparent; color: var(--ts-ink); }
+  .mat-mdc-table, table { background: var(--ts-surface-secondary); color: var(--ts-ink); }
+  .mat-mdc-form-field { color: var(--ts-ink); }
+  .mdc-text-field__input { color: var(--ts-ink) !important; }
+  .mat-mdc-form-field-focus-overlay { background-color: transparent; }
+  .mat-mdc-form-field-subscript-wrapper { color: var(--ts-ink-secondary); }
+  .mat-mdc-input-element::placeholder { color: var(--ts-ink-secondary); opacity: 0.8; }
+
+  /* Dividers and borders */
+  .mat-divider, mat-divider { border-color: var(--ts-border) !important; }
+  .mat-mdc-card, mat-card { border: 1px solid var(--ts-border); }
+  .mat-mdc-table .mdc-data-table__header-row { border-bottom: 1px solid var(--ts-border); }
+  .mat-mdc-table .mdc-data-table__row { border-bottom: 1px solid var(--ts-border); }
+
+  /* Buttons */
+  .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button, .mat-mdc-flat-button {
+    color: var(--ts-ink);
+  }
+  .mat-mdc-stroked-button { border-color: var(--ts-border); }
+  .mat-mdc-raised-button, .mat-mdc-flat-button { background: var(--ts-surface); }
+
+  /* Menu and overlays */
+  .mat-mdc-menu-panel, .cdk-overlay-pane .mat-mdc-menu-panel { background: var(--ts-surface-secondary); color: var(--ts-ink); }
+  .cdk-overlay-backdrop { background: var(--ts-overlay-bg); }
+
+  /* Chips and badges */
+  .mat-mdc-chip { background: var(--ts-surface); color: var(--ts-ink); }
+  .mat-badge-content { background: var(--ts-red); color: #fff; }
+
+  /* Tabs */
+  .mat-mdc-tab-group { color: var(--ts-ink); }
+  .mat-mdc-tab-header { border-bottom: 1px solid var(--ts-border); }
+  .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label { color: var(--ts-red); }
 }
 
 /* Material Icons font configuration */

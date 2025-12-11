@@ -8,6 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { NotificationService } from '../services/notification.service';
 import { AuthService, ImpersonationData } from '../services/auth.service';
+import { ThemeService } from '../services/theme.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -23,6 +24,9 @@ import { Observable } from 'rxjs';
         <img src="assets/truckstop-logo-optimized.png" alt="Truckstop" class="brand-logo" width="211" height="50" />
       </button>
       <span class="spacer"></span>
+      <button mat-icon-button (click)="toggleTheme()" [attr.aria-label]="'Toggle ' + (themeService.getTheme() === 'light' ? 'dark' : 'light') + ' mode'" title="Toggle dark mode" class="theme-toggle-btn">
+        <mat-icon>{{ themeService.getTheme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+      </button>
       <button mat-icon-button routerLink="/notifications" aria-label="Notifications" class="notification-btn">
         <mat-icon [matBadge]="(unreadCount$ | async) || 0" 
                   [matBadgeHidden]="(unreadCount$ | async) === 0"
@@ -103,6 +107,13 @@ import { Observable } from 'rxjs';
       flex-shrink: 0;
       justify-self: end;
     }
+    .theme-toggle-btn {
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+    .theme-toggle-btn:hover {
+      transform: rotate(180deg);
+    }
     .notification-btn {
       flex-shrink: 0;
     }
@@ -149,10 +160,15 @@ export class NavbarComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private notificationService = inject(NotificationService);
+  themeService = inject(ThemeService);
 
   constructor() {
     this.unreadCount$ = this.notificationService.unreadCount$;
     this.impersonation$ = this.authService.impersonation$;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   logout() {

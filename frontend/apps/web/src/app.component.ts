@@ -7,6 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavbarComponent } from './app/layout/navbar.component';
 import { SidebarComponent } from './app/layout/sidebar.component';
 import { AuthService, UserRole } from './app/services/auth.service';
+import { ThemeService } from './app/services/theme.service';
 
 interface NavItem {
   label: string;
@@ -58,8 +59,11 @@ export class AppComponent {
 
   private authService = inject(AuthService);
   private breakpoint = inject(BreakpointObserver);
+  private themeService = inject(ThemeService);
 
   constructor() {
+    // Initialize theme service on app startup
+    this.themeService;
     this.breakpoint
       .observe(['(max-width: 960px)'])
       .pipe(takeUntilDestroyed())

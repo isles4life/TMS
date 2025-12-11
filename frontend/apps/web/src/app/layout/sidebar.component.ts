@@ -71,7 +71,7 @@ interface NavItem {
       gap: var(--ts-spacing-lg);
       height: 100%;
       padding: var(--ts-spacing-lg);
-      background: #fff;
+      background: var(--ts-surface-secondary);
       border-right: 1px solid var(--ts-border);
     }
     .sidebar__header {
@@ -120,7 +120,7 @@ interface NavItem {
       height: 24px;
       line-height: 1;
       overflow: visible;
-      color: var(--ts-stone);
+      color: var(--ts-ink-secondary);
     }
     .nav-label {
       flex: 1;
@@ -129,7 +129,8 @@ interface NavItem {
       color: var(--ts-ink);
     }
     a.active {
-      background: rgba(215,25,32,0.08);
+      background: color-mix(in oklab, var(--ts-red) 12%, transparent);
+      outline: 1px solid color-mix(in oklab, var(--ts-red) 30%, var(--ts-border));
     }
     a.active .nav-icon {
       color: var(--ts-red);
@@ -154,6 +155,21 @@ interface NavItem {
       height: 20px;
       font-size: 20px;
       line-height: 1;
+    }
+
+    /* Dark mode explicit overrides for maximum readability */
+    :root.dark-mode .sidebar {
+      background: var(--ts-surface-secondary);
+    }
+    :root.dark-mode .nav-label {
+      color: var(--ts-ink);
+    }
+    :root.dark-mode .nav-icon {
+      color: var(--ts-ink-secondary);
+    }
+    :root.dark-mode a.active {
+      background: color-mix(in oklab, var(--ts-red) 18%, transparent);
+      outline: 1px solid color-mix(in oklab, var(--ts-red) 40%, var(--ts-border));
     }
   `]
 })

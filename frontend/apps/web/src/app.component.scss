@@ -13,13 +13,19 @@
     .ts-sidenav {
       width: 260px;
       border-right: 1px solid var(--ts-border);
-      background: #fff;
+      background: var(--ts-surface-secondary);
       box-shadow: 2px 0 8px rgba(0,0,0,0.12);
     }.content {
       padding: var(--ts-spacing-lg) var(--ts-spacing-md);
       max-width: 1180px;
   margin: 0 auto;
   width: 100%;
+}
+
+/* Dark mode specific tweaks for sidebar container */
+:host(.dark-mode) .ts-sidenav {
+  background: var(--ts-surface-secondary);
+  border-right: 1px solid var(--ts-border);
 }
 
 @media (max-width: 960px) {

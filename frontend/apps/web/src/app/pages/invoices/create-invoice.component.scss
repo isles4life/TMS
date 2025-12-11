@@ -1,12 +1,15 @@
 .invoice-form {
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: var(--ts-page-bg);
   min-height: 100vh;
 
   .form-card {
     max-width: 1200px;
     margin: 0 auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    background: var(--ts-surface-secondary);
+    color: var(--ts-ink);
+    border: 1px solid var(--ts-border);
   }
 
   .form-sections {
@@ -19,11 +22,11 @@
         gap: 12px;
         font-size: 18px;
         font-weight: 600;
-        color: #333;
+        color: var(--ts-ink);
         margin: 16px 0;
 
         mat-icon {
-          color: #1976d2;
+          color: var(--ts-red);
         }
       }
 
@@ -44,10 +47,10 @@
     }
 
     .line-items-table {
-      border: 1px solid #e0e0e0;
+      border: 1px solid var(--ts-border);
       border-radius: 4px;
       overflow: hidden;
-      background: white;
+      background: var(--ts-surface-secondary);
       margin: 16px 0;
 
       .table-header {
@@ -55,10 +58,10 @@
         grid-template-columns: 2fr 0.8fr 1fr 1fr 0.5fr;
         gap: 12px;
         padding: 12px 16px;
-        background-color: #f5f5f5;
-        border-bottom: 2px solid #e0e0e0;
+        background-color: var(--ts-surface);
+        border-bottom: 2px solid var(--ts-border);
         font-weight: 600;
-        color: #555;
+        color: var(--ts-ink-secondary);
 
         > div {
           padding: 8px 0;
@@ -82,7 +85,7 @@
           grid-template-columns: 2fr 0.8fr 1fr 1fr 0.5fr;
           gap: 12px;
           padding: 12px 16px;
-          border-bottom: 1px solid #f0f0f0;
+          border-bottom: 1px solid var(--ts-border);
           align-items: center;
 
           &:last-child {
@@ -90,7 +93,7 @@
           }
 
           &:hover {
-            background-color: #fafafa;
+            background-color: var(--ts-surface);
           }
 
           mat-form-field {
@@ -99,7 +102,7 @@
 
           .amount-value {
             font-weight: 600;
-            color: #1976d2;
+            color: var(--ts-red);
             display: block;
             padding: 8px 0;
           }
@@ -127,8 +130,8 @@
 
     .totals-section {
       .totals-summary {
-        background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
-        border-left: 4px solid #1976d2;
+        background: var(--ts-surface-secondary);
+        border-left: 4px solid var(--ts-red);
         padding: 16px;
         border-radius: 4px;
         max-width: 400px;
@@ -143,23 +146,23 @@
 
           .label {
             font-weight: 500;
-            color: #555;
+            color: var(--ts-ink-secondary);
           }
 
           .value {
             font-weight: 600;
-            color: #333;
+            color: var(--ts-ink);
           }
 
           &.grand-total {
             padding-top: 12px;
             margin-top: 12px;
-            border-top: 2px solid #e0e0e0;
+            border-top: 2px solid var(--ts-border);
             font-size: 16px;
 
             .label,
             .value {
-              color: #1976d2;
+              color: var(--ts-red);
               font-weight: 700;
             }
           }
@@ -176,6 +179,7 @@
 
     button {
       min-width: 140px;
+      color: var(--ts-ink);
     }
   }
 }
