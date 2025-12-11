@@ -101,3 +101,12 @@ public class FuelCostEstimate
     public double AverageMPG { get; set; }
     public string VehicleType { get; set; } = string.Empty;
 }
+
+public class FuelPriceInfo
+{
+    public string ZipCode { get; set; } = string.Empty;
+    public string FuelType { get; set; } = "diesel"; // diesel or gas
+    public decimal PricePerGallon { get; set; }
+    public string Source { get; set; } = "config:default";
+    public DateTime RetrievedAt { get; set; } = DateTime.UtcNow;
+}

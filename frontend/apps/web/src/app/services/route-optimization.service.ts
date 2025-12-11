@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface RouteRequest {
   originLatitude: number;
@@ -90,11 +91,19 @@ export interface FuelCostEstimate {
   vehicleType: string;
 }
 
+export interface FuelPriceInfo {
+  zipCode: string;
+  fuelType: string;
+  pricePerGallon: number;
+  source: string;
+  retrievedAt: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class RouteOptimizationService {
-  private readonly apiUrl = 'http://localhost:5000/api/routes';
+  private readonly apiUrl = `${environment.apiUrl}/routes`;
 
   constructor(private http: HttpClient) {}
 
@@ -176,6 +185,17 @@ export class RouteOptimizationService {
       .set('fuelPricePerGallon', fuelPricePerGallon.toString());
 
     return this.http.get<FuelCostEstimate>(`${this.apiUrl}/fuel-cost`, { params });
+  }
+
+  /**
+   * Lookup fuel price by zip code
+   */
+  getFuelPriceByZip(zipCode: string, fuelType: string = 'diesel'): Observable<FuelPriceInfo> {
+    const params = new HttpParams()
+      .set('zipCode', zipCode)
+      .set('fuelType', fuelType);
+
+    return this.http.get<FuelPriceInfo>(`${this.apiUrl}/fuel-price`, { params });
   }
 
   /**

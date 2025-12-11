@@ -11,6 +11,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
 import { RealTimeTrackingService, ActiveTracker, GeofenceAlert, DriverLocationUpdate } from '../services/real-time-tracking.service';
+import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.component';
 
 @Component({
   selector: 'app-live-tracking-dashboard',
@@ -24,7 +25,8 @@ import { RealTimeTrackingService, ActiveTracker, GeofenceAlert, DriverLocationUp
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatBadgeModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    RouteOptimizerCardComponent
   ],
   template: `
     <div class="tracking-dashboard">
@@ -45,6 +47,10 @@ import { RealTimeTrackingService, ActiveTracker, GeofenceAlert, DriverLocationUp
           </button>
         </div>
       </div>
+
+      <app-route-optimizer-card
+        [defaultOrigin]="activeTrackers[0] ? { lat: activeTrackers[0].latitude, lng: activeTrackers[0].longitude } : undefined">
+      </app-route-optimizer-card>
 
       <!-- Active Trackers Grid -->
       <mat-card class="trackers-card">

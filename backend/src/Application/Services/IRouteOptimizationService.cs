@@ -54,4 +54,9 @@ public interface IRouteOptimizationService
         double distanceMiles,
         string vehicleType,
         decimal fuelPricePerGallon);
+
+    /// <summary>
+    /// Lookup fuel price by zip code
+    /// </summary>
+    Task<FuelPriceInfo> GetFuelPriceByZipAsync(string zipCode, string fuelType = "diesel");
 }

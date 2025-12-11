@@ -1,4 +1,4 @@
-namespace TMS.Infrastructure.Services;
+namespace TMS.Application.Services;
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TMS.Application.DTOs;
-using TMS.Application.Services;
 
 /// <summary>
 /// Route optimization service with HERE Maps API integration
@@ -22,6 +21,9 @@ public class RouteOptimizationService : IRouteOptimizationService
     private readonly HttpClient _httpClient;
     private readonly string? _hereApiKey;
     private const double EARTH_RADIUS_MILES = 3959.0;
+    private readonly decimal _defaultDieselPrice;
+    private readonly decimal _defaultGasPrice;
+    private readonly Dictionary<string, decimal> _zipPriceOverrides;
     
     // Average MPG by vehicle type
     private readonly Dictionary<string, double> _vehicleMpg = new()
@@ -40,6 +42,9 @@ public class RouteOptimizationService : IRouteOptimizationService
         _configuration = configuration;
         _httpClient = httpClientFactory.CreateClient();
         _hereApiKey = configuration["HereMaps:ApiKey"];
+        _defaultDieselPrice = GetConfigDecimal("FuelPrices:DefaultDiesel", 4.25m);
+        _defaultGasPrice = GetConfigDecimal("FuelPrices:DefaultGas", 3.65m);
+        _zipPriceOverrides = configuration.GetSection("FuelPrices:ZipOverrides").Get<Dictionary<string, decimal>>() ?? new();
         
         if (string.IsNullOrEmpty(_hereApiKey))
         {
@@ -186,21 +191,21 @@ public class RouteOptimizationService : IRouteOptimizationService
         // Alternative 1: Fastest (if not already)
         if (request.OptimizationMode != "fastest")
         {
-            var fastestRequest = request with { OptimizationMode = "fastest" };
+            var fastestRequest = CloneRouteRequest(request, r => r.OptimizationMode = "fastest");
             routes.Add(await CalculateRouteAsync(fastestRequest));
         }
 
         // Alternative 2: Shortest distance
         if (request.OptimizationMode != "shortest")
         {
-            var shortestRequest = request with { OptimizationMode = "shortest" };
+            var shortestRequest = CloneRouteRequest(request, r => r.OptimizationMode = "shortest");
             routes.Add(await CalculateRouteAsync(shortestRequest));
         }
 
         // Alternative 3: Avoid tolls
         if (!request.AvoidTolls && routes.Count < maxAlternatives + 1)
         {
-            var noTollsRequest = request with { AvoidTolls = true };
+            var noTollsRequest = CloneRouteRequest(request, r => r.AvoidTolls = true);
             routes.Add(await CalculateRouteAsync(noTollsRequest));
         }
 
@@ -227,7 +232,87 @@ public class RouteOptimizationService : IRouteOptimizationService
         });
     }
 
+    public Task<FuelPriceInfo> GetFuelPriceByZipAsync(string zipCode, string fuelType = "diesel")
+    {
+        var normalizedZip = NormalizeZip(zipCode);
+        var normalizedFuel = NormalizeFuelType(fuelType);
+
+        var price = ResolveFuelPrice(null, normalizedZip, normalizedFuel);
+        var source = _zipPriceOverrides.ContainsKey(normalizedZip)
+            ? "config:zip-override"
+            : "config:default";
+
+        return Task.FromResult(new FuelPriceInfo
+        {
+            ZipCode = normalizedZip,
+            FuelType = normalizedFuel,
+            PricePerGallon = price,
+            Source = source,
+            RetrievedAt = DateTime.UtcNow
+        });
+    }
+
     #region Private Methods
+
+    private RouteRequest CloneRouteRequest(RouteRequest request, Action<RouteRequest> update)
+    {
+        var clone = new RouteRequest
+        {
+            OriginLatitude = request.OriginLatitude,
+            OriginLongitude = request.OriginLongitude,
+            DestinationLatitude = request.DestinationLatitude,
+            DestinationLongitude = request.DestinationLongitude,
+            VehicleType = request.VehicleType,
+            DepartureTime = request.DepartureTime,
+            AvoidTolls = request.AvoidTolls,
+            AvoidHighways = request.AvoidHighways,
+            AvoidCountries = request.AvoidCountries != null ? new List<string>(request.AvoidCountries) : null,
+            OptimizationMode = request.OptimizationMode
+        };
+
+        update(clone);
+        return clone;
+    }
+
+    private decimal ResolveFuelPrice(string? vehicleType, string? zipCode = null, string? fuelType = null)
+    {
+        var resolvedFuel = NormalizeFuelType(fuelType ?? ResolveFuelType(vehicleType));
+        var normalizedZip = NormalizeZip(zipCode ?? string.Empty);
+
+        if (!string.IsNullOrEmpty(normalizedZip) && _zipPriceOverrides.TryGetValue(normalizedZip, out var overridePrice))
+        {
+            return overridePrice;
+        }
+
+        return resolvedFuel == "diesel" ? _defaultDieselPrice : _defaultGasPrice;
+    }
+
+    private string ResolveFuelType(string? vehicleType)
+    {
+        if (string.IsNullOrWhiteSpace(vehicleType))
+        {
+            return "diesel";
+        }
+
+        return vehicleType.ToLower() == "truck" ? "diesel" : "gas";
+    }
+
+    private string NormalizeFuelType(string? fuelType)
+    {
+        var normalized = fuelType?.Trim().ToLower();
+        return normalized == "gasoline" ? "gas" : (normalized ?? "diesel");
+    }
+
+    private string NormalizeZip(string zip)
+    {
+        return zip?.Trim() ?? string.Empty;
+    }
+
+    private decimal GetConfigDecimal(string key, decimal fallback)
+    {
+        var value = _configuration[key];
+        return decimal.TryParse(value, out var result) ? result : fallback;
+    }
 
     private async Task<RouteResponse> CalculateRouteViaHereAsync(RouteRequest request)
     {
@@ -279,7 +364,8 @@ public class RouteOptimizationService : IRouteOptimizationService
         // Calculate fuel cost
         var mpg = _vehicleMpg.GetValueOrDefault(request.VehicleType.ToLower(), 6.5);
         var fuelConsumption = distance / mpg;
-        var fuelCost = (decimal)fuelConsumption * 3.50m; // Assume $3.50/gallon
+        var pricePerGallon = ResolveFuelPrice(request.VehicleType);
+        var fuelCost = (decimal)fuelConsumption * pricePerGallon;
 
         return new RouteResponse
         {
@@ -364,6 +450,12 @@ public class RouteOptimizationService : IRouteOptimizationService
         var departure = departureTime ?? DateTime.UtcNow;
         var eta = departure.AddMinutes(durationMinutes);
 
+        var fuelType = ResolveFuelType(null);
+        var pricePerGallon = ResolveFuelPrice(null, null, fuelType);
+        var mpg = _vehicleMpg.GetValueOrDefault("truck", 6.5);
+        var estimatedFuelConsumption = distanceMiles / mpg;
+        var estimatedFuelCost = Math.Round((decimal)estimatedFuelConsumption * pricePerGallon, 2);
+
         return new RouteResponse
         {
             RouteId = route.Id ?? Guid.NewGuid().ToString(),
@@ -376,8 +468,8 @@ public class RouteOptimizationService : IRouteOptimizationService
             Summary = new RouteSummary
             {
                 OptimizationMode = "fastest",
-                FuelConsumptionGallons = Math.Round(distanceMiles / 6.5, 2),
-                EstimatedFuelCost = Math.Round((decimal)(distanceMiles / 6.5) * 3.50m, 2),
+                FuelConsumptionGallons = Math.Round(estimatedFuelConsumption, 2),
+                EstimatedFuelCost = estimatedFuelCost,
                 RestStopsRequired = durationMinutes / 240, // Every 4 hours
                 Warnings = new List<string>()
             }

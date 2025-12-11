@@ -39,6 +39,10 @@ public static class RouteEndpoints
         group.MapGet("/fuel-cost", CalculateFuelCost)
             .WithName("CalculateFuelCost")
             .WithDescription("Calculate estimated fuel cost for a route");
+
+        group.MapGet("/fuel-price", GetFuelPriceByZip)
+            .WithName("GetFuelPriceByZip")
+            .WithDescription("Lookup fuel price per gallon by zip code");
     }
 
     private static async Task<IResult> CalculateRoute(
@@ -148,6 +152,22 @@ public static class RouteEndpoints
                 distanceMiles, vehicleType, fuelPricePerGallon);
             
             return Results.Ok(new { success = true, data = fuelCost });
+        }
+        catch (Exception ex)
+        {
+            return Results.BadRequest(new { success = false, error = ex.Message });
+        }
+    }
+
+    private static async Task<IResult> GetFuelPriceByZip(
+        string zipCode,
+        string? fuelType,
+        IRouteOptimizationService routeService)
+    {
+        try
+        {
+            var priceInfo = await routeService.GetFuelPriceByZipAsync(zipCode, fuelType ?? "diesel");
+            return Results.Ok(new { success = true, data = priceInfo });
         }
         catch (Exception ex)
         {
