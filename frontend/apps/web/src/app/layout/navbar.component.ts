@@ -27,7 +27,8 @@ import { Observable } from 'rxjs';
         <mat-icon [matBadge]="(unreadCount$ | async) || 0" 
                   [matBadgeHidden]="(unreadCount$ | async) === 0"
                   matBadgeColor="warn"
-                  matBadgeSize="small">notifications</mat-icon>
+                  matBadgeSize="small"
+                  aria-hidden="false">notifications</mat-icon>
       </button>
       <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu" class="profile-btn">
         <mat-icon>account_circle</mat-icon>

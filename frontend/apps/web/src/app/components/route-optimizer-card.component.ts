@@ -136,7 +136,7 @@ import { RouteOptimizationService, RouteRequest, RouteResponse, FuelCostEstimate
             </div>
           }
 
-          @if (routeResult.summary?.warnings?.length) {
+          @if (routeResult.summary.warnings.length) {
             <div class="warnings">
               @for (warning of routeResult.summary.warnings; track warning) {
                 <mat-chip color="warn" selected>

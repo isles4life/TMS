@@ -334,76 +334,86 @@ interface SystemUser {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin: 0 0 8px 0;
+      margin: 0 0 12px 0;
       font-size: 28px;
       font-weight: 600;
-      color: #333;
+      color: #1a1a1a;
     }
 
     .admin-header h1 mat-icon {
       color: #d71920;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
     }
 
     .subtitle {
       color: #666;
       margin: 0;
       font-size: 14px;
+      line-height: 1.5;
     }
 
     .settings-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
     }
 
     .settings-card {
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       border-radius: 8px;
       height: 100%;
     }
 
     .settings-card mat-card-header {
-      border-bottom: 1px solid #f0f0f0;
-      padding: 16px;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 20px;
       margin: -16px -16px 0 -16px;
+      background: #fafafa;
     }
 
     .settings-card mat-card-title {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       margin: 0;
-      font-size: 16px;
-      color: #333;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
     }
 
     .settings-card mat-card-title mat-icon {
       color: #d71920;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
     }
 
     .setting-row {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 16px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
     .setting-row.toggle {
       flex-direction: row;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .label-section {
       flex: 1;
     }
 
-    .setting-row label {
+    .setting-label {
       font-weight: 600;
-      color: #333;
+      color: #1a1a1a;
       font-size: 14px;
+      line-height: 1.4;
     }
 
     .help-text {
@@ -420,49 +430,60 @@ interface SystemUser {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 14px 0;
+      border-bottom: 1px solid #e0e0e0;
       font-size: 14px;
     }
 
     .info-row:last-child {
       border-bottom: none;
+      padding-bottom: 0;
     }
 
     .info-row .label {
       color: #666;
       font-weight: 500;
+      line-height: 1.4;
     }
 
     .info-row .value {
-      color: #333;
+      color: #1a1a1a;
       font-weight: 600;
+      line-height: 1.4;
     }
 
     .status-active {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       color: #4caf50;
     }
 
     .status-active mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
     }
 
     .action-buttons {
       display: flex;
-      gap: 12px;
+      gap: 16px;
       justify-content: flex-end;
-      margin-top: 20px;
+      margin-top: 24px;
     }
 
     .action-buttons button {
       display: flex;
       align-items: center;
       gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .action-buttons button mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
     }
 
     .admin-tabs {
@@ -487,61 +508,64 @@ interface SystemUser {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 16px;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 20px;
+      border-bottom: 1px solid #e0e0e0;
       margin: 0;
+      background: #fafafa;
     }
 
     .users-card mat-card-title {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 12px;
       margin: 0;
-      font-size: 14px;
-      color: #333;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
     }
 
     .users-card mat-card-title mat-icon {
       color: #d71920;
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
     }
 
     .add-user-btn {
       display: flex;
       align-items: center;
-      gap: 4px;
-      height: 36px;
-      font-size: 13px;
+      gap: 8px;
+      height: 40px;
+      font-size: 14px;
+      font-weight: 500;
     }
 
     .add-user-btn mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
     }
 
     .users-table {
       width: 100%;
-      margin-top: 8px;
+      margin-top: 0;
       table-layout: fixed;
       word-break: break-word;
-      font-size: 13px;
+      font-size: 14px;
     }
 
     .users-table th {
       background: #f5f5f5;
-      color: #333;
+      color: #1a1a1a;
       font-weight: 600;
-      padding: 8px 6px;
+      padding: 12px 16px;
       text-align: left;
       white-space: normal;
-      font-size: 12px;
+      font-size: 13px;
     }
 
     .users-table td {
-      padding: 8px 6px;
+      padding: 12px 16px;
       border-bottom: 1px solid #e0e0e0;
       white-space: normal;
       vertical-align: middle;
@@ -549,12 +573,13 @@ interface SystemUser {
 
     .role-badge {
       display: inline-block;
-      padding: 3px 8px;
-      border-radius: 10px;
+      padding: 4px 10px;
+      border-radius: 12px;
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       white-space: nowrap;
+      line-height: 1.4;
     }
 
     .role-superadmin {
@@ -575,12 +600,19 @@ interface SystemUser {
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 3px;
-      padding: 3px 8px;
-      border-radius: 10px;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 12px;
       font-size: 11px;
       font-weight: 600;
       white-space: nowrap;
+      line-height: 1.4;
+    }
+
+    .status-badge mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
     }
 
     .status-badge.active {
@@ -596,6 +628,12 @@ interface SystemUser {
     .action-btn {
       color: #d71920;
       padding: 4px;
+    }
+
+    .action-btn mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
     }
 
     .action-btn mat-icon {
