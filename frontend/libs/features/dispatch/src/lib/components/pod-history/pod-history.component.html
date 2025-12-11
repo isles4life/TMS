@@ -1,0 +1,121 @@
+<div class="pod-history-container">
+  <div class="history-header">
+    <h1>Proof of Delivery History</h1>
+    <button class="btn btn-secondary" (click)="exportToCSV()">📥 Export CSV</button>
+  </div>
+
+  <div class="alerts">
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+      <button class="close-btn" (click)="errorMessage = ''">&times;</button>
+    </div>
+  </div>
+
+  <div class="filters-section">
+    <h2>Filters</h2>
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Search</label>
+        <input type="text" 
+               placeholder="POD ID, Load ID, or Trip ID"
+               [(ngModel)]="searchTerm"
+               (change)="onFilterChange()">
+      </div>
+
+      <div class="filter-group">
+        <label>Status</label>
+        <select [(ngModel)]="filterStatus" (change)="onFilterChange()">
+          <option *ngFor="let option of statusOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Driver ID</label>
+        <input type="text" 
+               placeholder="Enter driver ID"
+               [(ngModel)]="filterDriverId">
+      </div>
+
+      <div class="filter-group">
+        <label>Start Date</label>
+        <input type="date" [(ngModel)]="startDate">
+      </div>
+
+      <div class="filter-group">
+        <label>End Date</label>
+        <input type="date" [(ngModel)]="endDate">
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-primary" (click)="loadByDriver()">Search</button>
+        <button class="btn btn-secondary" (click)="resetFilters()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-section">
+    <div class="results-header">
+      <h2>Results ({{ filteredPods.length }})</h2>
+      <div class="results-info" *ngIf="!isLoading">
+        <small>Showing {{ filteredPods.length }} of {{ pods.length }} records</small>
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="isLoading">
+      <p>Loading Proofs of Delivery...</p>
+    </div>
+
+    <div class="no-results" *ngIf="!isLoading && filteredPods.length === 0">
+      <p>No Proofs of Delivery found</p>
+    </div>
+
+    <div class="table-container" *ngIf="!isLoading && filteredPods.length > 0">
+      <table class="pods-table">
+        <thead>
+          <tr>
+            <th>POD ID</th>
+            <th>Trip ID</th>
+            <th>Load ID</th>
+            <th>Driver ID</th>
+            <th>Recipient</th>
+            <th>Status</th>
+            <th>Delivery Date</th>
+            <th>On-Time</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pod of filteredPods" [ngClass]="'status-row-' + pod.status">
+            <td class="pod-id">{{ pod.id | slice:0:8 }}</td>
+            <td>{{ pod.tripId }}</td>
+            <td>{{ pod.loadId }}</td>
+            <td>{{ pod.driverId }}</td>
+            <td>{{ pod.recipientName || '-' }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="'status-' + pod.status">
+                {{ getStatusLabel(pod.status) }}
+              </span>
+            </td>
+            <td>{{ pod.deliveryDateTime ? (pod.deliveryDateTime | date:'short') : '-' }}</td>
+            <td>
+              <span class="on-time-indicator" [ngClass]="pod.isOnTime ? 'on-time' : 'late'">
+                {{ pod.isOnTime ? '✓ Yes' : '✗ Late' }}
+              </span>
+            </td>
+            <td class="actions">
+              <button class="action-btn view" 
+                      (click)="viewPOD(pod)"
+                      title="View POD">👁️</button>
+              <button class="action-btn edit" 
+                      (click)="editPOD(pod)"
+                      [disabled]="pod.status === 3"
+                      title="Edit POD">✎</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

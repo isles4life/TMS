@@ -1,0 +1,231 @@
+<div class="pod-capture-container">
+  <div class="pod-header">
+    <h1>Proof of Delivery</h1>
+    <div class="pod-info" *ngIf="currentPOD">
+      <span class="pod-id">POD #{{ currentPOD.id | slice:0:8 }}</span>
+      <span class="pod-status" [ngClass]="'status-' + currentPOD.status">
+        {{ getStatusLabel(currentPOD.status) }}
+      </span>
+    </div>
+  </div>
+
+  <div class="alerts">
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+      <button (click)="errorMessage = ''" class="close-btn">&times;</button>
+    </div>
+    <div class="success-message" *ngIf="successMessage">
+      {{ successMessage }}
+      <button (click)="successMessage = ''" class="close-btn">&times;</button>
+    </div>
+  </div>
+
+  <div class="step-indicator">
+    <div class="step" [ngClass]="{ active: currentStep === 'capture', completed: currentPOD?.photos?.length }" 
+         (click)="currentStep = 'capture'">
+      <span class="step-number">1</span>
+      <span class="step-label">Photos</span>
+    </div>
+    <div class="step" [ngClass]="{ active: currentStep === 'sign', completed: currentPOD?.signatureData }" 
+         (click)="currentStep = 'sign'">
+      <span class="step-number">2</span>
+      <span class="step-label">Signature</span>
+    </div>
+    <div class="step" [ngClass]="{ active: currentStep === 'review', completed: currentPOD?.status === 3 }" 
+         (click)="currentStep = 'review'">
+      <span class="step-number">3</span>
+      <span class="step-label">Review</span>
+    </div>
+  </div>
+
+  <form [formGroup]="podForm" class="pod-form">
+    <!-- Photo Capture Step -->
+    <div class="step-content" *ngIf="currentStep === 'capture'">
+      <h2>Capture Photos</h2>
+
+      <div class="form-group">
+        <label>Photo Type</label>
+        <select formControlName="selectedPhotoType">
+          <option *ngFor="let type of photoTypes" [value]="type.value">
+            {{ type.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Photo Description (Optional)</label>
+        <input type="text" formControlName="photoDescription" 
+               placeholder="Add notes about this photo">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Latitude (Optional)</label>
+          <input type="number" formControlName="latitude" 
+                 placeholder="Auto-capture with location button" step="0.000001" readonly>
+        </div>
+        <div class="form-group">
+          <label>Longitude (Optional)</label>
+          <input type="number" formControlName="longitude" 
+                 placeholder="Auto-capture with location button" step="0.000001" readonly>
+        </div>
+        <div class="form-group" style="display: flex; align-items: flex-end;">
+          <button type="button" class="btn btn-secondary" (click)="captureLocation()">
+            📍 Capture Location
+          </button>
+        </div>
+      </div>
+
+      <div class="file-upload-area">
+        <input type="file" #photoInput multiple accept="image/*" 
+               (change)="onPhotoSelected($event)" style="display: none;">
+        <div class="upload-button" (click)="photoInput.click()">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">
+            <p>Click to select photos</p>
+            <small>Max 10MB per photo, 100MB total</small>
+            <small>Current: {{ (totalPhotoSize / 1024 / 1024).toFixed(1) }}MB</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="photos-list" *ngIf="photos.length > 0">
+        <h3>Selected Photos ({{ photos.length }})</h3>
+        <div class="photo-item" *ngFor="let photo of photos; let i = index">
+          <div class="photo-preview">
+            <img [src]="photo.photoUrl" alt="Preview">
+          </div>
+          <div class="photo-info">
+            <p><strong>{{ getPhotoTypeLabel(photo.photoType) }}</strong></p>
+            <small *ngIf="photo.description">{{ photo.description }}</small>
+            <small class="file-size">{{ (photo.fileSizeBytes / 1024 / 1024).toFixed(2) }}MB</small>
+            <small *ngIf="photo.latitude && photo.longitude">
+              📍 {{ photo.latitude.toFixed(4) }}, {{ photo.longitude.toFixed(4) }}
+            </small>
+          </div>
+          <button type="button" class="btn-remove" (click)="removePhoto(i)" title="Remove">
+            ❌
+          </button>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button type="button" class="btn btn-primary" 
+                (click)="uploadPhotos()" 
+                [disabled]="photos.length === 0 || isLoading">
+          {{ isLoading ? 'Uploading...' : 'Upload Photos & Continue' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Signature Step -->
+    <div class="step-content" *ngIf="currentStep === 'sign'">
+      <h2>Recipient Signature & Delivery Confirmation</h2>
+
+      <div class="form-group">
+        <label>Recipient Name *</label>
+        <input type="text" formControlName="recipientName" 
+               placeholder="Enter recipient's full name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Delivery Notes (Optional)</label>
+        <textarea formControlName="deliveryNotes" 
+                  placeholder="Any special notes about delivery"
+                  rows="3"></textarea>
+      </div>
+
+      <div class="signature-section">
+        <label>Recipient Signature *</label>
+        <div class="signature-canvas-wrapper">
+          <canvas #signatureCanvas 
+                  class="signature-canvas"
+                  width="400" height="200"></canvas>
+        </div>
+        <button type="button" class="btn btn-secondary" (click)="clearSignature()">
+          Clear Signature
+        </button>
+      </div>
+
+      <div class="step-actions">
+        <button type="button" class="btn btn-secondary" (click)="currentStep = 'capture'">
+          Back
+        </button>
+        <button type="button" class="btn btn-primary" 
+                (click)="signPOD()" 
+                [disabled]="!podForm.valid || isLoading">
+          {{ isLoading ? 'Signing...' : 'Sign & Continue' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Review Step -->
+    <div class="step-content" *ngIf="currentStep === 'review'">
+      <h2>Review & Complete</h2>
+
+      <div class="review-section" *ngIf="currentPOD">
+        <div class="review-group">
+          <h3>Delivery Information</h3>
+          <div class="review-item">
+            <label>Trip ID:</label>
+            <span>{{ currentPOD.tripId }}</span>
+          </div>
+          <div class="review-item">
+            <label>Load ID:</label>
+            <span>{{ currentPOD.loadId }}</span>
+          </div>
+          <div class="review-item">
+            <label>Recipient:</label>
+            <span>{{ currentPOD.recipientName }}</span>
+          </div>
+          <div class="review-item">
+            <label>Delivery DateTime:</label>
+            <span>{{ currentPOD.deliveryDateTime | date:'medium' }}</span>
+          </div>
+          <div class="review-item" *ngIf="currentPOD.isOnTime !== null">
+            <label>On-Time Delivery:</label>
+            <span [ngClass]="{ 'text-success': currentPOD.isOnTime, 'text-danger': !currentPOD.isOnTime }">
+              {{ currentPOD.isOnTime ? '✓ Yes' : '✗ Late' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="review-group">
+          <h3>Photos ({{ currentPOD.photos?.length || 0 }})</h3>
+          <div class="photos-review" *ngIf="currentPOD.photos && currentPOD.photos.length > 0">
+            <div class="photo-review-item" *ngFor="let photo of currentPOD.photos">
+              <img [src]="photo.photoUrl" [alt]="getPhotoTypeLabel(photo.photoType)">
+              <div class="photo-meta">
+                <small>{{ getPhotoTypeLabel(photo.photoType) }}</small>
+                <small *ngIf="photo.description">{{ photo.description }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-group">
+          <h3>Signature</h3>
+          <div *ngIf="currentPOD.signatureData" class="signature-review">
+            <img [src]="currentPOD.signatureData" alt="Signature">
+          </div>
+        </div>
+
+        <div class="review-group" *ngIf="currentPOD.deliveryNotes">
+          <h3>Delivery Notes</h3>
+          <p>{{ currentPOD.deliveryNotes }}</p>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button type="button" class="btn btn-secondary" (click)="currentStep = 'sign'">
+          Back
+        </button>
+        <button type="button" class="btn btn-success" 
+                (click)="completePOD()" 
+                [disabled]="isLoading">
+          {{ isLoading ? 'Completing...' : '✓ Complete POD' }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

@@ -31,6 +31,8 @@ public class TMSDbContext : DbContext
     public DbSet<DriverAvailability> DriverAvailabilities { get; set; }
     public DbSet<DriverLocation> DriverLocations { get; set; }
     public DbSet<GeofenceAlert> GeofenceAlerts { get; set; }
+    public DbSet<ProofOfDelivery> ProofsOfDelivery { get; set; }
+    public DbSet<PODPhoto> PODPhotos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -163,5 +165,30 @@ public class TMSDbContext : DbContext
             .WithMany()
             .HasForeignKey(ga => ga.DispatchId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Proof of Delivery relationships
+        modelBuilder.Entity<ProofOfDelivery>()
+            .HasMany(p => p.Photos)
+            .WithOne(ph => ph.ProofOfDelivery)
+            .HasForeignKey(ph => ph.ProofOfDeliveryId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ProofOfDelivery>()
+            .Property(p => p.Status)
+            .HasDefaultValue(PODStatus.Draft);
+
+        modelBuilder.Entity<ProofOfDelivery>()
+            .HasIndex(p => p.LoadId)
+            .IsUnique();
+
+        modelBuilder.Entity<ProofOfDelivery>()
+            .HasIndex(p => p.TripId);
+
+        modelBuilder.Entity<ProofOfDelivery>()
+            .HasIndex(p => p.DriverId);
+
+        modelBuilder.Entity<PODPhoto>()
+            .Property(p => p.CapturedDateTime)
+            .HasDefaultValue(DateTime.UtcNow);
     }
 }

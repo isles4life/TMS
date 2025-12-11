@@ -1,0 +1,150 @@
+<div class="pod-view-container">
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading Proof of Delivery...</p>
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="pod-view" *ngIf="pod && !isLoading">
+    <div class="pod-header">
+      <div class="header-info">
+        <h1>Proof of Delivery</h1>
+        <div class="pod-meta">
+          <span class="pod-id">POD #{{ pod.id | slice:0:12 }}</span>
+          <span class="pod-status" [ngClass]="getStatusBadgeClass(pod.status)">
+            {{ getStatusLabel(pod.status) }}
+          </span>
+          <span class="timestamp">Created: {{ pod.createdAt | date:'medium' }}</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="downloadPOD()">
+          📥 Download
+        </button>
+      </div>
+    </div>
+
+    <div class="pod-sections">
+      <!-- Delivery Information -->
+      <section class="pod-section">
+        <h2>Delivery Information</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Trip ID</label>
+            <span class="info-value">{{ pod.tripId }}</span>
+          </div>
+          <div class="info-item">
+            <label>Load ID</label>
+            <span class="info-value">{{ pod.loadId }}</span>
+          </div>
+          <div class="info-item">
+            <label>Driver ID</label>
+            <span class="info-value">{{ pod.driverId }}</span>
+          </div>
+          <div class="info-item">
+            <label>Recipient Name</label>
+            <span class="info-value">{{ pod.recipientName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Delivery Date/Time</label>
+            <span class="info-value">{{ pod.deliveryDateTime | date:'medium' }}</span>
+          </div>
+          <div class="info-item">
+            <label>On-Time Delivery</label>
+            <span class="info-value" [ngClass]="pod.isOnTime ? 'text-success' : 'text-danger'">
+              {{ pod.isOnTime ? '✓ Yes' : '✗ Late' }}
+            </span>
+          </div>
+          <div class="info-item" *ngIf="pod.deliveryLocation">
+            <label>Delivery Location</label>
+            <span class="info-value">{{ pod.deliveryLocation }}</span>
+          </div>
+          <div class="info-item" *ngIf="pod.deliveryLatitude && pod.deliveryLongitude">
+            <label>Coordinates</label>
+            <span class="info-value">
+              {{ pod.deliveryLatitude | number:'1.6-6' }}, {{ pod.deliveryLongitude | number:'1.6-6' }}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Delivery Notes -->
+      <section class="pod-section" *ngIf="pod.deliveryNotes">
+        <h2>Delivery Notes</h2>
+        <div class="notes-content">
+          {{ pod.deliveryNotes }}
+        </div>
+      </section>
+
+      <!-- Recipient Signature -->
+      <section class="pod-section" *ngIf="pod.signatureData">
+        <h2>Recipient Signature</h2>
+        <div class="signature-display">
+          <img [src]="pod.signatureData" alt="Recipient Signature">
+          <p class="signature-name">Signed by: {{ pod.recipientName }}</p>
+        </div>
+      </section>
+
+      <!-- Photos -->
+      <section class="pod-section" *ngIf="pod.photos && pod.photos.length > 0">
+        <h2>Attached Photos ({{ pod.photos.length }})</h2>
+        <div class="photos-grid">
+          <div class="photo-card" *ngFor="let photo of pod.photos">
+            <div class="photo-image">
+              <img [src]="photo.photoUrl" [alt]="getPhotoTypeLabel(photo.photoType)">
+            </div>
+            <div class="photo-details">
+              <p class="photo-type"><strong>{{ getPhotoTypeLabel(photo.photoType) }}</strong></p>
+              <p class="photo-description" *ngIf="photo.description">{{ photo.description }}</p>
+              <div class="photo-meta">
+                <small>Captured: {{ photo.capturedDateTime | date:'short' }}</small>
+                <small *ngIf="photo.latitude && photo.longitude">
+                  📍 {{ photo.latitude | number:'1.6-6' }}, {{ photo.longitude | number:'1.6-6' }}
+                </small>
+                <small>{{ (photo.fileSizeBytes / 1024 / 1024).toFixed(2) }}MB</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Exception Notes -->
+      <section class="pod-section" *ngIf="pod.exceptionNotes">
+        <h2>Exception Notes</h2>
+        <div class="exception-content">
+          {{ pod.exceptionNotes }}
+        </div>
+      </section>
+
+      <!-- Timeline -->
+      <section class="pod-section">
+        <h2>Timeline</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <p class="timeline-status">Created</p>
+              <small class="timeline-date">{{ pod.createdAt | date:'medium' }}</small>
+            </div>
+          </div>
+          <div class="timeline-item" *ngIf="pod.signatureData">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <p class="timeline-status">Signed</p>
+              <small class="timeline-date">{{ pod.deliveryDateTime | date:'medium' }}</small>
+            </div>
+          </div>
+          <div class="timeline-item" *ngIf="pod.completedDateTime">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <p class="timeline-status">Completed</p>
+              <small class="timeline-date">{{ pod.completedDateTime | date:'medium' }}</small>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

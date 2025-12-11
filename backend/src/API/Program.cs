@@ -20,6 +20,7 @@ using TMS.Application.Queries.Drivers;
 using TMS.Application.Services;
 using TMS.Infrastructure.Services;
 using TMS.Infrastructure.Persistence;
+using TMS.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,11 @@ builder.Services.AddScoped<ITrackingService, TrackingService>();
 // Add Route Optimization Service
 builder.Services.AddHttpClient(); // Required for HERE Maps API calls
 builder.Services.AddScoped<IRouteOptimizationService, RouteOptimizationService>();
+
+// Add ProofOfDelivery Service
+builder.Services.AddScoped<IProofOfDeliveryService, ProofOfDeliveryService>();
+builder.Services.AddScoped<IProofOfDeliveryRepository, TMS.Infrastructure.Repositories.ProofOfDeliveryRepository>();
+builder.Services.AddScoped<IPODPhotoRepository, TMS.Infrastructure.Repositories.PODPhotoRepository>();
 
 // Add SignalR for real-time tracking
 builder.Services.AddSignalR();
@@ -183,6 +189,7 @@ try
     app.RegisterDispatchEndpoints();
     app.RegisterTrackingEndpoints();
     app.RegisterRouteEndpoints();
+    app.MapProofOfDeliveryEndpoints();
 
     // Register SignalR hubs
     app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");
