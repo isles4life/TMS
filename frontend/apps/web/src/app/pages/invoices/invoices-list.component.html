@@ -45,8 +45,8 @@
   <!-- Controls Section -->
   <div class="controls-section">
     <div class="left-controls">
-      <mat-form-field class="search-field">
-        <mat-label>Search invoices...</mat-label>
+      <mat-form-field class="search-field" floatLabel="always" appearance="outline">
+        <mat-label>Search invoices</mat-label>
         <input matInput [(ngModel)]="searchQuery" (input)="onSearchChange()" placeholder="Search by client, number, email">
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>

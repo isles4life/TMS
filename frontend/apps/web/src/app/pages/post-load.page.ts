@@ -44,13 +44,15 @@ import { PageHeaderComponent } from '../components/page-header.component';
             <div class="form-section">
               <h3>Route</h3>
               <div class="field-row">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Origin City</mat-label>
-                  <input matInput placeholder="e.g. Boise, ID" formControlName="origin" required />
+                  <input matInput formControlName="origin" required />
+                  <mat-hint>e.g. Boise, ID</mat-hint>
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Destination City</mat-label>
-                  <input matInput placeholder="e.g. Denver, CO" formControlName="destination" required />
+                  <input matInput formControlName="destination" required />
+                  <mat-hint>e.g. Denver, CO</mat-hint>
                 </mat-form-field>
               </div>
             </div>
@@ -69,9 +71,10 @@ import { PageHeaderComponent } from '../components/page-header.component';
                     <mat-option value="Specialized">Specialized</mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Rate ($/mile)</mat-label>
-                  <input matInput type="number" placeholder="e.g. 2.35" formControlName="rate" required step="0.01" min="0" />
+                  <input matInput type="number" formControlName="rate" required step="0.01" min="0" />
+                  <mat-hint>e.g. 2.35</mat-hint>
                 </mat-form-field>
               </div>
             </div>
@@ -131,19 +134,20 @@ import { PageHeaderComponent } from '../components/page-header.component';
             <!-- Additional Info Section -->
             <div class="form-section">
               <h3>Additional Information</h3>
-              <mat-form-field appearance="outline" class="full-width">
+              <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                 <mat-label>Special Instructions / Notes</mat-label>
                 <textarea
                   matInput
                   formControlName="notes"
-                  placeholder="e.g. No tarps, call 30 mins before arrival, safety vest required"
                   rows="4"
                 ></textarea>
+                <mat-hint>e.g. No tarps, call 30 mins before arrival</mat-hint>
               </mat-form-field>
               <div class="field-row">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Tags (comma-separated)</mat-label>
-                  <input matInput placeholder="e.g. No tarp, Appointment, Quick pay" formControlName="tagsInput" />
+                  <input matInput formControlName="tagsInput" />
+                  <mat-hint>e.g. No tarp, Appointment, Quick pay</mat-hint>
                 </mat-form-field>
               </div>
             </div>

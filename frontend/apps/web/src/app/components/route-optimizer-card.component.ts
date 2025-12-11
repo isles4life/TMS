@@ -72,13 +72,15 @@ import { RouteOptimizationService, RouteRequest, RouteResponse, FuelCostEstimate
                 <mat-option value="car">Car</mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" floatLabel="always">
               <mat-label>Fuel Price (per gallon)</mat-label>
-              <input matInput formControlName="fuelPricePerGallon" type="number" step="0.01" placeholder="Optional">
+              <input matInput formControlName="fuelPricePerGallon" type="number" step="0.01">
+              <mat-hint align="end">Optional</mat-hint>
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" floatLabel="always">
               <mat-label>Zip for fuel lookup</mat-label>
-              <input matInput formControlName="zipCode" type="text" maxlength="10" placeholder="Optional">
+              <input matInput formControlName="zipCode" type="text" maxlength="10">
+              <mat-hint align="end">Optional</mat-hint>
             </mat-form-field>
           </div>
 

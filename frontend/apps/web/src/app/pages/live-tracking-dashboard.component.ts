@@ -208,6 +208,7 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
       padding: 20px;
       max-width: 1400px;
       margin: 0 auto;
+      color: var(--color-text);
     }
 
     .dashboard-header {
@@ -219,7 +220,8 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
       h1 {
         margin: 0;
         font-size: 28px;
-        font-weight: 500;
+        font-weight: 600;
+        color: var(--color-text);
       }
     }
 
@@ -235,6 +237,9 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
 
     .trackers-card {
       margin-bottom: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
     }
 
     .trackers-grid {
@@ -244,8 +249,10 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
     }
 
     .tracker-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      background: var(--card-bg);
+      color: var(--color-text);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
 
       mat-card-header {
         margin-bottom: 16px;
@@ -274,15 +281,18 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
           font-weight: 500;
 
           &.status-onduty {
-            background-color: #4caf50 !important;
+            background-color: var(--chip-bg);
+            color: var(--accent-green, var(--chip-text));
           }
 
           &.status-offduty {
-            background-color: #f44336 !important;
+            background-color: var(--chip-bg);
+            color: var(--accent-red);
           }
 
           &.status-onbreak {
-            background-color: #ff9800 !important;
+            background-color: var(--chip-bg);
+            color: var(--accent-amber, var(--chip-text));
           }
         }
       }
@@ -329,21 +339,22 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
 
       p {
         margin: 0;
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--muted-text);
       }
     }
 
     .empty-state {
       text-align: center;
       padding: 60px 20px;
-      color: rgba(0, 0, 0, 0.4);
+      color: var(--muted-text);
 
       mat-icon {
         font-size: 64px;
         width: 64px;
         height: 64px;
         margin: 0 auto 16px;
-        opacity: 0.5;
+        opacity: 0.55;
+        color: var(--muted-text);
       }
 
       p {
@@ -354,7 +365,10 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
 
     .alerts-card {
       margin-bottom: 20px;
-      border-left: 4px solid #f44336;
+      border-left: 4px solid var(--accent-red);
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
     }
 
     .alerts-list {
@@ -368,9 +382,10 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
       justify-content: space-between;
       align-items: center;
       padding: 12px;
-      background-color: #fff3e0;
-      border-radius: 4px;
-      border-left: 4px solid #ff9800;
+      background-color: var(--card-bg);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-xs, 0 2px 6px rgba(0,0,0,0.08));
 
       .alert-content {
         flex: 1;
@@ -381,15 +396,18 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
         .alert-driver {
           font-weight: 600;
           min-width: 150px;
+          color: var(--color-text);
         }
 
         .alert-zone {
           flex: 1;
-          color: #666;
+          color: var(--muted-text);
         }
 
         .alert-type {
           font-size: 11px;
+          background: var(--chip-bg);
+          color: var(--chip-text);
         }
       }
 
@@ -403,19 +421,21 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
       align-items: center;
       gap: 12px;
       padding: 16px;
-      background-color: #fff3e0;
-      border-radius: 4px;
-      border-left: 4px solid #ff9800;
+      background: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-amber, #ffb74d);
+      box-shadow: var(--shadow-sm);
       margin-bottom: 20px;
 
       mat-icon {
-        color: #ff9800;
+        color: var(--accent-amber, #ffb74d);
       }
 
       p {
         margin: 0;
         flex: 1;
-        color: #e65100;
+        color: var(--color-text);
       }
     }
 

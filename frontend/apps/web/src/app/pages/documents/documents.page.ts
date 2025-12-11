@@ -81,14 +81,16 @@ import { NotificationService } from '../../services/notification.service';
                   </mat-select>
                 </mat-form-field>
 
-                <mat-form-field appearance="fill" class="full-width">
+                <mat-form-field appearance="fill" class="full-width" floatLabel="always">
                   <mat-label>Related Load (Optional)</mat-label>
-                  <input matInput formControlName="loadId" placeholder="Load #12345">
+                  <input matInput formControlName="loadId">
+                  <mat-hint>Load #12345</mat-hint>
                 </mat-form-field>
 
-                <mat-form-field appearance="fill" class="full-width">
+                <mat-form-field appearance="fill" class="full-width" floatLabel="always">
                   <mat-label>Notes</mat-label>
-                  <textarea matInput formControlName="notes" placeholder="Add any notes about this document"></textarea>
+                  <textarea matInput formControlName="notes"></textarea>
+                  <mat-hint>Add any notes about this document</mat-hint>
                 </mat-form-field>
 
                 <div class="selected-files">

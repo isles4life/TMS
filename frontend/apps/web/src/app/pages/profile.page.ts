@@ -47,33 +47,33 @@ import { AuthService } from '../services/auth.service';
           <mat-card class="panel">
             <form [formGroup]="personalForm" (ngSubmit)="onSavePersonal()">
               <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>First Name</mat-label>
                   <input matInput formControlName="firstName" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Last Name</mat-label>
                   <input matInput formControlName="lastName" />
                 </mat-form-field>
               </div>
 
               <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Email</mat-label>
                   <input matInput type="email" formControlName="email" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Phone</mat-label>
                   <input matInput type="tel" formControlName="phone" />
                 </mat-form-field>
               </div>
 
               <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Company</mat-label>
                   <input matInput formControlName="company" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Role</mat-label>
                   <input matInput formControlName="role" />
                 </mat-form-field>
@@ -93,11 +93,11 @@ import { AuthService } from '../services/auth.service';
             <form [formGroup]="companyForm" (ngSubmit)="onSaveCompany()">
               <h3>Company Information</h3>
               <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Company Name</mat-label>
                   <input matInput formControlName="companyName" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Company Type</mat-label>
                   <mat-select formControlName="companyType">
                     <mat-option value="carrier">Carrier</mat-option>
@@ -108,22 +108,22 @@ import { AuthService } from '../services/auth.service';
               </div>
 
               <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Address</mat-label>
                   <input matInput formControlName="address" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>City</mat-label>
                   <input matInput formControlName="city" />
                 </mat-form-field>
               </div>
 
               <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>State</mat-label>
                   <input matInput formControlName="state" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>ZIP Code</mat-label>
                   <input matInput formControlName="zipCode" />
                 </mat-form-field>
@@ -131,11 +131,11 @@ import { AuthService } from '../services/auth.service';
 
               <h3 style="margin-top: var(--ts-spacing-lg);">Billing Information</h3>
               <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Billing Email</mat-label>
                   <input matInput type="email" formControlName="billingEmail" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Payment Method</mat-label>
                   <mat-select formControlName="paymentMethod">
                     <mat-option value="credit_card">Credit Card</mat-option>
@@ -159,18 +159,18 @@ import { AuthService } from '../services/auth.service';
             <h3>Change Password</h3>
             <form [formGroup]="securityForm" (ngSubmit)="onChangePassword()">
               <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Current Password</mat-label>
                   <input matInput type="password" formControlName="currentPassword" />
                 </mat-form-field>
               </div>
 
               <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>New Password</mat-label>
                   <input matInput type="password" formControlName="newPassword" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width" floatLabel="always">
                   <mat-label>Confirm Password</mat-label>
                   <input matInput type="password" formControlName="confirmPassword" />
                 </mat-form-field>

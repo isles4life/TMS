@@ -27,15 +27,17 @@ import { PageHeaderComponent } from '../components/page-header.component';
 
       <mat-card class="panel">
         <form [formGroup]="filters" class="filters" (ngSubmit)="applyFilters()">
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" floatLabel="always">
             <mat-label>Origin</mat-label>
-            <input matInput placeholder="e.g. Boise, ID" formControlName="origin" />
+            <input matInput formControlName="origin" />
+            <mat-hint>e.g. Boise, ID</mat-hint>
           </mat-form-field>
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" floatLabel="always">
             <mat-label>Destination</mat-label>
-            <input matInput placeholder="e.g. Denver, CO" formControlName="destination" />
+            <input matInput formControlName="destination" />
+            <mat-hint>e.g. Denver, CO</mat-hint>
           </mat-form-field>
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" floatLabel="always">
             <mat-label>Equipment</mat-label>
             <mat-select formControlName="equipment">
               <mat-option value="">Any</mat-option>
