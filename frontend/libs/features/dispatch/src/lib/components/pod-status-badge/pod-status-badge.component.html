@@ -1,0 +1,24 @@
+<div class="pod-status-container">
+  <span class="status-badge" [ngClass]="getStatusClass(podStatus)" *ngIf="podStatus !== null">
+    {{ getStatusLabel(podStatus) }}
+  </span>
+  
+  <span class="status-badge status-none" *ngIf="podStatus === null">
+    No POD
+  </span>
+
+  <div class="pod-actions">
+    <button class="action-btn view" 
+            (click)="onViewPOD()"
+            [disabled]="!canView()"
+            title="View POD details">
+      👁️
+    </button>
+    <button class="action-btn capture" 
+            (click)="onCapturePOD()"
+            [disabled]="!canEdit()"
+            title="Edit POD">
+      ✎
+    </button>
+  </div>
+</div>

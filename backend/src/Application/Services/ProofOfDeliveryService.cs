@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TMS.Application.DTOs;
-using TMS.Application.Repositories;
+using TMS.Domain.Repositories;
 using TMS.Domain.Entities.Loads;
 using TMS.Domain.Common;
 
@@ -29,15 +33,15 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
         {
             // Validate input
             if (string.IsNullOrWhiteSpace(dto.LoadId))
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("LoadId is required");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("LoadId is required");
 
             // Check if POD already exists for this load
             if (await _podRepository.ExistsByLoadIdAsync(dto.LoadId))
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("A proof of delivery already exists for this load");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("A proof of delivery already exists for this load");
 
             var pod = new ProofOfDelivery
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 TripId = dto.TripId,
                 LoadId = dto.LoadId,
                 DriverId = dto.DriverId,
@@ -60,13 +64,11 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
             var createdPod = await _podRepository.CreateAsync(pod);
             var podDto = MapToDto(createdPod);
 
-            return ApiResponse<ProofOfDeliveryDto>.SuccessResponse(
-                podDto,
-                "Proof of Delivery created successfully");
+            return ApiResponse<ProofOfDeliveryDto>.CreateSuccess(podDto);
         }
         catch (Exception ex)
         {
-            return ApiResponse<ProofOfDeliveryDto>.FailureResponse($"Error creating proof of delivery: {ex.Message}");
+            return ApiResponse<ProofOfDeliveryDto>.CreateFailure($"Error creating proof of delivery: {ex.Message}");
         }
     }
 
@@ -76,13 +78,13 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
         {
             var pod = await _podRepository.GetByIdAsync(dto.ProofOfDeliveryId);
             if (pod == null)
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Proof of delivery not found");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Proof of delivery not found");
 
             if (string.IsNullOrWhiteSpace(dto.SignatureData))
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Signature data is required");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Signature data is required");
 
             if (string.IsNullOrWhiteSpace(dto.RecipientName))
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Recipient name is required");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Recipient name is required");
 
             pod.RecipientName = dto.RecipientName;
             pod.SignatureData = dto.SignatureData;
@@ -95,13 +97,11 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
             var updatedPod = await _podRepository.UpdateAsync(pod);
             var podDto = MapToDto(updatedPod);
 
-            return ApiResponse<ProofOfDeliveryDto>.SuccessResponse(
-                podDto,
-                "Signature captured successfully");
+            return ApiResponse<ProofOfDeliveryDto>.CreateSuccess(podDto);
         }
         catch (Exception ex)
         {
-            return ApiResponse<ProofOfDeliveryDto>.FailureResponse($"Error signing proof of delivery: {ex.Message}");
+            return ApiResponse<ProofOfDeliveryDto>.CreateFailure($"Error signing proof of delivery: {ex.Message}");
         }
     }
 
@@ -111,28 +111,32 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
         {
             var pod = await _podRepository.GetByIdAsync(dto.ProofOfDeliveryId);
             if (pod == null)
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Proof of delivery not found");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Proof of delivery not found");
 
             if (string.IsNullOrWhiteSpace(dto.PhotoData))
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Photo data is required");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Photo data is required");
+
+            // Convert string ID to Guid
+            if (!Guid.TryParse(dto.ProofOfDeliveryId, out var podGuid))
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Invalid proof of delivery ID format");
 
             // Validate photo size
             var photoBytes = Convert.FromBase64String(dto.PhotoData);
             if (photoBytes.Length > MAX_PHOTO_SIZE)
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse($"Photo size exceeds maximum of 10MB");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure($"Photo size exceeds maximum of 10MB");
 
             // Check total size
-            var totalSize = await _photoRepository.GetTotalFileSizeAsync(dto.ProofOfDeliveryId);
+            var totalSize = await _photoRepository.GetTotalFileSizeAsync(podGuid);
             if (totalSize + photoBytes.Length > MAX_TOTAL_PHOTOS_SIZE)
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse($"Total photo size would exceed 100MB limit");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure($"Total photo size would exceed 100MB limit");
 
             // Create photo record (in real implementation, would save file to storage)
             var photo = new PODPhoto
             {
-                Id = Guid.NewGuid().ToString(),
-                ProofOfDeliveryId = dto.ProofOfDeliveryId,
+                Id = Guid.NewGuid(),
+                ProofOfDeliveryId = podGuid,
                 PhotoType = (PODPhotoType)dto.PhotoType,
-                PhotoUrl = $"pod/{dto.ProofOfDeliveryId}/photos/{Guid.NewGuid()}.jpg",
+                PhotoUrl = $"pod/{podGuid}/photos/{Guid.NewGuid()}.jpg",
                 FileSizeBytes = photoBytes.Length,
                 Description = dto.Description,
                 Latitude = dto.Latitude,
@@ -145,13 +149,11 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
             await _podRepository.UpdateAsync(pod);
 
             var podDto = MapToDto(pod);
-            return ApiResponse<ProofOfDeliveryDto>.SuccessResponse(
-                podDto,
-                "Photo added successfully");
+            return ApiResponse<ProofOfDeliveryDto>.CreateSuccess(podDto);
         }
         catch (Exception ex)
         {
-            return ApiResponse<ProofOfDeliveryDto>.FailureResponse($"Error adding photo: {ex.Message}");
+            return ApiResponse<ProofOfDeliveryDto>.CreateFailure($"Error adding photo: {ex.Message}");
         }
     }
 
@@ -161,14 +163,14 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
         {
             var pod = await _podRepository.GetByIdAsync(dto.ProofOfDeliveryId);
             if (pod == null)
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Proof of delivery not found");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Proof of delivery not found");
 
             // Validate required fields for completion
             if (string.IsNullOrWhiteSpace(pod.RecipientName))
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Recipient signature is required before completion");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Recipient signature is required before completion");
 
             if (string.IsNullOrWhiteSpace(pod.SignatureData))
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Signature is required before completion");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Signature is required before completion");
 
             pod.Status = PODStatus.Completed;
             pod.CompletedDateTime = DateTime.UtcNow;
@@ -179,13 +181,11 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
             var updatedPod = await _podRepository.UpdateAsync(pod);
             var podDto = MapToDto(updatedPod);
 
-            return ApiResponse<ProofOfDeliveryDto>.SuccessResponse(
-                podDto,
-                "Proof of delivery completed");
+            return ApiResponse<ProofOfDeliveryDto>.CreateSuccess(podDto);
         }
         catch (Exception ex)
         {
-            return ApiResponse<ProofOfDeliveryDto>.FailureResponse($"Error completing proof of delivery: {ex.Message}");
+            return ApiResponse<ProofOfDeliveryDto>.CreateFailure($"Error completing proof of delivery: {ex.Message}");
         }
     }
 
@@ -195,14 +195,14 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
         {
             var pod = await _podRepository.GetByIdAsync(id);
             if (pod == null)
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Proof of delivery not found");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Proof of delivery not found");
 
             var podDto = MapToDto(pod);
-            return ApiResponse<ProofOfDeliveryDto>.SuccessResponse(podDto);
+            return ApiResponse<ProofOfDeliveryDto>.CreateSuccess(podDto);
         }
         catch (Exception ex)
         {
-            return ApiResponse<ProofOfDeliveryDto>.FailureResponse($"Error retrieving proof of delivery: {ex.Message}");
+            return ApiResponse<ProofOfDeliveryDto>.CreateFailure($"Error retrieving proof of delivery: {ex.Message}");
         }
     }
 
@@ -212,14 +212,14 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
         {
             var pod = await _podRepository.GetByLoadIdAsync(loadId);
             if (pod == null)
-                return ApiResponse<ProofOfDeliveryDto>.FailureResponse("Proof of delivery not found for this load");
+                return ApiResponse<ProofOfDeliveryDto>.CreateFailure("Proof of delivery not found for this load");
 
             var podDto = MapToDto(pod);
-            return ApiResponse<ProofOfDeliveryDto>.SuccessResponse(podDto);
+            return ApiResponse<ProofOfDeliveryDto>.CreateSuccess(podDto);
         }
         catch (Exception ex)
         {
-            return ApiResponse<ProofOfDeliveryDto>.FailureResponse($"Error retrieving proof of delivery: {ex.Message}");
+            return ApiResponse<ProofOfDeliveryDto>.CreateFailure($"Error retrieving proof of delivery: {ex.Message}");
         }
     }
 
@@ -230,7 +230,7 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
             var pods = await _podRepository.GetByDriverIdAsync(driverId, fromDate, toDate);
             var podDtos = pods.Select(p => new ProofOfDeliveryListDto
             {
-                Id = p.Id,
+                Id = p.Id.ToString(),
                 TripId = p.TripId,
                 LoadId = p.LoadId,
                 DriverId = p.DriverId,
@@ -243,11 +243,11 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
                 IsOnTime = p.IsOnTime
             }).ToList();
 
-            return ApiResponse<List<ProofOfDeliveryListDto>>.SuccessResponse(podDtos);
+            return ApiResponse<List<ProofOfDeliveryListDto>>.CreateSuccess(podDtos);
         }
         catch (Exception ex)
         {
-            return ApiResponse<List<ProofOfDeliveryListDto>>.FailureResponse($"Error retrieving driver PODs: {ex.Message}");
+            return ApiResponse<List<ProofOfDeliveryListDto>>.CreateFailure($"Error retrieving driver PODs: {ex.Message}");
         }
     }
 
@@ -257,11 +257,11 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
         {
             var pods = await _podRepository.GetPendingAsync();
             var podDtos = pods.Select(MapToListDto).ToList();
-            return ApiResponse<List<ProofOfDeliveryListDto>>.SuccessResponse(podDtos);
+            return ApiResponse<List<ProofOfDeliveryListDto>>.CreateSuccess(podDtos);
         }
         catch (Exception ex)
         {
-            return ApiResponse<List<ProofOfDeliveryListDto>>.FailureResponse($"Error retrieving pending PODs: {ex.Message}");
+            return ApiResponse<List<ProofOfDeliveryListDto>>.CreateFailure($"Error retrieving pending PODs: {ex.Message}");
         }
     }
 
@@ -269,7 +269,7 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
     {
         return new ProofOfDeliveryDto
         {
-            Id = pod.Id,
+            Id = pod.Id.ToString(),
             TripId = pod.TripId,
             LoadId = pod.LoadId,
             DriverId = pod.DriverId,
@@ -283,7 +283,7 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
             HasSignature = !string.IsNullOrWhiteSpace(pod.SignatureData),
             Photos = pod.Photos.Select(p => new PODPhotoDto
             {
-                Id = p.Id,
+                Id = p.Id.ToString(),
                 PhotoType = (int)p.PhotoType,
                 PhotoUrl = p.PhotoUrl,
                 FileSizeBytes = p.FileSizeBytes,
@@ -305,7 +305,7 @@ public class ProofOfDeliveryService : IProofOfDeliveryService
     {
         return new ProofOfDeliveryListDto
         {
-            Id = pod.Id,
+            Id = pod.Id.ToString(),
             TripId = pod.TripId,
             LoadId = pod.LoadId,
             DriverId = pod.DriverId,

@@ -1,13 +1,25 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMS.Application.DTOs;
 using TMS.Application.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using TMS.API.Hubs;
 
 namespace TMS.API.Endpoints;
 
 public static class ProofOfDeliveryEndpoints
 {
+    private static IHubContext<PODHub>? _hubContext;
+
     public static void MapProofOfDeliveryEndpoints(this WebApplication app)
     {
+        _hubContext = app.Services.GetRequiredService<IHubContext<PODHub>>();
+        
         var group = app.MapGroup("/api/proof-of-delivery")
             .WithName("ProofOfDelivery")
             .WithOpenApi();
@@ -52,11 +64,22 @@ public static class ProofOfDeliveryEndpoints
         try
         {
             var result = await service.CreateProofOfDeliveryAsync(dto);
-            return Results.Created($"/api/proof-of-delivery/{result.Id}", result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Results.BadRequest(new { error = ex.Message });
+            
+            if (!result.Success)
+            {
+                return Results.BadRequest(new { errors = result.Errors });
+            }
+
+            // Broadcast POD creation event
+            if (_hubContext != null && result.Data != null)
+            {
+                await _hubContext.Clients.Group($"driver-{dto.DriverId}")
+                    .SendAsync("PODCreated", result.Data.Id, dto.LoadId, dto.DriverId);
+                await _hubContext.Clients.All
+                    .SendAsync("PODCreated", result.Data.Id, dto.LoadId, dto.DriverId);
+            }
+            
+            return Results.Created($"/api/proof-of-delivery/{result.Data!.Id}", result.Data);
         }
         catch (Exception ex)
         {
@@ -71,16 +94,24 @@ public static class ProofOfDeliveryEndpoints
     {
         try
         {
-            var result = await service.SignProofOfDeliveryAsync(id, dto);
-            return Results.Ok(result);
-        }
-        catch (KeyNotFoundException)
-        {
-            return Results.NotFound();
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Results.BadRequest(new { error = ex.Message });
+            dto.ProofOfDeliveryId = id;
+            var result = await service.SignProofOfDeliveryAsync(dto);
+            
+            if (!result.Success)
+            {
+                return Results.BadRequest(new { errors = result.Errors });
+            }
+
+            // Broadcast POD signed event
+            if (_hubContext != null && result.Data != null)
+            {
+                await _hubContext.Clients.Group($"pod-{id}")
+                    .SendAsync("PODSigned", id, dto.RecipientName, result.Data.DeliveryDateTime);
+                await _hubContext.Clients.All
+                    .SendAsync("PODSigned", id, dto.RecipientName, result.Data.DeliveryDateTime);
+            }
+            
+            return Results.Ok(result.Data);
         }
         catch (Exception ex)
         {
@@ -95,16 +126,15 @@ public static class ProofOfDeliveryEndpoints
     {
         try
         {
-            var result = await service.AddPhotoAsync(id, dto);
-            return Results.Ok(result);
-        }
-        catch (KeyNotFoundException)
-        {
-            return Results.NotFound();
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Results.BadRequest(new { error = ex.Message });
+            dto.ProofOfDeliveryId = id;
+            var result = await service.AddPhotoAsync(dto);
+            
+            if (!result.Success)
+            {
+                return Results.BadRequest(new { errors = result.Errors });
+            }
+
+            return Results.Ok(result.Data);
         }
         catch (Exception ex)
         {
@@ -119,8 +149,19 @@ public static class ProofOfDeliveryEndpoints
     {
         try
         {
-            var result = await service.CompleteProofOfDeliveryAsync(id, dto);
-            return Results.Ok(result);
+            dto.ProofOfDeliveryId = id;
+            var result = await service.CompleteProofOfDeliveryAsync(dto);
+            
+            // Broadcast POD completed event
+            if (_hubContext != null && result.Success && result.Data != null)
+            {
+                await _hubContext.Clients.Group($"pod-{id}")
+                    .SendAsync("PODCompleted", id, result.Data.LoadId);
+                await _hubContext.Clients.All
+                    .SendAsync("PODCompleted", id, result.Data.LoadId);
+            }
+            
+            return result.Success ? Results.Ok(result.Data) : Results.BadRequest(result.Errors);
         }
         catch (KeyNotFoundException)
         {

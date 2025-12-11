@@ -1,0 +1,62 @@
+.pod-status-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    &.status-0 { background: #f0f0f0; color: #666; } // Draft
+    &.status-1 { background: #fff3cd; color: #856404; } // Pending
+    &.status-2 { background: #cfe2ff; color: #084298; } // Signed
+    &.status-3 { background: #d1e7dd; color: #0f5132; } // Completed
+    &.status-4 { background: #f8d7da; color: #842029; } // Rejected
+    &.status-5 { background: #e2e3e5; color: #383d41; } // Cancelled
+    &.status-none { background: #f9f9f9; color: #999; border: 1px solid #ddd; }
+  }
+
+  .pod-actions {
+    display: flex;
+    gap: 4px;
+
+    .action-btn {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: #f0f0f0;
+        border-color: #0066cc;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      &.view:hover:not(:disabled) {
+        background: #e3f2fd;
+        border-color: #0066cc;
+      }
+
+      &.capture:hover:not(:disabled) {
+        background: #fff3cd;
+        border-color: #ffc107;
+      }
+    }
+  }
+}

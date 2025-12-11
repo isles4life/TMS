@@ -15,7 +15,7 @@ namespace TMS.Infrastructure.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.5");
 
             modelBuilder.Entity("TMS.Domain.Entities.Companies.Carrier", b =>
                 {
@@ -493,6 +493,9 @@ namespace TMS.Infrastructure.Migrations
                     b.Property<DateTime>("PickupDateTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ProofOfDeliveryId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
@@ -514,11 +517,151 @@ namespace TMS.Infrastructure.Migrations
 
                     b.HasIndex("DriverId");
 
+                    b.HasIndex("ProofOfDeliveryId");
+
                     b.HasIndex("TractorId");
 
                     b.HasIndex("TrailerId");
 
                     b.ToTable("Loads");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Loads.PODPhoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CapturedDateTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue(new DateTime(2025, 12, 11, 19, 58, 49, 206, DateTimeKind.Utc).AddTicks(5648));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PhotoType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PhotoUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ProofOfDeliveryId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProofOfDeliveryId");
+
+                    b.ToTable("PODPhotos");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Loads.ProofOfDelivery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CompletedDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeliveryDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("DeliveryLatitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeliveryLocation")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("DeliveryLongitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeliveryNotes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DriverId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("EstimatedDeliveryDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExceptionNotes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool?>("IsOnTime")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LoadId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RecipientName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SignatureData")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("TripId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("LoadId")
+                        .IsUnique();
+
+                    b.HasIndex("TripId");
+
+                    b.ToTable("ProofsOfDelivery");
                 });
 
             modelBuilder.Entity("TMS.Domain.Entities.MaintenanceRecord", b =>
@@ -1135,6 +1278,10 @@ namespace TMS.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("DriverId");
 
+                    b.HasOne("TMS.Domain.Entities.Loads.ProofOfDelivery", "ProofOfDelivery")
+                        .WithMany()
+                        .HasForeignKey("ProofOfDeliveryId");
+
                     b.HasOne("TMS.Domain.Entities.Equipment.PowerOnlyTractor", "Tractor")
                         .WithMany()
                         .HasForeignKey("TractorId");
@@ -1231,9 +1378,22 @@ namespace TMS.Infrastructure.Migrations
                     b.Navigation("PickupLocation")
                         .IsRequired();
 
+                    b.Navigation("ProofOfDelivery");
+
                     b.Navigation("Tractor");
 
                     b.Navigation("Trailer");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Loads.PODPhoto", b =>
+                {
+                    b.HasOne("TMS.Domain.Entities.Loads.ProofOfDelivery", "ProofOfDelivery")
+                        .WithMany("Photos")
+                        .HasForeignKey("ProofOfDeliveryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProofOfDelivery");
                 });
 
             modelBuilder.Entity("TMS.Domain.Entities.MaintenanceRecord", b =>
@@ -1339,6 +1499,11 @@ namespace TMS.Infrastructure.Migrations
                     b.Navigation("Documents");
 
                     b.Navigation("Trips");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Loads.ProofOfDelivery", b =>
+                {
+                    b.Navigation("Photos");
                 });
 
             modelBuilder.Entity("TMS.Domain.Entities.Trailer", b =>

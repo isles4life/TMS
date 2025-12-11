@@ -10,16 +10,22 @@ using TMS.Application.DTOs;
 using TMS.Domain.Entities.Loads;
 using TMS.Domain.Entities.Drivers;
 using TMS.Infrastructure.Persistence;
+using TMS.Domain.Entities.Loads;
 
 public class DispatchService : IDispatchService
 {
     private readonly ILogger<DispatchService> _logger;
     private readonly TMSDbContext _context;
+    private readonly IProofOfDeliveryService _proofOfDeliveryService;
 
-    public DispatchService(ILogger<DispatchService> logger, TMSDbContext context)
+    public DispatchService(
+        ILogger<DispatchService> logger,
+        TMSDbContext context,
+        IProofOfDeliveryService proofOfDeliveryService)
     {
         _logger = logger;
         _context = context;
+        _proofOfDeliveryService = proofOfDeliveryService;
     }
 
     public async Task<List<DriverMatchResponse>> FindBestMatchesAsync(Guid loadId, int maxMatches = 5)
@@ -395,6 +401,136 @@ public class DispatchService : IDispatchService
         var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
 
         return (decimal)(R * c);
+    }
+
+    public async Task<DispatchResponse> CompleteDeliveryAsync(Guid dispatchId, Guid loadId)
+    {
+        _logger.LogInformation("Completing delivery for dispatch {DispatchId} and load {LoadId}", dispatchId, loadId);
+
+        // Get dispatch and load
+        var dispatch = await _context.Dispatches
+            .Include(d => d.Load)
+            .Include(d => d.Driver)
+            .FirstOrDefaultAsync(d => d.Id == dispatchId);
+
+        if (dispatch == null)
+        {
+            throw new InvalidOperationException($"Dispatch {dispatchId} not found");
+        }
+
+        var load = await _context.Loads.FindAsync(loadId);
+        if (load == null)
+        {
+            throw new InvalidOperationException($"Load {loadId} not found");
+        }
+
+        // Mark dispatch as completed
+        dispatch.Status = DispatchStatus.Completed;
+        dispatch.UpdatedAt = DateTime.UtcNow;
+
+        // Mark load as delivered and create POD
+        load.Status = LoadStatus.Delivered;
+        load.UpdatedAt = DateTime.UtcNow;
+
+        // Auto-create POD for the delivered load
+        try
+        {
+            await CreatePODForDeliveredLoadAsync(load, dispatch);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating POD for delivered load {LoadId}", loadId);
+            // Don't fail the dispatch completion if POD creation fails
+            // but log the error for investigation
+        }
+
+        // Update driver availability to Available
+        var driverAvailability = await _context.DriverAvailabilities
+            .FirstOrDefaultAsync(d => d.DriverId == dispatch.DriverId);
+
+        if (driverAvailability != null)
+        {
+            driverAvailability.Status = AvailabilityStatus.Available;
+            driverAvailability.UpdatedAt = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new DispatchResponse
+        {
+            Id = dispatch.Id,
+            LoadId = dispatch.LoadId,
+            LoadNumber = load.LoadNumber,
+            DriverId = dispatch.DriverId,
+            DriverName = $"{dispatch.Driver.FirstName} {dispatch.Driver.LastName}",
+            DriverPhone = dispatch.Driver.PhoneNumber,
+            TractorId = dispatch.TractorId,
+            TractorNumber = dispatch.TractorId.HasValue ? $"T-{dispatch.TractorId.ToString().Substring(0, Math.Min(8, dispatch.TractorId.ToString().Length))}" : null,
+            TrailerId = dispatch.TrailerId,
+            TrailerNumber = dispatch.TrailerId.HasValue ? $"TR-{dispatch.TrailerId.ToString().Substring(0, Math.Min(8, dispatch.TrailerId.ToString().Length))}" : null,
+            Status = dispatch.Status.ToString(),
+            Method = dispatch.Method.ToString(),
+            AssignedAt = dispatch.AssignedAt,
+            Notes = dispatch.Notes
+        };
+    }
+
+    private async Task CreatePODForDeliveredLoadAsync(Load load, Dispatch dispatch)
+    {
+        _logger.LogInformation("Creating POD for delivered load {LoadId} with driver {DriverId}", load.Id, dispatch.DriverId);
+
+        try
+        {
+            var createPodDto = new CreateProofOfDeliveryDto
+            {
+                LoadId = load.Id.ToString(),
+                DriverId = dispatch.DriverId.ToString(),
+                TripId = null,
+                DeliveryDateTime = DateTime.UtcNow,
+                DeliveryLocation = load.DeliveryLocation != null
+                    ? $"{load.DeliveryLocation.City}, {load.DeliveryLocation.State}"
+                    : "Unknown",
+                DeliveryLatitude = (decimal)(load.DeliveryLocation?.Latitude ?? 0),
+                DeliveryLongitude = (decimal)(load.DeliveryLocation?.Longitude ?? 0),
+                EstimatedDeliveryDateTime = load.DeliveryDateTime,
+                ExceptionNotes = null
+            };
+
+            var podResult = await _proofOfDeliveryService.CreateProofOfDeliveryAsync(createPodDto);
+
+            if (podResult.Success && podResult.Data != null)
+            {
+                // Link the POD to the load
+                if (Guid.TryParse(podResult.Data.Id, out var podGuid))
+                {
+                    load.ProofOfDeliveryId = podGuid;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    _logger.LogError("Invalid POD ID format: {ProofOfDeliveryId}", podResult.Data.Id);
+                    return;
+                }
+
+                _logger.LogInformation(
+                    "Successfully created POD {ProofOfDeliveryId} for load {LoadId}",
+                    podResult.Data.Id,
+                    load.Id);
+            }
+            else
+            {
+                var errors = podResult.Errors != null ? string.Join(", ", podResult.Errors) : "Unknown error";
+                _logger.LogWarning(
+                    "Failed to create POD for load {LoadId}: {Errors}",
+                    load.Id,
+                    errors);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception creating POD for load {LoadId}", load.Id);
+            throw;
+        }
     }
 
 

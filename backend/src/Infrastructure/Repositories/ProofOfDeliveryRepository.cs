@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using TMS.Application.Repositories;
+using TMS.Domain.Repositories;
 using TMS.Domain.Entities.Loads;
 using TMS.Infrastructure.Persistence;
 
@@ -21,7 +25,7 @@ public class ProofOfDeliveryRepository : IProofOfDeliveryRepository
     {
         return await _context.ProofsOfDelivery
             .Include(p => p.Photos)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id.ToString() == id);
     }
 
     public async Task<ProofOfDelivery?> GetByLoadIdAsync(string loadId)
@@ -42,7 +46,8 @@ public class ProofOfDeliveryRepository : IProofOfDeliveryRepository
     {
         var query = _context.ProofsOfDelivery
             .Where(p => p.DriverId == driverId)
-            .Include(p => p.Photos);
+            .Include(p => p.Photos)
+            .AsQueryable();
 
         if (fromDate.HasValue)
             query = query.Where(p => p.DeliveryDateTime >= fromDate);
@@ -99,75 +104,5 @@ public class ProofOfDeliveryRepository : IProofOfDeliveryRepository
     public async Task<bool> ExistsByLoadIdAsync(string loadId)
     {
         return await _context.ProofsOfDelivery.AnyAsync(p => p.LoadId == loadId);
-    }
-}
-
-/// <summary>
-/// Repository implementation for POD photos
-/// </summary>
-public class PODPhotoRepository : IPODPhotoRepository
-{
-    private readonly TMSDbContext _context;
-
-    public PODPhotoRepository(TMSDbContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<PODPhoto?> GetByIdAsync(string id)
-    {
-        return await _context.PODPhotos.FirstOrDefaultAsync(p => p.Id == id);
-    }
-
-    public async Task<List<PODPhoto>> GetByProofOfDeliveryIdAsync(string podId)
-    {
-        return await _context.PODPhotos
-            .Where(p => p.ProofOfDeliveryId == podId)
-            .OrderBy(p => p.CapturedDateTime)
-            .ToListAsync();
-    }
-
-    public async Task<List<PODPhoto>> GetByTypeAsync(string podId, int photoType)
-    {
-        return await _context.PODPhotos
-            .Where(p => p.ProofOfDeliveryId == podId && (int)p.PhotoType == photoType)
-            .OrderBy(p => p.CapturedDateTime)
-            .ToListAsync();
-    }
-
-    public async Task<PODPhoto> CreateAsync(PODPhoto photo)
-    {
-        _context.PODPhotos.Add(photo);
-        await _context.SaveChangesAsync();
-        return photo;
-    }
-
-    public async Task<bool> DeleteAsync(string id)
-    {
-        var photo = await GetByIdAsync(id);
-        if (photo == null)
-            return false;
-
-        _context.PODPhotos.Remove(photo);
-        await _context.SaveChangesAsync();
-        return true;
-    }
-
-    public async Task<bool> DeleteAllByProofOfDeliveryIdAsync(string podId)
-    {
-        var photos = await GetByProofOfDeliveryIdAsync(podId);
-        if (!photos.Any())
-            return true;
-
-        _context.PODPhotos.RemoveRange(photos);
-        await _context.SaveChangesAsync();
-        return true;
-    }
-
-    public async Task<long> GetTotalFileSizeAsync(string podId)
-    {
-        return await _context.PODPhotos
-            .Where(p => p.ProofOfDeliveryId == podId)
-            .SumAsync(p => p.FileSizeBytes);
     }
 }

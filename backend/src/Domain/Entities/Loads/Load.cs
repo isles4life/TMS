@@ -40,6 +40,9 @@ public class Load : BaseEntity
     // Tracking
     public DateTime? PickedUpAt { get; set; }
     public DateTime? DeliveredAt { get; set; }
+    
+    // Proof of Delivery
+    public Guid? ProofOfDeliveryId { get; set; }
 
     // Navigation
     public Carrier? Carrier { get; set; }
@@ -48,6 +51,7 @@ public class Load : BaseEntity
     public Trailer? Trailer { get; set; }
     public ICollection<Trip> Trips { get; set; } = [];
     public ICollection<Document> Documents { get; set; } = [];
+    public ProofOfDelivery? ProofOfDelivery { get; set; }
 }
 
 public enum LoadType

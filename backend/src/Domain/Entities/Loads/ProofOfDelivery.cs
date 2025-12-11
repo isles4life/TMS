@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using TMS.Domain.Common;
 
 namespace TMS.Domain.Entities.Loads;
@@ -82,7 +84,7 @@ public class ProofOfDelivery : BaseEntity
 /// </summary>
 public class PODPhoto : BaseEntity
 {
-    public string ProofOfDeliveryId { get; set; } = string.Empty;
+    public Guid ProofOfDeliveryId { get; set; }
     public ProofOfDelivery? ProofOfDelivery { get; set; }
 
     /// <summary>

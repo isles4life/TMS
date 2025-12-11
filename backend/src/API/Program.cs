@@ -77,10 +77,10 @@ builder.Services.AddScoped<ITrackingService, TrackingService>();
 builder.Services.AddHttpClient(); // Required for HERE Maps API calls
 builder.Services.AddScoped<IRouteOptimizationService, RouteOptimizationService>();
 
-// Add ProofOfDelivery Service
+// Add ProofOfDelivery Service and Repositories
+builder.Services.AddScoped<TMS.Domain.Repositories.IProofOfDeliveryRepository, TMS.Infrastructure.Repositories.ProofOfDeliveryRepository>();
+builder.Services.AddScoped<TMS.Domain.Repositories.IPODPhotoRepository, TMS.Infrastructure.Repositories.PODPhotoRepository>();
 builder.Services.AddScoped<IProofOfDeliveryService, ProofOfDeliveryService>();
-builder.Services.AddScoped<IProofOfDeliveryRepository, TMS.Infrastructure.Repositories.ProofOfDeliveryRepository>();
-builder.Services.AddScoped<IPODPhotoRepository, TMS.Infrastructure.Repositories.PODPhotoRepository>();
 
 // Add SignalR for real-time tracking
 builder.Services.AddSignalR();
@@ -193,6 +193,7 @@ try
 
     // Register SignalR hubs
     app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");
+    app.MapHub<TMS.API.Hubs.PODHub>("/hubs/pod");
 
     // Lifecycle logging helpers to diagnose unexpected shutdowns
     var lifetime = app.Lifetime;

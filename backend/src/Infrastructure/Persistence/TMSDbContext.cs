@@ -1,5 +1,6 @@
 namespace TMS.Infrastructure.Persistence;
 
+using System;
 using Microsoft.EntityFrameworkCore;
 using TMS.Domain.Entities;
 using TMS.Domain.Entities.Companies;

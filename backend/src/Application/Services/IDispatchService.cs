@@ -14,6 +14,7 @@ public interface IDispatchService
     Task<DispatchResponse> RejectDispatchAsync(Guid dispatchId, string reason);
     Task<List<DispatchResponse>> GetActiveDispatchesAsync(Guid? driverId = null);
     Task<DriverAvailabilityResponse> UpdateDriverAvailabilityAsync(DriverAvailabilityRequest request);
+    Task<DispatchResponse> CompleteDeliveryAsync(Guid dispatchId, Guid loadId);
     decimal CalculateProximityScore(decimal distanceMiles);
     decimal CalculateAvailabilityScore(decimal hoursAvailable);
     decimal CalculatePerformanceScore(decimal onTimeRate, decimal acceptanceRate, int completedLoads);
