@@ -3,14 +3,13 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
-import { RealTimeTrackingService, ActiveTracker, GeofenceAlert, DriverLocationUpdate } from '../services/real-time-tracking.service';
+import { RealTimeTrackingService, ActiveTracker, GeofenceAlert } from '../services/real-time-tracking.service';
 import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.component';
 
 @Component({
@@ -502,7 +501,7 @@ export class LiveTrackingDashboardComponent implements OnInit, OnDestroy {
     try {
       await this.trackingService.acknowledgeAlert(alertId);
       this.snackBar.open('Alert acknowledged', 'Close', {duration: 2000});
-    } catch (error) {
+    } catch {
       this.snackBar.open('Failed to acknowledge alert', 'Close', {duration: 3000});
     }
   }
@@ -512,7 +511,7 @@ export class LiveTrackingDashboardComponent implements OnInit, OnDestroy {
       await this.trackingService.connect();
       this.isConnected = true;
       this.snackBar.open('Reconnected to tracking service', 'Close', {duration: 3000});
-    } catch (error) {
+    } catch {
       this.snackBar.open('Failed to reconnect', 'Close', {duration: 3000});
     }
   }

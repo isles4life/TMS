@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,7 +16,7 @@ import { ExportService } from '../services/export.service';
   imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatListModule, MatMenuModule, MetricCardsComponent, LoadTableComponent, PageHeaderComponent],
   template: `
     <div class="page">
-      <ts-page-header 
+      <app-ts-page-header 
         eyebrow="Overview" 
         title="Dashboard" 
         description="Visibility across loads, revenue, and operations at a glance."
@@ -38,9 +38,9 @@ import { ExportService } from '../services/export.service';
         <!-- <button mat-flat-button color="primary" class="primary">
           New load
         </button> -->
-      </ts-page-header>
+      </app-ts-page-header>
 
-      <ts-metric-cards [metrics]="metrics"></ts-metric-cards>
+      <app-ts-metric-cards [metrics]="metrics"></app-ts-metric-cards>
 
       <div class="split">
         <mat-card class="panel">
@@ -51,7 +51,7 @@ import { ExportService } from '../services/export.service';
             </div>
             <button mat-button color="primary" routerLink="/load-board">View board</button>
           </div>
-          <ts-load-table [rows]="recentLoads"></ts-load-table>
+          <app-ts-load-table [rows]="recentLoads"></app-ts-load-table>
         </mat-card>
 
         <mat-card class="panel health-panel">

@@ -11,23 +11,31 @@ export interface Metric {
 }
 
 @Component({
-  selector: 'ts-metric-cards',
+  selector: 'app-ts-metric-cards',
   standalone: true,
   imports: [CommonModule, MatCardModule, MatIconModule],
   template: `
     <div class="metric-grid">
-      <mat-card class="metric-card" *ngFor="let metric of metrics">
-        <div class="metric-card__header">
-          <div class="trend-icon-wrapper">
-            <mat-icon *ngIf="metric.trend === 'up'" class="trend up">trending_up</mat-icon>
-            <mat-icon *ngIf="metric.trend === 'down'" class="trend down">trending_down</mat-icon>
-            <mat-icon *ngIf="metric.trend === 'neutral'" class="trend neutral">horizontal_rule</mat-icon>
+      @for (metric of metrics; track metric.label) {
+        <mat-card class="metric-card">
+          <div class="metric-card__header">
+            <div class="trend-icon-wrapper">
+              @if (metric.trend === 'up') {
+                <mat-icon class="trend up">trending_up</mat-icon>
+              } @else if (metric.trend === 'down') {
+                <mat-icon class="trend down">trending_down</mat-icon>
+              } @else if (metric.trend === 'neutral') {
+                <mat-icon class="trend neutral">horizontal_rule</mat-icon>
+              }
+            </div>
+            <span class="metric-label">{{ metric.label }}</span>
           </div>
-          <span class="metric-label">{{ metric.label }}</span>
-        </div>
-        <div class="metric-value">{{ metric.value }}</div>
-        <div class="metric-delta" *ngIf="metric.delta">{{ metric.delta }}</div>
-      </mat-card>
+          <div class="metric-value">{{ metric.value }}</div>
+          @if (metric.delta) {
+            <div class="metric-delta">{{ metric.delta }}</div>
+          }
+        </mat-card>
+      }
     </div>
   `,
   styles: [`

@@ -41,7 +41,7 @@ interface SystemUser {
 }
 
 @Component({
-  selector: 'ts-admin-dashboard',
+  selector: 'app-ts-admin-dashboard',
   standalone: true,
   imports: [
     CommonModule,

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -14,13 +14,13 @@ import { PageHeaderComponent } from '../components/page-header.component';
   imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSlideToggleModule, MatButtonModule, PageHeaderComponent],
   template: `
     <div class="page">
-      <ts-page-header 
+      <app-ts-page-header 
         eyebrow="Preferences" 
         title="Settings" 
         description="Simple controls with instant validation."
         [hasActions]="true">
         <button mat-stroked-button color="primary" (click)="form.reset(defaults)">Reset</button>
-      </ts-page-header>
+      </app-ts-page-header>
 
       <mat-card class="panel">
         <form [formGroup]="form" class="form" (ngSubmit)="save()">
@@ -50,14 +50,14 @@ import { PageHeaderComponent } from '../components/page-header.component';
   `]
 })
 export class SettingsPage {
+  private fb = inject(FormBuilder);
+
   defaults = { company: 'Truckstop Logistics', email: 'ops@truckstop.com', alerts: true };
   form = this.fb.group({
     company: [this.defaults.company, Validators.required],
     email: [this.defaults.email, [Validators.required, Validators.email]],
     alerts: [this.defaults.alerts],
   });
-
-  constructor(private fb: FormBuilder) {}
 
   save() {
     this.form.markAllAsTouched();

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -8,8 +8,7 @@ import { environment } from '../../environments/environment';
 })
 export class ApiService {
   private apiUrl = environment.apiUrl;
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({

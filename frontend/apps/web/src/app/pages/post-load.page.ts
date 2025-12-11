@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -30,12 +30,12 @@ import { PageHeaderComponent } from '../components/page-header.component';
   ],
   template: `
     <div class="page">
-      <ts-page-header
+      <app-ts-page-header
         eyebrow="Marketplace"
         title="Post a Load"
         description="Create a new load and set all details. Quick pay enabled loads get priority visibility."
         [hasActions]="false">
-      </ts-page-header>
+      </app-ts-page-header>
 
       <mat-card class="panel">
         <form [formGroup]="loadForm" (ngSubmit)="onSubmit()">

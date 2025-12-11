@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
@@ -37,8 +37,7 @@ export class AuthService {
 
   private impersonationSubject = new BehaviorSubject<ImpersonationData | null>(this.getImpersonationFromStorage());
   public impersonation$ = this.impersonationSubject.asObservable();
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   login(email: string, password: string): Observable<LoginResponse> {
     // Demo credentials for offline testing
@@ -86,7 +85,7 @@ export class AuthService {
             this.currentUserSubject.next(response.user);
           }
         }),
-        catchError(error => {
+        catchError(() => {
           // If backend is not available and credentials don't match demo, return error
           return of({
             success: false,

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -41,13 +41,13 @@ const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
   imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, PageHeaderComponent],
   template: `
     <div class="page">
-      <ts-page-header 
+      <app-ts-page-header 
         eyebrow="Load detail" 
         [title]="title"
         [description]="description"
         [hasActions]="true">
         <button mat-stroked-button color="primary">Share</button>
-      </ts-page-header>
+      </app-ts-page-header>
 
       <div class="detail-grid">
         <mat-card class="panel">
@@ -160,12 +160,12 @@ const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
   `]
 })
 export class LoadDetailsPage implements OnInit {
+  private route = inject(ActivatedRoute);
+
   loadId = '';
   load: LoadDetail | undefined;
   title = '';
   description = 'Flat, clean, WCAG-aligned layout with grouped information.';
-
-  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.loadId = this.route.snapshot.paramMap.get('id') ?? 'Load';

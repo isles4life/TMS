@@ -6,7 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DispatchService, DriverMatchResponse, DispatchRequest } from '../services/dispatch.service';
 import { Router } from '@angular/router';
@@ -321,7 +321,7 @@ export class DispatchDashboardComponent implements OnInit {
     };
 
     this.dispatchService.assignLoad(request).subscribe({
-      next: (dispatch: any) => {
+      next: () => {
         this.snackBar.open(
           `Successfully assigned ${match.driverName} to load`,
           'Close',

@@ -38,7 +38,8 @@ public static class EmailEndpoints
             return Results.BadRequest(new EmailResponse
             {
                 Success = false,
-                Message = "Email and subject are required"
+                Message = "Email and subject are required",
+                EmailId = string.Empty
             });
         }
 
@@ -59,7 +60,8 @@ public static class EmailEndpoints
             return Results.BadRequest(new EmailResponse
             {
                 Success = false,
-                Message = "Email and FirstName are required"
+                Message = "Email and FirstName are required",
+                EmailId = string.Empty
             });
         }
 
@@ -85,7 +87,8 @@ public static class EmailEndpoints
             return Results.BadRequest(new EmailResponse
             {
                 Success = false,
-                Message = "Email and FirstName are required"
+                Message = "Email and FirstName are required",
+                EmailId = string.Empty
             });
         }
 

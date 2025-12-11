@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -26,7 +26,7 @@ export interface SystemUserPayload {
 }
 
 @Component({
-  selector: 'ts-user-dialog',
+  selector: 'app-ts-user-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -108,7 +108,7 @@ export interface SystemUserPayload {
               <div class="toggle-hint">{{ form.isActive ? 'User can access the system' : 'User cannot log in' }}</div>
             </div>
           </div>
-      <mat-slide-toggle [(ngModel)]=\"form.isActive\" color=\"primary\" class=\"ts-toggle\">
+          <mat-slide-toggle [(ngModel)]="form.isActive" color="primary" class="ts-toggle">
             {{ form.isActive ? 'Active' : 'Inactive' }}
           </mat-slide-toggle>
         </div>
@@ -329,12 +329,12 @@ export class UserDialogComponent {
     isActive: true
   };
 
-  constructor(
-    private dialogRef: MatDialogRef<UserDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: UserDialogData
-  ) {
-    if (data.user) {
-      this.form = { ...data.user };
+  private dialogRef = inject(MatDialogRef<UserDialogComponent>);
+  public data = inject<UserDialogData>(MAT_DIALOG_DATA);
+
+  constructor() {
+    if (this.data.user) {
+      this.form = { ...this.data.user };
     }
   }
 

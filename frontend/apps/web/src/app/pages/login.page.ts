@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -59,12 +59,12 @@ import { MatIconModule } from '@angular/material/icon';
   `]
 })
 export class LoginPage {
+  private fb = inject(FormBuilder);
+
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
-
-  constructor(private fb: FormBuilder) {}
 
   submit() {
     this.form.markAllAsTouched();

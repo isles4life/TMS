@@ -11,7 +11,7 @@ import { AuthService, ImpersonationData } from '../services/auth.service';
 import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'ts-navbar',
+  selector: 'app-ts-navbar',
   standalone: true,
   imports: [CommonModule, RouterModule, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, MatBadgeModule],
   template: `
@@ -145,8 +145,9 @@ export class NavbarComponent implements OnInit {
 
   private authService = inject(AuthService);
   private router = inject(Router);
+  private notificationService = inject(NotificationService);
 
-  constructor(private notificationService: NotificationService) {
+  constructor() {
     this.unreadCount$ = this.notificationService.unreadCount$;
     this.impersonation$ = this.authService.impersonation$;
   }

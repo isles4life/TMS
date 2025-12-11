@@ -15,7 +15,7 @@ interface NavItem {
 }
 
 @Component({
-  selector: 'ts-sidebar',
+  selector: 'app-ts-sidebar',
   standalone: true,
   imports: [CommonModule, RouterModule, MatListModule, MatIconModule, MatButtonModule, MatDividerModule],
   template: `
@@ -27,26 +27,28 @@ interface NavItem {
         </button>
       </div>
       <mat-nav-list class="nav-list">
-        <a mat-list-item *ngFor="let item of getVisibleItems()" [routerLink]="item.path" routerLinkActive="active" class="nav-item">
-          <div class="nav-content">
-            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
-            <span class="nav-label">{{ item.label }}</span>
-          </div>
-        </a>
+        @for (item of getVisibleItems(); track item.path) {
+          <a mat-list-item [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+            <div class="nav-content">
+              <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+              <span class="nav-label">{{ item.label }}</span>
+            </div>
+          </a>
+        }
       </mat-nav-list>
 
       <div class="sidebar__footer">
         <a mat-stroked-button color="primary" fullWidth href="https://truckstop.com/contact-us/" target="_blank" rel="noopener noreferrer">Support</a>
-        <button 
-          *ngIf="isAuthenticated$ | async as user; else loginBtn" 
-          mat-flat-button 
-          color="warn" 
-          fullWidth
-          (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          Log Out
-        </button>
-        <ng-template #loginBtn>
+        @if (isAuthenticated$ | async; as user) {
+          <button 
+            mat-flat-button 
+            color="warn" 
+            fullWidth
+            (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            Log Out
+          </button>
+        } @else {
           <button 
             mat-flat-button 
             [style.background-color]="'#d71920'"
@@ -57,7 +59,7 @@ interface NavItem {
             <mat-icon>login</mat-icon>
             Log In
           </button>
-        </ng-template>
+        }
       </div>
     </div>
   `,

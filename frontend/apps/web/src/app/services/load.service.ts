@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 
@@ -18,7 +18,7 @@ export interface Load {
   providedIn: 'root'
 })
 export class LoadService {
-  constructor(private api: ApiService) {}
+  private api = inject(ApiService);
 
   getAllLoads(): Observable<Load[]> {
     return this.api.get<Load[]>('poweronly/loads');

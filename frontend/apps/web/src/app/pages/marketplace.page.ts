@@ -42,12 +42,12 @@ interface Integration {
   ],
   template: `
     <div class="page">
-      <ts-page-header
+      <app-ts-page-header
         eyebrow="Integrations"
         title="Marketplace"
         description="Connect with industry-leading load board platforms to expand your reach."
         [hasActions]="false">
-      </ts-page-header>
+      </app-ts-page-header>
 
       <div class="integrations-container">
         <div class="integrations-grid">

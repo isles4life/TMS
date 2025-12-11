@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,13 +17,13 @@ import { PageHeaderComponent } from '../components/page-header.component';
   imports: [CommonModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCardModule, ReactiveFormsModule, RouterModule, LoadTableComponent, PageHeaderComponent],
   template: `
     <div class="page">
-      <ts-page-header 
+      <app-ts-page-header 
         eyebrow="Marketplace" 
         title="Load Board" 
         description="Filter and post Truckstop-ready loads with fast actions."
         [hasActions]="true">
         <button mat-flat-button color="primary" class="primary" routerLink="/post-load">Post load</button>
-      </ts-page-header>
+      </app-ts-page-header>
 
       <mat-card class="panel">
         <form [formGroup]="filters" class="filters" (ngSubmit)="applyFilters()">
@@ -49,7 +49,7 @@ import { PageHeaderComponent } from '../components/page-header.component';
       </mat-card>
 
       <mat-card class="panel">
-        <ts-load-table [rows]="rows"></ts-load-table>
+        <app-ts-load-table [rows]="rows"></app-ts-load-table>
       </mat-card>
     </div>
   `,
@@ -59,6 +59,8 @@ import { PageHeaderComponent } from '../components/page-header.component';
   `]
 })
 export class LoadBoardPage {
+  private fb = inject(FormBuilder);
+
   filters = this.fb.group({ origin: [''], destination: [''], equipment: [''] });
 
   rows: LoadRow[] = [
@@ -76,8 +78,6 @@ export class LoadBoardPage {
     { id: 'LB-6021', origin: 'Charlotte, NC', destination: 'Nashville, TN', equipment: 'Van', rate: '$2.12', pickup: 'Tomorrow 11:30a', status: 'Pending' },
     { id: 'LB-6022', origin: 'Cincinnati, OH', destination: 'Detroit, MI', equipment: 'Flatbed', rate: '$2.08', pickup: 'Today 2:50p', status: 'Available' }
   ];
-
-  constructor(private fb: FormBuilder) {}
 
   applyFilters() {
     this.filters.markAllAsTouched();

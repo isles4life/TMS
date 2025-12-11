@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
@@ -19,7 +19,7 @@ export interface LoadRow {
 }
 
 @Component({
-  selector: 'ts-load-table',
+  selector: 'app-ts-load-table',
   standalone: true,
   imports: [CommonModule, MatTableModule, MatChipsModule, MatIconModule, MatCardModule, MatPaginatorModule, RouterModule],
   template: `
@@ -121,8 +121,7 @@ export class LoadTableComponent implements OnChanges {
   pageSize = 5;
   pageSizeOptions = [5, 10, 25];
   visibleRows: LoadRow[] = [];
-
-  constructor(private router: Router) {}
+  private router = inject(Router);
 
   ngOnChanges(): void {
     this.pageIndex = 0;

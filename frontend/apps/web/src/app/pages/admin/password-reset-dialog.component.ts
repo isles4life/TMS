@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +12,7 @@ export interface PasswordResetDialogData {
 }
 
 @Component({
-  selector: 'ts-password-reset-dialog',
+  selector: 'app-ts-password-reset-dialog',
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, MatDividerModule],
   template: `

@@ -2,19 +2,25 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'ts-page-header',
+  selector: 'app-ts-page-header',
   standalone: true,
   imports: [CommonModule],
   template: `
     <div class="page__header">
       <div>
-        <p class="eyebrow" *ngIf="eyebrow">{{ eyebrow }}</p>
+        @if (eyebrow) {
+          <p class="eyebrow">{{ eyebrow }}</p>
+        }
         <h1>{{ title }}</h1>
-        <p class="lede" *ngIf="description">{{ description }}</p>
+        @if (description) {
+          <p class="lede">{{ description }}</p>
+        }
       </div>
-      <div class="cta-group" *ngIf="hasActions">
-        <ng-content></ng-content>
-      </div>
+      @if (hasActions) {
+        <div class="cta-group">
+          <ng-content></ng-content>
+        </div>
+      }
     </div>
   `,
   styles: [`

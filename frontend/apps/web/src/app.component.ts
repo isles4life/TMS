@@ -22,11 +22,11 @@ interface NavItem {
   template: `
     <mat-sidenav-container class="shell">
       <mat-sidenav #sidenav class="ts-sidenav" [mode]="isMobile ? 'over' : 'side'" [opened]="isMobile ? false : sidenavOpened">
-        <ts-sidebar [items]="navItems" (closed)="closeNav()"></ts-sidebar>
+        <app-ts-sidebar [items]="navItems" (closed)="closeNav()"></app-ts-sidebar>
       </mat-sidenav>
 
       <mat-sidenav-content>
-        <ts-navbar (menu)="toggleNav()"></ts-navbar>
+        <app-ts-navbar (menu)="toggleNav()"></app-ts-navbar>
         <div class="content">
           <router-outlet></router-outlet>
         </div>

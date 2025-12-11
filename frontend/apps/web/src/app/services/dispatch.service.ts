@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -85,8 +85,7 @@ export class DispatchService {
   private readonly apiUrl = 'http://localhost:5000/api/dispatch';
   private activeDispatchesSubject = new BehaviorSubject<DispatchResponse[]>([]);
   public activeDispatches$ = this.activeDispatchesSubject.asObservable();
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   /**
    * Find best driver matches for a load using auto-dispatch algorithm

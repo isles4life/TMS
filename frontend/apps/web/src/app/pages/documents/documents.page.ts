@@ -202,7 +202,7 @@ import { NotificationService } from '../../services/notification.service';
                 </div>
 
                 <div class="pending-actions">
-                  <button mat-raised-button color="accent" (click)="goToDocumentUpload(notif)">
+                  <button mat-raised-button color="accent" (click)="goToDocumentUpload()">
                     <mat-icon>upload</mat-icon>
                     Upload Document
                   </button>
@@ -603,7 +603,7 @@ export class DocumentsPage implements OnInit {
 
     const formValue = this.uploadForm.value;
     this.selectedFiles.forEach(file => {
-      const document = this.documentService.addDocument({
+      this.documentService.addDocument({
         filename: file.name,
         size: file.size,
         type: formValue.type,
@@ -680,7 +680,7 @@ export class DocumentsPage implements OnInit {
     return icons[type] || 'description';
   }
 
-  goToDocumentUpload(notification: any) {
+  goToDocumentUpload() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 

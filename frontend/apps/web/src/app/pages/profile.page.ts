@@ -34,12 +34,12 @@ import { AuthService } from '../services/auth.service';
   ],
   template: `
     <div class="page">
-      <ts-page-header
+      <app-ts-page-header
         eyebrow="Account"
         title="Profile"
         description="Manage your profile information and account settings."
         [hasActions]="false">
-      </ts-page-header>
+      </app-ts-page-header>
 
       <mat-tab-group class="profile-tabs">
         <!-- Personal Information Tab -->
