@@ -56,24 +56,32 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
         <mat-card-header>
           <mat-card-title>
             Active Drivers
-            <mat-chip *ngIf="activeTrackers.length > 0" class="tracker-badge">
-              {{ activeTrackers.length }}
-            </mat-chip>
+            @if (activeTrackers.length > 0) {
+              <mat-chip class="tracker-badge">
+                {{ activeTrackers.length }}
+              </mat-chip>
+            }
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div *ngIf="isLoading" class="loading-spinner">
-            <mat-spinner diameter="40"></mat-spinner>
-            <p>Loading tracker data...</p>
-          </div>
+          @if (isLoading) {
+            <div class="loading-spinner">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading tracker data...</p>
+            </div>
+          }
 
-          <div *ngIf="!isLoading && activeTrackers.length === 0" class="empty-state">
-            <mat-icon>location_off</mat-icon>
-            <p>No active drivers being tracked</p>
-          </div>
+          @if (!isLoading && activeTrackers.length === 0) {
+            <div class="empty-state">
+              <mat-icon>location_off</mat-icon>
+              <p>No active drivers being tracked</p>
+            </div>
+          }
 
-          <div *ngIf="!isLoading && activeTrackers.length > 0" class="trackers-grid">
-            <mat-card *ngFor="let tracker of activeTrackers" class="tracker-card">
+          @if (!isLoading && activeTrackers.length > 0) {
+            <div class="trackers-grid">
+              @for (tracker of activeTrackers; track tracker.id) {
+                <mat-card class="tracker-card">
               <mat-card-header>
                 <div class="tracker-header">
                   <div class="driver-info">
@@ -100,16 +108,18 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
                   </div>
                 </div>
 
-                <div class="detail-row" *ngIf="tracker.loadNumber">
-                  <div class="detail-item">
-                    <span class="label">Pickup</span>
-                    <span class="value">{{ tracker.pickupLocation }}</span>
+                @if (tracker.loadNumber) {
+                  <div class="detail-row">
+                    <div class="detail-item">
+                      <span class="label">Pickup</span>
+                      <span class="value">{{ tracker.pickupLocation }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">Delivery</span>
+                      <span class="value">{{ tracker.deliveryLocation }}</span>
+                    </div>
                   </div>
-                  <div class="detail-item">
-                    <span class="label">Delivery</span>
-                    <span class="value">{{ tracker.deliveryLocation }}</span>
-                  </div>
-                </div>
+                }
 
                 <div class="detail-row">
                   <div class="detail-item">
@@ -141,46 +151,56 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
                 </button>
               </mat-card-actions>
             </mat-card>
-          </div>
+          }
+        </div>
+      }
         </mat-card-content>
       </mat-card>
 
       <!-- Geofence Alerts -->
-        <mat-card class="alerts-card" *ngIf="pendingAlerts.length > 0">
-        <mat-card-header>
-          <mat-card-title [matBadge]="pendingAlerts.length" matBadgeColor="warn">
-            Geofence Alerts
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="alerts-list">
-            <div *ngFor="let alert of pendingAlerts" class="alert-item">
-              <div class="alert-content">
-                <div class="alert-driver">{{ alert.driverName }}</div>
-                <div class="alert-zone">{{ alert.zoneName }}</div>
-                <mat-chip class="alert-type">{{ alert.alertType }}</mat-chip>
-                <mat-chip [color]="alert.isAcknowledged ? 'accent' : 'warn'">
-                  {{ alert.isAcknowledged ? 'Acknowledged' : 'Pending' }}
-                </mat-chip>
-              </div>
-              <div class="alert-actions">
-                <button 
-                  mat-icon-button 
-                  [disabled]="alert.isAcknowledged"
-                  (click)="acknowledgeAlert(alert.id)"
-                  matTooltip="Acknowledge alert">
-                  <mat-icon>check_circle</mat-icon>
-                </button>
-              </div>
+      @if (pendingAlerts.length > 0) {
+        <mat-card class="alerts-card">
+          <mat-card-header>
+            <mat-card-title [matBadge]="pendingAlerts.length" matBadgeColor="warn">
+              Geofence Alerts
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="alerts-list">
+              @for (alert of pendingAlerts; track alert.id) {
+                <div class="alert-item">
+                  <div class="alert-content">
+                    <div class="alert-driver">{{ alert.driverName }}</div>
+                    <div class="alert-zone">{{ alert.zoneName }}</div>
+                    <mat-chip class="alert-type">{{ alert.alertType }}</mat-chip>
+                    <mat-chip [color]="alert.isAcknowledged ? 'accent' : 'warn'">
+                      {{ alert.isAcknowledged ? 'Acknowledged' : 'Pending' }}
+                    </mat-chip>
+                  </div>
+                  <div class="alert-actions">
+                    <button 
+                      mat-icon-button 
+                      [disabled]="alert.isAcknowledged"
+                      (click)="acknowledgeAlert(alert.id)"
+                      matTooltip="Acknowledge alert">
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              }
             </div>
-          </div>
-        </mat-card-content>
-      </mat-card>      <!-- Connection Status -->
-      <div class="connection-status" *ngIf="!isConnected">
-        <mat-icon>error_outline</mat-icon>
-        <p>Real-time tracking not connected. Some features may be unavailable.</p>
-        <button mat-button (click)="reconnect()">Reconnect</button>
-      </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Connection Status -->
+      @if (!isConnected) {
+        <div class="connection-status">
+          <mat-icon>error_outline</mat-icon>
+          <p>Real-time tracking not connected. Some features may be unavailable.</p>
+          <button mat-button (click)="reconnect()">Reconnect</button>
+        </div>
+      }
     </div>
   `,
   styles: [`

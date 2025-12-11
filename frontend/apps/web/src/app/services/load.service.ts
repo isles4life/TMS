@@ -32,7 +32,7 @@ export class LoadService {
     return this.api.post<Load>('poweronly/loads', load);
   }
 
-  assignLoad(loadId: string, assignment: any): Observable<any> {
-    return this.api.post<any>(`poweronly/loads/${loadId}/assign`, assignment);
+  assignLoad(loadId: string, assignment: unknown): Observable<unknown> {
+    return this.api.post<unknown>(`poweronly/loads/${loadId}/assign`, assignment);
   }
 }

@@ -1,4 +1,5 @@
-<div class="invoice-view-container" *ngIf="invoice">
+@if (invoice) {
+  <div class="invoice-view-container">
   <!-- Header -->
   <div class="invoice-header">
     <div class="header-left">
@@ -20,10 +21,12 @@
       <button mat-icon-button matTooltip="Download" (click)="downloadInvoice()">
         <mat-icon>download</mat-icon>
       </button>
-      <button mat-raised-button color="primary" (click)="sendInvoice()" *ngIf="invoice.status !== 'sent' && invoice.status !== 'paid'">
-        <mat-icon>mail</mat-icon>
-        Send
-      </button>
+      @if (invoice.status !== 'sent' && invoice.status !== 'paid') {
+        <button mat-raised-button color="primary" (click)="sendInvoice()">
+          <mat-icon>mail</mat-icon>
+          Send
+        </button>
+      }
       <button mat-icon-button [matMenuTriggerFor]="menu">
         <mat-icon>more_vert</mat-icon>
       </button>
@@ -81,7 +84,9 @@
           <h4>BILL TO:</h4>
           <p class="client-name">{{ invoice.clientName }}</p>
           <p>{{ invoice.clientAddress }}</p>
-          <p *ngIf="invoice.clientPhone">{{ invoice.clientPhone }}</p>
+          @if (invoice.clientPhone) {
+            <p>{{ invoice.clientPhone }}</p>
+          }
           <p>{{ invoice.clientEmail }}</p>
         </div>
       </div>
@@ -100,12 +105,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of invoice.lineItems">
-              <td class="col-description">{{ item.description }}</td>
-              <td class="col-quantity">{{ item.quantity }}</td>
-              <td class="col-price">{{ formatCurrency(item.unitPrice) }}</td>
-              <td class="col-amount">{{ formatCurrency(item.amount) }}</td>
-            </tr>
+            @for (item of invoice.lineItems; track $index) {
+              <tr>
+                <td class="col-description">{{ item.description }}</td>
+                <td class="col-quantity">{{ item.quantity }}</td>
+                <td class="col-price">{{ formatCurrency(item.unitPrice) }}</td>
+                <td class="col-amount">{{ formatCurrency(item.amount) }}</td>
+              </tr>
+            }
           </tbody>
         </table>
       </div>
@@ -115,17 +122,21 @@
       <!-- Totals -->
       <div class="totals-section">
         <div class="totals-left">
-          <div class="payment-terms" *ngIf="invoice.paymentTerms">
+          @if (invoice.paymentTerms) {
+            <div class="payment-terms">
             <h4>Payment Terms</h4>
             <p>{{ invoice.paymentTerms }}</p>
           </div>
-          <div class="bank-details" *ngIf="invoice.bankDetails">
+          }
+          @if (invoice.bankDetails) {
+            <div class="bank-details">
             <h4>Bank Details</h4>
             <p><strong>Bank:</strong> {{ invoice.bankDetails.bankName }}</p>
             <p><strong>Account:</strong> {{ invoice.bankDetails.accountName }}</p>
             <p><strong>Account #:</strong> {{ invoice.bankDetails.accountNumber }}</p>
             <p><strong>Routing #:</strong> {{ invoice.bankDetails.routingNumber }}</p>
           </div>
+          }
         </div>
 
         <div class="totals-right">
@@ -145,10 +156,12 @@
       </div>
 
       <!-- Notes -->
-      <div class="notes-section" *ngIf="invoice.notes">
+      @if (invoice.notes) {
+        <div class="notes-section">
         <h4>Notes</h4>
         <p>{{ invoice.notes }}</p>
       </div>
+      }
     </mat-card>
 
     <!-- Sidebar -->
@@ -193,10 +206,12 @@
             <span class="label">Email:</span>
             <a [href]="'mailto:' + invoice.clientEmail">{{ invoice.clientEmail }}</a>
           </div>
-          <div class="info-item" *ngIf="invoice.clientPhone">
+          @if (invoice.clientPhone) {
+            <div class="info-item">
             <span class="label">Phone:</span>
             <span class="value">{{ invoice.clientPhone }}</span>
           </div>
+          }
         </mat-card-content>
       </mat-card>
 
@@ -235,4 +250,5 @@
       </mat-card>
     </div>
   </div>
-</div>
+  </div>
+}

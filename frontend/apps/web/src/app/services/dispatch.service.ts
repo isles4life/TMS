@@ -90,7 +90,7 @@ export class DispatchService {
   /**
    * Find best driver matches for a load using auto-dispatch algorithm
    */
-  findDriverMatches(loadId: string, maxMatches: number = 5): Observable<DriverMatchResponse[]> {
+  findDriverMatches(loadId: string, maxMatches = 5): Observable<DriverMatchResponse[]> {
     return this.http.get<DriverMatchResponse[]>(
       `${this.apiUrl}/matches/${loadId}?maxMatches=${maxMatches}`
     );

@@ -17,21 +17,31 @@
             <mat-form-field class="full-width">
               <mat-label>Client Name *</mat-label>
               <input matInput formControlName="clientName" placeholder="e.g., ABC Transport Co.">
-              <mat-error *ngIf="invoiceForm.get('clientName')?.hasError('required')">Client name is required</mat-error>
-              <mat-error *ngIf="invoiceForm.get('clientName')?.hasError('minlength')">Name must be at least 2 characters</mat-error>
+              @if (invoiceForm.get('clientName')?.hasError('required')) {
+                <mat-error>Client name is required</mat-error>
+              }
+              @if (invoiceForm.get('clientName')?.hasError('minlength')) {
+                <mat-error>Name must be at least 2 characters</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field class="full-width">
               <mat-label>Email Address *</mat-label>
               <input matInput formControlName="clientEmail" type="email" placeholder="billing@example.com">
-              <mat-error *ngIf="invoiceForm.get('clientEmail')?.hasError('required')">Email is required</mat-error>
-              <mat-error *ngIf="invoiceForm.get('clientEmail')?.hasError('email')">Invalid email format</mat-error>
+              @if (invoiceForm.get('clientEmail')?.hasError('required')) {
+                <mat-error>Email is required</mat-error>
+              }
+              @if (invoiceForm.get('clientEmail')?.hasError('email')) {
+                <mat-error>Invalid email format</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field class="full-width">
               <mat-label>Street Address *</mat-label>
               <input matInput formControlName="clientAddress" placeholder="123 Commerce St">
-              <mat-error *ngIf="invoiceForm.get('clientAddress')?.hasError('required')">Address is required</mat-error>
+              @if (invoiceForm.get('clientAddress')?.hasError('required')) {
+                <mat-error>Address is required</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field class="full-width">
@@ -53,26 +63,36 @@
             <mat-form-field class="full-width">
               <mat-label>Company Name *</mat-label>
               <input matInput formControlName="companyName">
-              <mat-error *ngIf="invoiceForm.get('companyName')?.hasError('required')">Company name is required</mat-error>
+              @if (invoiceForm.get('companyName')?.hasError('required')) {
+                <mat-error>Company name is required</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field class="full-width">
               <mat-label>Company Address *</mat-label>
               <input matInput formControlName="companyAddress">
-              <mat-error *ngIf="invoiceForm.get('companyAddress')?.hasError('required')">Company address is required</mat-error>
+              @if (invoiceForm.get('companyAddress')?.hasError('required')) {
+                <mat-error>Company address is required</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Phone *</mat-label>
               <input matInput formControlName="companyPhone">
-              <mat-error *ngIf="invoiceForm.get('companyPhone')?.hasError('required')">Phone is required</mat-error>
+              @if (invoiceForm.get('companyPhone')?.hasError('required')) {
+                <mat-error>Phone is required</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Email *</mat-label>
               <input matInput formControlName="companyEmail" type="email">
-              <mat-error *ngIf="invoiceForm.get('companyEmail')?.hasError('required')">Email is required</mat-error>
-              <mat-error *ngIf="invoiceForm.get('companyEmail')?.hasError('email')">Invalid email format</mat-error>
+              @if (invoiceForm.get('companyEmail')?.hasError('required')) {
+                <mat-error>Email is required</mat-error>
+              }
+              @if (invoiceForm.get('companyEmail')?.hasError('email')) {
+                <mat-error>Invalid email format</mat-error>
+              }
             </mat-form-field>
           </div>
         </div>
@@ -103,7 +123,9 @@
             <mat-form-field>
               <mat-label>Currency *</mat-label>
               <mat-select formControlName="currency">
-                <mat-option *ngFor="let curr of currencies" [value]="curr">{{ curr }}</mat-option>
+                @for (curr of currencies; track curr) {
+                  <mat-option [value]="curr">{{ curr }}</mat-option>
+                }
               </mat-select>
             </mat-form-field>
 
@@ -144,7 +166,8 @@
             </div>
 
             <div class="table-body" formArrayName="lineItems">
-              <div class="table-row" *ngFor="let item of lineItems.controls; let i = index" [formGroupName]="i">
+              @for (item of lineItems.controls; track i; let i = $index) {
+                <div class="table-row" [formGroupName]="i">
                 <div class="col-description">
                   <mat-form-field>
                     <mat-label>Description</mat-label>
@@ -174,7 +197,8 @@
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
-              </div>
+                </div>
+              }
             </div>
           </div>
 

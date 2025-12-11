@@ -140,7 +140,7 @@ export class CreateInvoiceComponent implements OnInit {
     const formValue = this.invoiceForm.value;
     const totals = this.calculateTotals();
     
-    const lineItems: InvoiceLineItem[] = formValue.lineItems.map((item: any, index: number) => ({
+    const lineItems: InvoiceLineItem[] = formValue.lineItems.map((item: { description: string; quantity: number; unitPrice: number; amount: number }, index: number) => ({
       id: `li-${Date.now()}-${index}`,
       description: item.description,
       quantity: item.quantity,

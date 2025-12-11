@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,28 +26,35 @@ import { Router } from '@angular/router';
       <div class="page-header">
         <h1>Notifications</h1>
         <div class="header-actions">
-          <button mat-button (click)="markAllAsRead()" *ngIf="unreadNotifications.length > 0">
-            <mat-icon>done_all</mat-icon>
-            Mark all as read
-          </button>
-          <button mat-button color="warn" (click)="clearAll()" *ngIf="notifications.length > 0">
-            <mat-icon>delete_sweep</mat-icon>
-            Clear all
-          </button>
+          @if (unreadNotifications.length > 0) {
+            <button mat-button (click)="markAllAsRead()">
+              <mat-icon>done_all</mat-icon>
+              Mark all as read
+            </button>
+          }
+          @if (notifications.length > 0) {
+            <button mat-button color="warn" (click)="clearAll()">
+              <mat-icon>delete_sweep</mat-icon>
+              Clear all
+            </button>
+          }
         </div>
       </div>
 
       <mat-tab-group class="notifications-tabs">
         <mat-tab label="All ({{ notifications.length }})">
           <div class="notifications-list">
-            <div *ngIf="notifications.length === 0" class="empty-state">
-              <mat-icon>notifications_none</mat-icon>
-              <p>No notifications</p>
-            </div>
-            <mat-card *ngFor="let notification of notifications" 
-                     class="notification-card"
-                     [class.unread]="!notification.read"
-                     (click)="handleNotificationClick(notification)">
+            @if (notifications.length === 0) {
+              <div class="empty-state">
+                <mat-icon>notifications_none</mat-icon>
+                <p>No notifications</p>
+              </div>
+            }
+            @for (notification of notifications; track notification.id) {
+              <mat-card 
+                       class="notification-card"
+                       [class.unread]="!notification.read"
+                       (click)="handleNotificationClick(notification)">
               <div class="notification-content">
                 <div class="notification-icon" [ngClass]="'type-' + notification.type">
                   <mat-icon>{{ getNotificationIcon(notification.type) }}</mat-icon>
@@ -58,9 +65,11 @@ import { Router } from '@angular/router';
                     <span class="notification-time">{{ formatTime(notification.timestamp) }}</span>
                   </div>
                   <p>{{ notification.message }}</p>
-                  <mat-chip-set *ngIf="notification.category">
-                    <mat-chip>{{ notification.category }}</mat-chip>
-                  </mat-chip-set>
+                  @if (notification.category) {
+                    <mat-chip-set>
+                      <mat-chip>{{ notification.category }}</mat-chip>
+                    </mat-chip-set>
+                  }
                 </div>
                 <div class="notification-actions">
                   <button mat-icon-button (click)="toggleRead(notification, $event)">
@@ -71,19 +80,23 @@ import { Router } from '@angular/router';
                   </button>
                 </div>
               </div>
-            </mat-card>
+              </mat-card>
+            }
           </div>
         </mat-tab>
 
         <mat-tab label="Unread ({{ unreadNotifications.length }})">
           <div class="notifications-list">
-            <div *ngIf="unreadNotifications.length === 0" class="empty-state">
-              <mat-icon>mark_email_read</mat-icon>
-              <p>No unread notifications</p>
-            </div>
-            <mat-card *ngFor="let notification of unreadNotifications" 
-                     class="notification-card unread"
-                     (click)="handleNotificationClick(notification)">
+            @if (unreadNotifications.length === 0) {
+              <div class="empty-state">
+                <mat-icon>mark_email_read</mat-icon>
+                <p>No unread notifications</p>
+              </div>
+            }
+            @for (notification of unreadNotifications; track notification.id) {
+              <mat-card 
+                       class="notification-card unread"
+                       (click)="handleNotificationClick(notification)">
               <div class="notification-content">
                 <div class="notification-icon" [ngClass]="'type-' + notification.type">
                   <mat-icon>{{ getNotificationIcon(notification.type) }}</mat-icon>
@@ -94,9 +107,11 @@ import { Router } from '@angular/router';
                     <span class="notification-time">{{ formatTime(notification.timestamp) }}</span>
                   </div>
                   <p>{{ notification.message }}</p>
-                  <mat-chip-set *ngIf="notification.category">
-                    <mat-chip>{{ notification.category }}</mat-chip>
-                  </mat-chip-set>
+                  @if (notification.category) {
+                    <mat-chip-set>
+                      <mat-chip>{{ notification.category }}</mat-chip>
+                    </mat-chip-set>
+                  }
                 </div>
                 <div class="notification-actions">
                   <button mat-icon-button (click)="toggleRead(notification, $event)">
@@ -107,7 +122,8 @@ import { Router } from '@angular/router';
                   </button>
                 </div>
               </div>
-            </mat-card>
+              </mat-card>
+            }
           </div>
         </mat-tab>
       </mat-tab-group>
@@ -300,10 +316,8 @@ export class NotificationsPage implements OnInit {
   notifications: Notification[] = [];
   unreadNotifications: Notification[] = [];
 
-  constructor(
-    private notificationService: NotificationService,
-    private router: Router
-  ) {}
+  private notificationService = inject(NotificationService);
+  private router = inject(Router);
 
   ngOnInit() {
     this.loadNotifications();
@@ -352,7 +366,7 @@ export class NotificationsPage implements OnInit {
   }
 
   getNotificationIcon(type: string): string {
-    const icons: { [key: string]: string } = {
+    const icons: Record<string, string> = {
       'info': 'info',
       'success': 'check_circle',
       'warning': 'warning',

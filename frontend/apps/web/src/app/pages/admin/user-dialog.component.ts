@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -91,12 +91,14 @@ export interface SystemUserPayload {
           <mat-label>User Role</mat-label>
           <mat-icon matPrefix>admin_panel_settings</mat-icon>
           <mat-select [(ngModel)]="form.role" required>
-            <mat-option *ngFor="let role of roles" [value]="role">
+            @for (role of roles; track role) {
+              <mat-option [value]="role">
               <div class="role-option">
                 <span class="role-name">{{ role }}</span>
                 <span class="role-desc">{{ getRoleDescription(role) }}</span>
               </div>
-            </mat-option>
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
 

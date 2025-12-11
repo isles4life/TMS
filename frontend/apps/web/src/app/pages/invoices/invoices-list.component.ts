@@ -42,8 +42,8 @@ import { InvoiceService, Invoice } from './invoice.service';
 export class InvoicesListComponent implements OnInit {
   invoices: Invoice[] = [];
   filteredInvoices: Invoice[] = [];
-  selectedStatus: string = 'all';
-  searchQuery: string = '';
+  selectedStatus = 'all';
+  searchQuery = '';
   
   private invoiceService = inject(InvoiceService);
   private router = inject(Router);
@@ -100,7 +100,7 @@ export class InvoicesListComponent implements OnInit {
   }
 
   getStatusColor(status: string): string {
-    const statusColors: { [key: string]: string } = {
+    const statusColors: Record<string, string> = {
       'draft': 'accent',
       'sent': 'primary',
       'viewed': 'accent',
@@ -112,7 +112,7 @@ export class InvoicesListComponent implements OnInit {
   }
 
   getStatusIcon(status: string): string {
-    const statusIcons: { [key: string]: string } = {
+    const statusIcons: Record<string, string> = {
       'draft': 'edit',
       'sent': 'mail',
       'viewed': 'visibility',

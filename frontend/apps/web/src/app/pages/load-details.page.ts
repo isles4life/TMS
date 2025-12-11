@@ -7,7 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { PageHeaderComponent } from '../components/page-header.component';
 import { ActivatedRoute } from '@angular/router';
 
-type LoadDetail = {
+interface LoadDetail {
   id: string;
   origin: string;
   destination: string;
@@ -131,7 +131,9 @@ const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
           </div>
           <p class="body">{{ load?.notes }}</p>
           <div class="chips">
-            <span class="chip" *ngFor="let tag of load?.tags">{{ tag }}</span>
+            @for (tag of load?.tags; track tag) {
+              <span class="chip">{{ tag }}</span>
+            }
           </div>
         </mat-card>
       </div>

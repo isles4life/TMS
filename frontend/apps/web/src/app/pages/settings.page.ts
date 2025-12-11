@@ -27,13 +27,19 @@ import { PageHeaderComponent } from '../components/page-header.component';
           <mat-form-field appearance="outline">
             <mat-label>Company name</mat-label>
             <input matInput formControlName="company" required />
-            <mat-error *ngIf="form.controls.company.hasError('required')">Company is required</mat-error>
+            @if (form.controls.company.hasError('required')) {
+              <mat-error>Company is required</mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Notification email</mat-label>
             <input matInput formControlName="email" type="email" required />
-            <mat-error *ngIf="form.controls.email.hasError('required')">Email is required</mat-error>
-            <mat-error *ngIf="form.controls.email.hasError('email')">Provide a valid email</mat-error>
+            @if (form.controls.email.hasError('required')) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (form.controls.email.hasError('email')) {
+              <mat-error>Provide a valid email</mat-error>
+            }
           </mat-form-field>
           <mat-slide-toggle formControlName="alerts">Enable critical alerts</mat-slide-toggle>
           <div class="actions">

@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -194,10 +194,8 @@ export interface PasswordResetDialogData {
   `]
 })
 export class PasswordResetDialogComponent {
-  constructor(
-    private dialogRef: MatDialogRef<PasswordResetDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: PasswordResetDialogData
-  ) {}
+  private dialogRef = inject(MatDialogRef<PasswordResetDialogComponent>);
+  public data = inject<PasswordResetDialogData>(MAT_DIALOG_DATA);
 
   close(): void {
     this.dialogRef.close();

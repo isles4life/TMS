@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, inject } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -45,16 +45,18 @@ import { Observable } from 'rxjs';
         </button>
       </mat-menu>
     </div>
-    <div *ngIf="impersonation$ | async as imp" class="impersonation-banner">
-      <div class="impersonation-text">
-        <mat-icon>switch_account</mat-icon>
-        <span>Impersonating {{ imp.impersonatedUser.firstName }} {{ imp.impersonatedUser.lastName }} ({{ imp.impersonatedUser.role }})</span>
+    @if (impersonation$ | async; as imp) {
+      <div class="impersonation-banner">
+        <div class="impersonation-text">
+          <mat-icon>switch_account</mat-icon>
+          <span>Impersonating {{ imp.impersonatedUser.firstName }} {{ imp.impersonatedUser.lastName }} ({{ imp.impersonatedUser.role }})</span>
+        </div>
+        <button mat-stroked-button color="accent" (click)="endImpersonation()">
+          <mat-icon>close</mat-icon>
+          End impersonation
+        </button>
       </div>
-      <button mat-stroked-button color="accent" (click)="endImpersonation()">
-        <mat-icon>close</mat-icon>
-        End impersonation
-      </button>
-    </div>
+    }
   `,
   styles: [`
     .ts-nav-wrapper {
@@ -138,7 +140,7 @@ import { Observable } from 'rxjs';
     }
   `]
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
   @Output() menu = new EventEmitter<void>();
   unreadCount$: Observable<number>;
   impersonation$: Observable<ImpersonationData | null>;
@@ -150,10 +152,6 @@ export class NavbarComponent implements OnInit {
   constructor() {
     this.unreadCount$ = this.notificationService.unreadCount$;
     this.impersonation$ = this.authService.impersonation$;
-  }
-
-  ngOnInit() {
-    // Subscribe to notification count updates
   }
 
   logout() {

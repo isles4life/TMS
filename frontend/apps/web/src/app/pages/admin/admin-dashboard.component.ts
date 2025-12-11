@@ -86,7 +86,7 @@ interface SystemUser {
           </mat-card-header>
           <mat-card-content>
             <div class="setting-row">
-              <label>Application Name</label>
+              <span class="setting-label">Application Name</span>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>App Name</mat-label>
                 <input matInput [(ngModel)]="appSettings.appName" placeholder="Enter app name">
@@ -94,7 +94,7 @@ interface SystemUser {
             </div>
 
             <div class="setting-row">
-              <label>API Endpoint</label>
+              <span class="setting-label">API Endpoint</span>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Backend URL</mat-label>
                 <input matInput [(ngModel)]="appSettings.apiEndpoint" placeholder="Enter API endpoint">
@@ -102,7 +102,7 @@ interface SystemUser {
             </div>
 
             <div class="setting-row">
-              <label>Session Timeout (minutes)</label>
+              <span class="setting-label">Session Timeout (minutes)</span>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Timeout</mat-label>
                 <input matInput type="number" [(ngModel)]="appSettings.sessionTimeoutMinutes" min="5" max="480">
@@ -122,7 +122,7 @@ interface SystemUser {
           <mat-card-content>
             <div class="setting-row toggle">
               <div class="label-section">
-                <label>Maintenance Mode</label>
+                <span class="setting-label">Maintenance Mode</span>
                 <p class="help-text">Enable to prevent users from accessing the application</p>
               </div>
               <mat-slide-toggle [(ngModel)]="appSettings.maintenanceMode" color="primary" class="ts-toggle"></mat-slide-toggle>
@@ -132,7 +132,7 @@ interface SystemUser {
 
             <div class="setting-row toggle">
               <div class="label-section">
-                <label>Enable Notifications</label>
+                <span class="setting-label">Enable Notifications</span>
                 <p class="help-text">Allow in-app notifications and email alerts</p>
               </div>
               <mat-slide-toggle [(ngModel)]="appSettings.enableNotifications" color="primary" class="ts-toggle"></mat-slide-toggle>
@@ -150,7 +150,7 @@ interface SystemUser {
           </mat-card-header>
           <mat-card-content>
             <div class="setting-row">
-              <label>Log Retention (days)</label>
+              <span class="setting-label">Log Retention (days)</span>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Days</mat-label>
                 <input matInput type="number" [(ngModel)]="appSettings.logRetentionDays" min="7" max="365">
@@ -158,7 +158,7 @@ interface SystemUser {
             </div>
 
             <div class="setting-row">
-              <label>Max Upload Size (MB)</label>
+              <span class="setting-label">Max Upload Size (MB)</span>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Size</mat-label>
                 <input matInput type="number" [(ngModel)]="appSettings.maxUploadSizeMB" min="1" max="1000">
@@ -895,7 +895,7 @@ export class AdminDashboardComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe((result: any) => {
+    dialogRef.afterClosed().subscribe((result: { action: string } | undefined) => {
       if (!result || result.action !== 'send-reset') {
         return;
       }

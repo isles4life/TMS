@@ -34,7 +34,7 @@ import { InvoiceService, Invoice } from './invoice.service';
 })
 export class InvoiceViewComponent implements OnInit {
   invoice: Invoice | null = null;
-  invoiceId: string = '';
+  invoiceId = '';
 
   private invoiceService = inject(InvoiceService);
   private route = inject(ActivatedRoute);
@@ -82,7 +82,7 @@ export class InvoiceViewComponent implements OnInit {
   }
 
   getStatusColor(status: string): string {
-    const statusColors: { [key: string]: string } = {
+    const statusColors: Record<string, string> = {
       'draft': 'accent',
       'sent': 'primary',
       'viewed': 'accent',
@@ -94,7 +94,7 @@ export class InvoiceViewComponent implements OnInit {
   }
 
   getStatusIcon(status: string): string {
-    const statusIcons: { [key: string]: string } = {
+    const statusIcons: Record<string, string> = {
       'draft': 'edit',
       'sent': 'mail',
       'viewed': 'visibility',

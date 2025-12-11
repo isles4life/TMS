@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -95,12 +95,15 @@ import { RouteOptimizationService, RouteRequest, RouteResponse, FuelCostEstimate
           </div>
         </form>
 
-        <div class="loader" *ngIf="isLoading">
+        @if (isLoading) {
+          <div class="loader">
           <mat-spinner diameter="32"></mat-spinner>
           <span>Calculating route...</span>
-        </div>
+          </div>
+        }
 
-        <div class="results" *ngIf="routeResult && !isLoading">
+        @if (routeResult && !isLoading) {
+          <div class="results">
           <div class="result-row">
             <span class="label">Distance</span>
             <span class="value">{{ formatDistance(routeResult.distanceMiles) }} ({{ routeResult.distanceKilometers | number:'1.1-1' }} km)</span>
@@ -113,26 +116,37 @@ import { RouteOptimizationService, RouteRequest, RouteResponse, FuelCostEstimate
             <span class="label">ETA</span>
             <span class="value">{{ formatETA(routeResult.estimatedArrivalTime) }}</span>
           </div>
-          <div class="result-row" *ngIf="routeResult.trafficDelayMinutes">
+          @if (routeResult.trafficDelayMinutes) {
+            <div class="result-row">
             <span class="label">Traffic Delay</span>
             <span class="value">+{{ routeResult.trafficDelayMinutes | number:'1.0-0' }} min</span>
-          </div>
+            </div>
+          }
 
-          <div class="fuel" *ngIf="fuelEstimate">
+          @if (fuelEstimate) {
+            <div class="fuel">
             <mat-chip color="primary" selected>
               Fuel Cost: {{ fuelEstimate.totalFuelCost | currency:'USD':'symbol' }}
             </mat-chip>
             <mat-chip>Consumption: {{ fuelEstimate.fuelConsumptionGallons | number:'1.1-1' }} gal</mat-chip>
             <mat-chip>MPG: {{ fuelEstimate.averageMPG | number:'1.1-1' }}</mat-chip>
-            <mat-chip *ngIf="fuelPriceInfo">{{ fuelPriceInfo.pricePerGallon | currency:'USD':'symbol' }} · {{ fuelPriceInfo.fuelType | uppercase }} ({{ fuelPriceInfo.source }})</mat-chip>
-          </div>
+            @if (fuelPriceInfo) {
+              <mat-chip>{{ fuelPriceInfo.pricePerGallon | currency:'USD':'symbol' }} · {{ fuelPriceInfo.fuelType | uppercase }} ({{ fuelPriceInfo.source }})</mat-chip>
+            }
+            </div>
+          }
 
-          <div class="warnings" *ngIf="routeResult.summary?.warnings?.length">
-            <mat-chip *ngFor="let warning of routeResult.summary.warnings" color="warn" selected>
+          @if (routeResult.summary?.warnings?.length) {
+            <div class="warnings">
+              @for (warning of routeResult.summary.warnings; track warning) {
+                <mat-chip color="warn" selected>
               {{ warning }}
-            </mat-chip>
+                </mat-chip>
+              }
+            </div>
+          }
           </div>
-        </div>
+        }
       </mat-card-content>
     </mat-card>
   `,
@@ -207,11 +221,11 @@ export class RouteOptimizerCardComponent implements OnChanges {
   fuelPriceInfo: FuelPriceInfo | null = null;
   isLoading = false;
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly routeService: RouteOptimizationService,
-    private readonly snackBar: MatSnackBar
-  ) {
+  private readonly fb = inject(FormBuilder);
+  private readonly routeService = inject(RouteOptimizationService);
+  private readonly snackBar = inject(MatSnackBar);
+
+  constructor() {
     this.form = this.fb.group({
       originLatitude: [this.defaultOrigin?.lat, [Validators.required, Validators.min(-90), Validators.max(90)]],
       originLongitude: [this.defaultOrigin?.lng, [Validators.required, Validators.min(-180), Validators.max(180)]],

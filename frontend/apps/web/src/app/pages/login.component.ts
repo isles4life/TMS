@@ -41,9 +41,11 @@ import { AuthService } from '../services/auth.service';
               <input matInput type="password" formControlName="password" required />
             </mat-form-field>
 
-            <div *ngIf="errorMessage" class="error-message">
-              {{ errorMessage }}
-            </div>
+            @if (errorMessage) {
+              <div class="error-message">
+                {{ errorMessage }}
+              </div>
+            }
 
             <button 
               mat-flat-button 
@@ -51,8 +53,11 @@ import { AuthService } from '../services/auth.service';
               type="submit" 
               [disabled]="!loginForm.valid || isLoading"
               class="full-width login-button">
-              <span *ngIf="!isLoading">Login</span>
-              <span *ngIf="isLoading">Logging in...</span>
+              @if (!isLoading) {
+                <span>Login</span>
+              } @else {
+                <span>Logging in...</span>
+              }
             </button>
 
             <p class="signup-link">

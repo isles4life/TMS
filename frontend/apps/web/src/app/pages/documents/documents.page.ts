@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -92,17 +92,21 @@ import { NotificationService } from '../../services/notification.service';
                 </mat-form-field>
 
                 <div class="selected-files">
-                  <h4 *ngIf="selectedFiles.length > 0">Selected Files ({{ selectedFiles.length }})</h4>
-                  <div *ngFor="let file of selectedFiles" class="file-item">
-                    <mat-icon>description</mat-icon>
-                    <div class="file-info">
-                      <span class="file-name">{{ file.name }}</span>
-                      <span class="file-size">{{ formatFileSize(file.size) }}</span>
+                  @if (selectedFiles.length > 0) {
+                    <h4>Selected Files ({{ selectedFiles.length }})</h4>
+                  }
+                  @for (file of selectedFiles; track file.name) {
+                    <div class="file-item">
+                      <mat-icon>description</mat-icon>
+                      <div class="file-info">
+                        <span class="file-name">{{ file.name }}</span>
+                        <span class="file-size">{{ formatFileSize(file.size) }}</span>
+                      </div>
+                      <button mat-icon-button type="button" (click)="removeFile(file)">
+                        <mat-icon>close</mat-icon>
+                      </button>
                     </div>
-                    <button mat-icon-button type="button" (click)="removeFile(file)">
-                      <mat-icon>close</mat-icon>
-                    </button>
-                  </div>
+                  }
                 </div>
 
                 <div class="form-actions">
@@ -124,95 +128,107 @@ import { NotificationService } from '../../services/notification.service';
 
         <mat-tab label="Uploaded Documents ({{ documents.length }})">
           <div class="documents-list">
-            <div *ngIf="documents.length === 0" class="empty-state">
-              <mat-icon>folder_open</mat-icon>
-              <p>No documents uploaded yet</p>
-            </div>
+            @if (documents.length === 0) {
+              <div class="empty-state">
+                <mat-icon>folder_open</mat-icon>
+                <p>No documents uploaded yet</p>
+              </div>
+            }
 
-            <div *ngFor="let doc of documents" class="document-item">
-              <mat-card>
-                <div class="document-header">
-                  <div class="document-info">
-                    <mat-icon class="doc-icon">
-                      {{ getDocumentIcon(doc.type) }}
-                    </mat-icon>
-                    <div class="doc-details">
-                      <h4>{{ doc.filename }}</h4>
-                      <p class="doc-type">{{ formatDocType(doc.type) }}</p>
+            @for (doc of documents; track doc.filename) {
+              <div class="document-item">
+                <mat-card>
+                  <div class="document-header">
+                    <div class="document-info">
+                      <mat-icon class="doc-icon">
+                        {{ getDocumentIcon(doc.type) }}
+                      </mat-icon>
+                      <div class="doc-details">
+                        <h4>{{ doc.filename }}</h4>
+                        <p class="doc-type">{{ formatDocType(doc.type) }}</p>
+                      </div>
+                    </div>
+                    <div class="document-meta">
+                      <span class="doc-size">{{ formatFileSize(doc.size) }}</span>
+                      <span class="doc-date">{{ formatDate(doc.uploadDate) }}</span>
+                      <mat-chip-set>
+                        <mat-chip [ngClass]="'status-' + doc.status">
+                          {{ doc.status | titlecase }}
+                        </mat-chip>
+                      </mat-chip-set>
                     </div>
                   </div>
-                  <div class="document-meta">
-                    <span class="doc-size">{{ formatFileSize(doc.size) }}</span>
-                    <span class="doc-date">{{ formatDate(doc.uploadDate) }}</span>
-                    <mat-chip-set>
-                      <mat-chip [ngClass]="'status-' + doc.status">
-                        {{ doc.status | titlecase }}
-                      </mat-chip>
-                    </mat-chip-set>
+
+                  <mat-divider></mat-divider>
+
+                  @if (doc.notes) {
+                    <div class="document-body">
+                      <p><strong>Notes:</strong> {{ doc.notes }}</p>
+                    </div>
+                  }
+
+                  @if (doc.loadId) {
+                    <div class="document-body">
+                      <p><strong>Related Load:</strong> #{{ doc.loadId }}</p>
+                    </div>
+                  }
+
+                  <div class="document-actions">
+                    <button mat-button color="primary">
+                      <mat-icon>download</mat-icon>
+                      Download
+                    </button>
+                    <button mat-button color="primary">
+                      <mat-icon>preview</mat-icon>
+                      Preview
+                    </button>
+                    <button mat-button color="warn">
+                      <mat-icon>delete</mat-icon>
+                      Delete
+                    </button>
                   </div>
-                </div>
-
-                <mat-divider></mat-divider>
-
-                <div class="document-body" *ngIf="doc.notes">
-                  <p><strong>Notes:</strong> {{ doc.notes }}</p>
-                </div>
-
-                <div class="document-body" *ngIf="doc.loadId">
-                  <p><strong>Related Load:</strong> #{{ doc.loadId }}</p>
-                </div>
-
-                <div class="document-actions">
-                  <button mat-button color="primary">
-                    <mat-icon>download</mat-icon>
-                    Download
-                  </button>
-                  <button mat-button color="primary">
-                    <mat-icon>preview</mat-icon>
-                    Preview
-                  </button>
-                  <button mat-button color="warn">
-                    <mat-icon>delete</mat-icon>
-                    Delete
-                  </button>
-                </div>
-              </mat-card>
-            </div>
+                </mat-card>
+              </div>
+            }
           </div>
         </mat-tab>
 
         <mat-tab label="Pending Uploads">
           <div class="documents-list">
-            <div *ngIf="pendingNotifications.length === 0" class="empty-state">
-              <mat-icon>done_all</mat-icon>
-              <p>No pending document uploads</p>
-            </div>
+            @if (pendingNotifications.length === 0) {
+              <div class="empty-state">
+                <mat-icon>done_all</mat-icon>
+                <p>No pending document uploads</p>
+              </div>
+            }
 
-            <div *ngFor="let notif of pendingNotifications" class="pending-item">
-              <mat-card>
-                <div class="pending-header">
-                  <div class="pending-info">
-                    <mat-icon class="warning-icon">warning</mat-icon>
-                    <div class="pending-details">
-                      <h4>{{ notif.title }}</h4>
-                      <p class="pending-message">{{ notif.message }}</p>
+            @for (notif of pendingNotifications; track notif.title) {
+              <div class="pending-item">
+                <mat-card>
+                  <div class="pending-header">
+                    <div class="pending-info">
+                      <mat-icon class="warning-icon">warning</mat-icon>
+                      <div class="pending-details">
+                        <h4>{{ notif.title }}</h4>
+                        <p class="pending-message">{{ notif.message }}</p>
+                      </div>
                     </div>
+                    <span class="pending-time">{{ formatTime(notif.timestamp) }}</span>
                   </div>
-                  <span class="pending-time">{{ formatTime(notif.timestamp) }}</span>
-                </div>
 
-                <div class="pending-actions">
-                  <button mat-raised-button color="accent" (click)="goToDocumentUpload()">
-                    <mat-icon>upload</mat-icon>
-                    Upload Document
-                  </button>
-                  <button mat-button (click)="markNotificationRead(notif)">
-                    <mat-icon>done</mat-icon>
-                    Mark as Done
-                  </button>
-                </div>
-              </mat-card>
-            </div>
+                  <div class="pending-actions">
+                    <button mat-raised-button color="accent" (click)="goToDocumentUpload()">
+                      <mat-icon>upload</mat-icon>
+                      Upload Document
+                    </button>
+                    <button mat-button (click)="markNotificationRead(notif)">
+                      <mat-icon>done</mat-icon>
+                      Mark as Done
+                    </button>
+                  </div>
+                </mat-card>
+              </div>
+            }
           </div>
         </mat-tab>
       </mat-tab-group>
@@ -527,14 +543,14 @@ export class DocumentsPage implements OnInit {
   documents: Document[] = [];
   selectedFiles: File[] = [];
   isDragging = false;
-  pendingNotifications: any[] = [];
+  pendingNotifications: { id: string; title: string; message: string; timestamp: Date }[] = [];
 
-  constructor(
-    private fb: FormBuilder,
-    private documentService: DocumentService,
-    private notificationService: NotificationService,
-    private snackBar: MatSnackBar
-  ) {
+  private fb = inject(FormBuilder);
+  private documentService = inject(DocumentService);
+  private notificationService = inject(NotificationService);
+  private snackBar = inject(MatSnackBar);
+
+  constructor() {
     this.uploadForm = this.fb.group({
       type: ['', Validators.required],
       loadId: [''],
@@ -668,7 +684,7 @@ export class DocumentsPage implements OnInit {
   }
 
   getDocumentIcon(type: string): string {
-    const icons: { [key: string]: string } = {
+    const icons: Record<string, string> = {
       'proof-of-delivery': 'check_circle',
       'bill-of-lading': 'receipt',
       'invoice': 'receipt_long',
@@ -684,7 +700,7 @@ export class DocumentsPage implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  markNotificationRead(notification: any) {
+  markNotificationRead(notification: { id: string }) {
     this.notificationService.markAsRead(notification.id);
     this.loadPendingNotifications();
     this.snackBar.open('Marked as done', 'Close', { duration: 2000 });

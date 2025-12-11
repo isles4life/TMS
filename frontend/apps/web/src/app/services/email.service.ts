@@ -21,7 +21,7 @@ export interface EmailResponse {
 export class EmailService {
   private apiUrl = 'http://localhost:5000/api/email';
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   sendWelcomeEmail(email: string, firstName: string, lastName: string, tempPassword: string): Observable<EmailResponse> {
     console.log('📧 Sending welcome email to:', email);

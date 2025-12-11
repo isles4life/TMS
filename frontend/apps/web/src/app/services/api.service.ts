@@ -24,14 +24,14 @@ export class ApiService {
   }
 
   // Generic POST request
-  post<T>(endpoint: string, data: any): Observable<T> {
+  post<T>(endpoint: string, data: unknown): Observable<T> {
     return this.http.post<T>(`${this.apiUrl}/${endpoint}`, data, {
       headers: this.getHeaders()
     });
   }
 
   // Generic PUT request
-  put<T>(endpoint: string, data: any): Observable<T> {
+  put<T>(endpoint: string, data: unknown): Observable<T> {
     return this.http.put<T>(`${this.apiUrl}/${endpoint}`, data, {
       headers: this.getHeaders()
     });

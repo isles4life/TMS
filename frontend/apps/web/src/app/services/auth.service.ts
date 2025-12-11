@@ -41,7 +41,7 @@ export class AuthService {
 
   login(email: string, password: string): Observable<LoginResponse> {
     // Demo credentials for offline testing
-    const DEMO_CREDENTIALS: { [key: string]: { password: string; role: UserRole; firstName: string } } = {
+    const DEMO_CREDENTIALS: Record<string, { password: string; role: UserRole; firstName: string }> = {
       'superadmin@example.com': { password: 'admin123', role: 'SuperAdmin', firstName: 'Super' },
       'broker@example.com': { password: 'broker123', role: 'Broker', firstName: 'Broker' },
       'carrier@example.com': { password: 'carrier123', role: 'Carrier', firstName: 'Carrier' },

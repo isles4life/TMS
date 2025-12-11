@@ -54,9 +54,11 @@
       <mat-form-field class="status-filter">
         <mat-label>Filter by Status</mat-label>
         <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onStatusChange()">
-          <mat-option *ngFor="let option of statusOptions" [value]="option.value">
-            {{ option.label }}
-          </mat-option>
+          @for (option of statusOptions; track option.value) {
+            <mat-option [value]="option.value">
+              {{ option.label }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
@@ -69,7 +71,8 @@
 
   <!-- Invoices List -->
   <div class="invoices-list">
-    <mat-card class="invoice-card" *ngFor="let invoice of filteredInvoices">
+    @for (invoice of filteredInvoices; track invoice.id) {
+      <mat-card class="invoice-card">
       <mat-card-header>
         <div class="header-left">
           <mat-card-title>Invoice #{{ invoice.invoiceNumber }}</mat-card-title>
@@ -153,18 +156,23 @@
         </mat-menu>
       </mat-card-actions>
     </mat-card>
+    }
 
     <!-- Empty State -->
-    <mat-card class="empty-state" *ngIf="filteredInvoices.length === 0">
-      <mat-card-content>
-        <mat-icon class="empty-icon">receipt_long</mat-icon>
-        <h3>No invoices found</h3>
-        <p>{{ searchQuery ? 'Try adjusting your search criteria' : 'Create your first invoice to get started' }}</p>
-        <button mat-raised-button color="primary" routerLink="/invoices/create" *ngIf="!searchQuery">
-          <mat-icon>add</mat-icon>
-          Create Invoice
-        </button>
-      </mat-card-content>
-    </mat-card>
+    @if (filteredInvoices.length === 0) {
+      <mat-card class="empty-state">
+        <mat-card-content>
+          <mat-icon class="empty-icon">receipt_long</mat-icon>
+          <h3>No invoices found</h3>
+          <p>{{ searchQuery ? 'Try adjusting your search criteria' : 'Create your first invoice to get started' }}</p>
+          @if (!searchQuery) {
+            <button mat-raised-button color="primary" routerLink="/invoices/create">
+              <mat-icon>add</mat-icon>
+              Create Invoice
+            </button>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
   </div>
 </div>

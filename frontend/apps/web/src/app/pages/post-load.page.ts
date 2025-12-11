@@ -239,7 +239,8 @@ import { PageHeaderComponent } from '../components/page-header.component';
 export class PostLoadPage implements OnInit {
   loadForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.loadForm = this.fb.group({

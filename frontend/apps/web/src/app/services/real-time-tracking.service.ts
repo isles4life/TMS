@@ -72,10 +72,10 @@ export class RealTimeTrackingService {
   private pendingAlertsSubject = new BehaviorSubject<GeofenceAlert[]>([]);
   public pendingAlerts$ = this.pendingAlertsSubject.asObservable();
   
-  private pickupZoneAlertSubject = new Subject<any>();
+  private pickupZoneAlertSubject = new Subject<GeofenceAlert>();
   public pickupZoneAlert$ = this.pickupZoneAlertSubject.asObservable();
   
-  private deliveryZoneAlertSubject = new Subject<any>();
+  private deliveryZoneAlertSubject = new Subject<GeofenceAlert>();
   public deliveryZoneAlert$ = this.deliveryZoneAlertSubject.asObservable();
   
   private errorSubject = new Subject<string>();
@@ -147,13 +147,13 @@ export class RealTimeTrackingService {
     });
 
     // Geofence alerts
-    this.connection.on('PickupZoneAlert', (alert: any) => {
+    this.connection.on('PickupZoneAlert', (alert: GeofenceAlert) => {
       this.ngZone.run(() => {
         this.pickupZoneAlertSubject.next(alert);
       });
     });
 
-    this.connection.on('DeliveryZoneAlert', (alert: any) => {
+    this.connection.on('DeliveryZoneAlert', (alert: GeofenceAlert) => {
       this.ngZone.run(() => {
         this.deliveryZoneAlertSubject.next(alert);
       });
@@ -171,7 +171,7 @@ export class RealTimeTrackingService {
     });
 
     // Error handling
-    this.connection.on('Error', (error: any) => {
+    this.connection.on('Error', (error: { message?: string }) => {
       this.ngZone.run(() => {
         this.errorSubject.next(error.message || 'Unknown error');
       });
@@ -182,7 +182,7 @@ export class RealTimeTrackingService {
    * Update driver location (send to hub)
    */
   async updateDriverLocation(driverId: string, latitude: number, longitude: number, 
-    speedMph: number = 0, dispatchId?: string): Promise<void> {
+    speedMph = 0, dispatchId?: string): Promise<void> {
     if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
       throw new Error('Not connected to tracking hub');
     }
@@ -254,7 +254,7 @@ export class RealTimeTrackingService {
   /**
    * Get driver location history
    */
-  async getDriverHistory(driverId: string, lastMinutes: number = 60): Promise<void> {
+  async getDriverHistory(driverId: string, lastMinutes = 60): Promise<void> {
     if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
       throw new Error('Not connected to tracking hub');
     }
@@ -287,36 +287,36 @@ export class RealTimeTrackingService {
   /**
    * Get latest driver location (HTTP)
    */
-  getLatestDriverLocation(driverId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/location/${driverId}`);
+  getLatestDriverLocation(driverId: string): Observable<DriverLocationUpdate> {
+    return this.http.get<DriverLocationUpdate>(`${this.apiUrl}/location/${driverId}`);
   }
 
   /**
    * Get driver location history (HTTP)
    */
-  getDriverLocationHistory(driverId: string, lastMinutes: number = 60): Observable<any> {
-    return this.http.get(`${this.apiUrl}/location/${driverId}/history?lastMinutes=${lastMinutes}`);
+  getDriverLocationHistory(driverId: string, lastMinutes = 60): Observable<DriverLocationUpdate[]> {
+    return this.http.get<DriverLocationUpdate[]>(`${this.apiUrl}/location/${driverId}/history?lastMinutes=${lastMinutes}`);
   }
 
   /**
    * Get active trackers (HTTP)
    */
-  getActiveTrackersHttp(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/active`);
+  getActiveTrackersHttp(): Observable<ActiveTracker[]> {
+    return this.http.get<ActiveTracker[]>(`${this.apiUrl}/active`);
   }
 
   /**
    * Get pending alerts (HTTP)
    */
-  getPendingAlertsHttp(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/alerts`);
+  getPendingAlertsHttp(): Observable<GeofenceAlert[]> {
+    return this.http.get<GeofenceAlert[]>(`${this.apiUrl}/alerts`);
   }
 
   /**
    * Acknowledge alert (HTTP)
    */
-  acknowledgeAlertHttp(alertId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/alerts/${alertId}/acknowledge`, {});
+  acknowledgeAlertHttp(alertId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/alerts/${alertId}/acknowledge`, {});
   }
 
   /**

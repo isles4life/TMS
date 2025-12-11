@@ -28,7 +28,7 @@ export class NotificationService {
   private loadNotifications() {
     const stored = localStorage.getItem('notifications');
     if (stored) {
-      this.notifications = JSON.parse(stored).map((n: any) => ({
+      this.notifications = JSON.parse(stored).map((n: { timestamp: string }) => ({
         ...n,
         timestamp: new Date(n.timestamp)
       }));

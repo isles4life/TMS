@@ -8,6 +8,7 @@ export class ExportService {
   /**
    * Export data to CSV format
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   exportToCSV(data: any[], filename: string): void {
     if (!data || data.length === 0) {
       console.warn('No data to export');
@@ -38,6 +39,7 @@ export class ExportService {
   /**
    * Export dashboard data to CSV
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   exportDashboardReport(metrics: any[], loads: any[]): void {
     const timestamp = new Date().toISOString().split('T')[0];
     
@@ -75,7 +77,7 @@ export class ExportService {
   /**
    * Export data to JSON format
    */
-  exportToJSON(data: any[], filename: string): void {
+  exportToJSON(data: unknown[], filename: string): void {
     const jsonContent = JSON.stringify(data, null, 2);
     this.downloadFile(jsonContent, filename, 'application/json');
   }

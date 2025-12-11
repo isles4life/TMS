@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -51,10 +51,10 @@ interface Integration {
 
       <div class="integrations-container">
         <div class="integrations-grid">
-          <mat-card 
-            *ngFor="let integration of integrations"
-            class="integration-card"
-            [class.enabled]="integration.enabled">
+          @for (integration of integrations; track integration.id) {
+            <mat-card 
+              class="integration-card"
+              [class.enabled]="integration.enabled">
             
             <mat-card-header>
               <div class="header-content">
@@ -113,9 +113,15 @@ interface Integration {
                   </div>
 
                   <div class="api-status">
-                    <mat-icon *ngIf="integration.apiKey" class="status-icon success">check_circle</mat-icon>
-                    <span *ngIf="integration.apiKey" class="status-text">API Key Configured</span>
-                    <span *ngIf="!integration.apiKey && integration.enabled" class="status-text warning">Pending Configuration</span>
+                    @if (integration.apiKey) {
+                      <mat-icon class="status-icon success">check_circle</mat-icon>
+                    }
+                    @if (integration.apiKey) {
+                      <span class="status-text">API Key Configured</span>
+                    }
+                    @if (!integration.apiKey && integration.enabled) {
+                      <span class="status-text warning">Pending Configuration</span>
+                    }
                   </div>
                 </form>
               </mat-expansion-panel>
@@ -126,7 +132,8 @@ interface Integration {
                 </a>
               </div>
             </mat-card-content>
-          </mat-card>
+            </mat-card>
+          }
         </div>
       </div>
     </div>
@@ -336,7 +343,7 @@ export class MarketplacePage implements OnInit {
     }
   ];
 
-  apiKeyForms: Map<string, FormGroup> = new Map();
+  apiKeyForms = new Map<string, FormGroup>();
   private snackBar = inject(MatSnackBar);
   private fb = inject(FormBuilder);
 
@@ -379,8 +386,8 @@ export class MarketplacePage implements OnInit {
     return this.apiKeyForms.get(integrationId)!;
   }
 
-  getApiKeyControl(integrationId: string): any {
-    return this.apiKeyForms.get(integrationId)!.get('apiKey')!;
+  getApiKeyControl(integrationId: string): FormControl {
+    return this.apiKeyForms.get(integrationId)!.get('apiKey')! as FormControl;
   }
 
   saveApiKey(integration: Integration): void {

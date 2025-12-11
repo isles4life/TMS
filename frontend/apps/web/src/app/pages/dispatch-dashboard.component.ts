@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,25 +48,32 @@ import { Router } from '@angular/router';
           </button>
         </mat-card-header>
         <mat-card-content>
-          <div *ngIf="loading" class="loading-spinner">
+          @if (loading) {
+            <div class="loading-spinner">
             <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-          </div>
+            </div>
+          }
 
-          <div *ngIf="!loading && driverMatches.length === 0" class="no-data">
+          @if (!loading && driverMatches.length === 0) {
+            <div class="no-data">
             <mat-icon>info</mat-icon>
             <p>No driver matches found. Click "Find Best Matches" to search for available drivers.</p>
-          </div>
+            </div>
+          }
 
-          <table mat-table [dataSource]="driverMatches" *ngIf="!loading && driverMatches.length > 0" class="matches-table">
+          @if (!loading && driverMatches.length > 0) {
+            <table mat-table [dataSource]="driverMatches" class="matches-table">
             
             <!-- Recommended Column -->
             <ng-container matColumnDef="recommended">
               <th mat-header-cell *matHeaderCellDef>Status</th>
               <td mat-cell *matCellDef="let match">
-                <mat-chip *ngIf="match.isRecommended" color="accent" selected>
+                @if (match.isRecommended) {
+                  <mat-chip color="accent" selected>
                   <mat-icon>star</mat-icon>
                   Recommended
-                </mat-chip>
+                  </mat-chip>
+                }
               </td>
             </ng-container>
 
@@ -76,7 +83,9 @@ import { Router } from '@angular/router';
               <td mat-cell *matCellDef="let match">
                 <div class="driver-info">
                   <strong>{{ match.driverName }}</strong>
-                  <small *ngIf="match.driverPhone">{{ match.driverPhone }}</small>
+                  @if (match.driverPhone) {
+                    <small>{{ match.driverPhone }}</small>
+                  }
                 </div>
               </td>
             </ng-container>
@@ -86,14 +95,18 @@ import { Router } from '@angular/router';
               <th mat-header-cell *matHeaderCellDef>Equipment</th>
               <td mat-cell *matCellDef="let match">
                 <div class="equipment-info">
-                  <div *ngIf="match.tractorNumber">
+                  @if (match.tractorNumber) {
+                    <div>
                     <mat-icon inline>local_shipping</mat-icon>
                     {{ match.tractorNumber }}
-                  </div>
-                  <div *ngIf="match.trailerNumber">
+                    </div>
+                  }
+                  @if (match.trailerNumber) {
+                    <div>
                     <mat-icon inline>rv_hookup</mat-icon>
                     {{ match.trailerNumber }}
-                  </div>
+                    </div>
+                  }
                 </div>
               </td>
             </ng-container>
@@ -151,6 +164,7 @@ import { Router } from '@angular/router';
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
                 [class.recommended-row]="row.isRecommended"></tr>
           </table>
+          }
         </mat-card-content>
       </mat-card>
     </div>
@@ -280,11 +294,9 @@ export class DispatchDashboardComponent implements OnInit {
   // Mock load ID for testing - in real app, this would come from route params or selection
   currentLoadId = '00000000-0000-0000-0000-000000000001';
 
-  constructor(
-    private dispatchService: DispatchService,
-    private snackBar: MatSnackBar,
-    private router: Router
-  ) {}
+  private dispatchService = inject(DispatchService);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
 
   ngOnInit(): void {
     // Auto-load matches on init
@@ -302,7 +314,7 @@ export class DispatchDashboardComponent implements OnInit {
             this.snackBar.open('No available drivers found', 'Close', { duration: 3000 });
           }
         },
-        error: (error: any) => {
+        error: (error: unknown) => {
           console.error('Error finding matches:', error);
           this.loading = false;
           this.snackBar.open('Error loading driver matches', 'Close', { duration: 3000 });
@@ -330,7 +342,7 @@ export class DispatchDashboardComponent implements OnInit {
         // Remove the assigned driver from the list
         this.driverMatches = this.driverMatches.filter(m => m.driverId !== match.driverId);
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         console.error('Error assigning driver:', error);
         this.snackBar.open('Error assigning driver to load', 'Close', { duration: 3000 });
       }

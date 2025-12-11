@@ -69,7 +69,8 @@ export interface LoadRow {
       </mat-paginator>
 
       <div class="mobile">
-        <mat-card class="load-card" *ngFor="let row of visibleRows" (click)="navigate(row)" role="button" tabindex="0">
+        @for (row of visibleRows; track row.id) {
+          <mat-card class="load-card" (click)="navigate(row)" role="button" tabindex="0">
           <div class="load-card__header">
             <span class="id">#{{ row.id }}</span>
             <mat-chip [color]="row.status === 'Available' ? 'primary' : row.status === 'Pending' ? 'accent' : undefined" selected>{{ row.status }}</mat-chip>
@@ -79,6 +80,7 @@ export interface LoadRow {
           <div class="meta">Equip: {{ row.equipment }} • Rate: {{ row.rate }}</div>
           <div class="meta">Pickup: {{ row.pickup }}</div>
         </mat-card>
+        }
       </div>
     </div>
   `,

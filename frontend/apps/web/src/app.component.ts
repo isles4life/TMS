@@ -57,8 +57,9 @@ export class AppComponent {
   navItems: NavItem[] = [];
 
   private authService = inject(AuthService);
+  private breakpoint = inject(BreakpointObserver);
 
-  constructor(private breakpoint: BreakpointObserver) {
+  constructor() {
     this.breakpoint
       .observe(['(max-width: 960px)'])
       .pipe(takeUntilDestroyed())

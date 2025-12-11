@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -105,7 +105,7 @@ export interface FuelPriceInfo {
 export class RouteOptimizationService {
   private readonly apiUrl = `${environment.apiUrl}/routes`;
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   /**
    * Calculate optimized route between two points
@@ -122,7 +122,7 @@ export class RouteOptimizationService {
     originLng: number,
     destLat: number,
     destLng: number,
-    vehicleType: string = 'truck'
+    vehicleType = 'truck'
   ): Observable<RouteDistance> {
     const params = new HttpParams()
       .set('originLat', originLat.toString())
@@ -151,7 +151,7 @@ export class RouteOptimizationService {
       .set('destLng', destLng.toString())
       .set('departureTime', departureTime.toISOString());
 
-    return this.http.get<any>(`${this.apiUrl}/eta`, { params });
+    return this.http.get<{ estimatedArrivalTime: Date; departureTime: Date; travelTimeMinutes: number }>(`${this.apiUrl}/eta`, { params });
   }
 
   /**
@@ -164,7 +164,7 @@ export class RouteOptimizationService {
   /**
    * Get alternative routes with different optimization criteria
    */
-  getAlternativeRoutes(request: RouteRequest, maxAlternatives: number = 3): Observable<RouteResponse[]> {
+  getAlternativeRoutes(request: RouteRequest, maxAlternatives = 3): Observable<RouteResponse[]> {
     return this.http.post<RouteResponse[]>(
       `${this.apiUrl}/alternatives?maxAlternatives=${maxAlternatives}`,
       request
@@ -190,7 +190,7 @@ export class RouteOptimizationService {
   /**
    * Lookup fuel price by zip code
    */
-  getFuelPriceByZip(zipCode: string, fuelType: string = 'diesel'): Observable<FuelPriceInfo> {
+  getFuelPriceByZip(zipCode: string, fuelType = 'diesel'): Observable<FuelPriceInfo> {
     const params = new HttpParams()
       .set('zipCode', zipCode)
       .set('fuelType', fuelType);

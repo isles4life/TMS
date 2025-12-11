@@ -20,14 +20,22 @@ import { MatIconModule } from '@angular/material/icon';
           <mat-form-field appearance="outline" color="primary">
             <mat-label>Email</mat-label>
             <input matInput type="email" formControlName="email" required />
-            <mat-error *ngIf="form.controls.email.hasError('required')">Email is required</mat-error>
-            <mat-error *ngIf="form.controls.email.hasError('email')">Enter a valid email</mat-error>
+            @if (form.controls.email.hasError('required')) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (form.controls.email.hasError('email')) {
+              <mat-error>Enter a valid email</mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline" color="primary">
             <mat-label>Password</mat-label>
             <input matInput type="password" formControlName="password" required />
-            <mat-error *ngIf="form.controls.password.hasError('required')">Password is required</mat-error>
-            <mat-error *ngIf="form.controls.password.hasError('minlength')">Minimum 8 characters</mat-error>
+            @if (form.controls.password.hasError('required')) {
+              <mat-error>Password is required</mat-error>
+            }
+            @if (form.controls.password.hasError('minlength')) {
+              <mat-error>Minimum 8 characters</mat-error>
+            }
           </mat-form-field>
           <button mat-flat-button color="primary" class="primary" type="submit" [disabled]="form.invalid">Sign in</button>
         </form>

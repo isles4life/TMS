@@ -25,7 +25,7 @@ export class DocumentService {
   private loadDocuments() {
     const stored = localStorage.getItem('documents');
     if (stored) {
-      this.documents = JSON.parse(stored).map((d: any) => ({
+      this.documents = JSON.parse(stored).map((d: { uploadDate: string }) => ({
         ...d,
         uploadDate: new Date(d.uploadDate)
       }));
