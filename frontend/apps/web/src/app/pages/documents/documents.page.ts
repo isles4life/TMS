@@ -251,11 +251,12 @@ import { NotificationService } from '../../services/notification.service';
       margin: 0 0 8px 0;
       font-size: 28px;
       font-weight: 500;
+      color: var(--color-text, var(--ts-ink));
     }
 
     .subtitle {
       margin: 0;
-      color: #666;
+      color: var(--muted-text, #666);
       font-size: 14px;
     }
 
@@ -269,34 +270,36 @@ import { NotificationService } from '../../services/notification.service';
 
     .upload-card, .upload-form-card {
       margin-bottom: 24px;
+      background: var(--card-bg, var(--ts-surface-secondary));
+      color: var(--color-text, var(--ts-ink));
     }
 
     .upload-dropzone {
-      border: 2px dashed #ccc;
+      border: 2px dashed var(--border-color, #ccc);
       border-radius: 8px;
       padding: 40px 20px;
       text-align: center;
       transition: all 0.3s ease;
       cursor: pointer;
-      background-color: #fafafa;
+      background-color: var(--ts-surface-secondary, #fafafa);
     }
 
     .upload-dropzone:hover {
-      border-color: #1976d2;
-      background-color: #f0f7ff;
+      border-color: var(--ts-red, #1976d2);
+      background-color: var(--ts-surface, #f0f7ff);
     }
 
     .upload-dropzone.dragover {
-      border-color: #1976d2;
-      background-color: #e3f2fd;
-      box-shadow: 0 0 0 8px rgba(25, 118, 210, 0.1);
+      border-color: var(--ts-red, #1976d2);
+      background-color: var(--ts-surface, #e3f2fd);
+      box-shadow: 0 0 0 8px rgba(215, 25, 32, 0.1);
     }
 
     .upload-icon {
       font-size: 48px;
       width: 48px;
       height: 48px;
-      color: #1976d2;
+      color: var(--ts-red, #1976d2);
       margin-bottom: 16px;
     }
 
@@ -304,17 +307,19 @@ import { NotificationService } from '../../services/notification.service';
       margin: 0 0 8px 0;
       font-size: 18px;
       font-weight: 500;
+      color: var(--color-text, var(--ts-ink));
     }
 
     .upload-dropzone p {
       margin: 0 0 16px 0;
-      color: #666;
+      color: var(--muted-text, #666);
     }
 
     .upload-form-card h3 {
       margin-top: 0;
       font-size: 18px;
       font-weight: 500;
+      color: var(--color-text, var(--ts-ink));
     }
 
     .full-width {
@@ -330,7 +335,7 @@ import { NotificationService } from '../../services/notification.service';
       margin: 0 0 12px 0;
       font-size: 14px;
       font-weight: 500;
-      color: #666;
+      color: var(--muted-text, #666);
     }
 
     .file-item {
@@ -338,13 +343,14 @@ import { NotificationService } from '../../services/notification.service';
       align-items: center;
       gap: 12px;
       padding: 12px;
-      background-color: #f5f5f5;
+      background-color: var(--card-bg, #f5f5f5);
+      border: 1px solid var(--border-color, transparent);
       border-radius: 4px;
       margin-bottom: 8px;
     }
 
     .file-item mat-icon {
-      color: #1976d2;
+      color: var(--ts-red, #1976d2);
       flex-shrink: 0;
     }
 
@@ -357,11 +363,12 @@ import { NotificationService } from '../../services/notification.service';
     .file-name {
       font-weight: 500;
       font-size: 14px;
+      color: var(--color-text, var(--ts-ink));
     }
 
     .file-size {
       font-size: 12px;
-      color: #999;
+      color: var(--muted-text, #999);
     }
 
     .form-actions {
@@ -378,7 +385,7 @@ import { NotificationService } from '../../services/notification.service';
     .empty-state {
       text-align: center;
       padding: 60px 20px;
-      color: #999;
+      color: var(--muted-text, #999);
     }
 
     .empty-state mat-icon {
@@ -387,6 +394,7 @@ import { NotificationService } from '../../services/notification.service';
       height: 64px;
       margin-bottom: 16px;
       opacity: 0.5;
+      color: var(--muted-text, #999);
     }
 
     .empty-state p {
@@ -416,7 +424,7 @@ import { NotificationService } from '../../services/notification.service';
       font-size: 32px;
       width: 32px;
       height: 32px;
-      color: #1976d2;
+      color: var(--ts-red, #1976d2);
       flex-shrink: 0;
     }
 
@@ -424,12 +432,13 @@ import { NotificationService } from '../../services/notification.service';
       margin: 0 0 4px 0;
       font-size: 16px;
       font-weight: 500;
+      color: var(--color-text, var(--ts-ink));
     }
 
     .doc-type {
       margin: 0;
       font-size: 12px;
-      color: #666;
+      color: var(--muted-text, #666);
     }
 
     .document-meta {
@@ -441,17 +450,18 @@ import { NotificationService } from '../../services/notification.service';
 
     .doc-size {
       font-size: 12px;
-      color: #999;
+      color: var(--muted-text, #999);
     }
 
     .doc-date {
       font-size: 12px;
-      color: #999;
+      color: var(--muted-text, #999);
     }
 
     .document-body {
       padding: 12px 8px;
       font-size: 14px;
+      color: var(--color-text, var(--ts-ink));
     }
 
     .document-body p {

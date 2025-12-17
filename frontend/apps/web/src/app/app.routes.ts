@@ -11,8 +11,8 @@ export const APP_ROUTES: Routes = [
   { path: 'register', component: RegisterComponent, data: { title: 'Register' } },
   
   // Dashboard and general routes
-  { path: 'dashboard', canActivate: [AuthGuard], data: { title: 'Dashboard' }, loadComponent: () => import('./pages/dashboard.page').then(m => m.DashboardPage) },
-  { path: 'profile', canActivate: [AuthGuard], data: { title: 'Profile' }, loadComponent: () => import('./pages/profile.page').then(m => m.ProfilePage) },
+  { path: 'dashboard', canActivate: [AuthGuard], data: { title: 'Dashboard', preload: true }, loadComponent: () => import('./pages/dashboard.page').then(m => m.DashboardPage) },
+  { path: 'profile', canActivate: [AuthGuard], data: { title: 'Profile', preload: true }, loadComponent: () => import('./pages/profile.page').then(m => m.ProfilePage) },
   { path: 'notifications', canActivate: [AuthGuard], data: { title: 'Notifications' }, loadComponent: () => import('./pages/notifications/notifications.page').then(m => m.NotificationsPage) },
   { path: 'documents', canActivate: [AuthGuard], data: { title: 'Documents' }, loadComponent: () => import('./pages/documents/documents.page').then(m => m.DocumentsPage) },
 
@@ -20,11 +20,11 @@ export const APP_ROUTES: Routes = [
   { path: 'post-load', canActivate: [AuthGuard, RoleGuard], data: { title: 'Post a Load', roles: ['Broker'] }, loadComponent: () => import('./pages/post-load.page').then(m => m.PostLoadPage) },
 
   // Carrier-specific routes (Load Board)
-  { path: 'load-board', canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Board', roles: ['Carrier', 'Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/load-board.page').then(m => m.LoadBoardPage) },
+  { path: 'load-board', canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Board', roles: ['Carrier', 'Broker', 'SuperAdmin'], preload: true }, loadComponent: () => import('./pages/load-board.page').then(m => m.LoadBoardPage) },
   { path: 'load-details/:id', canActivate: [AuthGuard, RoleGuard], data: { title: 'Load Details', roles: ['Carrier', 'Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/load-details.page').then(m => m.LoadDetailsPage) },
 
   // Dispatch routes (Broker and SuperAdmin)
-  { path: 'dispatch', canActivate: [AuthGuard, RoleGuard], data: { title: 'Dispatch Management', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/dispatch-dashboard.component').then(m => m.DispatchDashboardComponent) },
+  { path: 'dispatch', canActivate: [AuthGuard, RoleGuard], data: { title: 'Dispatch Management', roles: ['Broker', 'SuperAdmin'], preload: true }, loadComponent: () => import('./pages/dispatch-dashboard.component').then(m => m.DispatchDashboardComponent) },
 
   // Real-time tracking (Broker, Carrier, SuperAdmin)
   { path: 'tracking', canActivate: [AuthGuard, RoleGuard], data: { title: 'Live Tracking', roles: ['Broker', 'Carrier', 'SuperAdmin'] }, loadComponent: () => import('./pages/live-tracking-dashboard.component').then(m => m.LiveTrackingDashboardComponent) },
@@ -34,7 +34,7 @@ export const APP_ROUTES: Routes = [
   { path: 'marketplace', canActivate: [AuthGuard], data: { title: 'Marketplace' }, loadComponent: () => import('./pages/marketplace.page').then(m => m.MarketplacePage) },
 
   // Invoice routes (available to Broker and SuperAdmin)
-  { path: 'invoices', canActivate: [AuthGuard, RoleGuard], data: { title: 'Invoices', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/invoices/invoices-list.component').then(m => m.InvoicesListComponent) },
+  { path: 'invoices', canActivate: [AuthGuard, RoleGuard], data: { title: 'Invoices', roles: ['Broker', 'SuperAdmin'], preload: true }, loadComponent: () => import('./pages/invoices/invoices-list.component').then(m => m.InvoicesListComponent) },
   { path: 'invoices/create', canActivate: [AuthGuard, RoleGuard], data: { title: 'Create Invoice', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/invoices/create-invoice.component').then(m => m.CreateInvoiceComponent) },
   { path: 'invoices/view/:id', canActivate: [AuthGuard, RoleGuard], data: { title: 'View Invoice', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/invoices/invoice-view.component').then(m => m.InvoiceViewComponent) },
   { path: 'invoices/edit/:id', canActivate: [AuthGuard, RoleGuard], data: { title: 'Edit Invoice', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/invoices/create-invoice.component').then(m => m.CreateInvoiceComponent) },

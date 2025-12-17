@@ -41,7 +41,7 @@ import { PageHeaderComponent } from '../components/page-header.component';
               <mat-error>Provide a valid email</mat-error>
             }
           </mat-form-field>
-          <mat-slide-toggle formControlName="alerts">Enable critical alerts</mat-slide-toggle>
+          <mat-slide-toggle formControlName="alerts" color="primary">Enable critical alerts</mat-slide-toggle>
           <div class="actions">
             <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Save changes</button>
           </div>

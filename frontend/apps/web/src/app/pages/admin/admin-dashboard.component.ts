@@ -87,23 +87,23 @@ interface SystemUser {
           <mat-card-content>
             <div class="setting-row">
               <span class="setting-label">Application Name</span>
-              <mat-form-field appearance="outline" class="full-width">
+              <mat-form-field appearance="outline" floatLabel="always" class="full-width">
                 <mat-label>App Name</mat-label>
-                <input matInput [(ngModel)]="appSettings.appName" placeholder="Enter app name">
+                <input matInput [(ngModel)]="appSettings.appName">
               </mat-form-field>
             </div>
 
             <div class="setting-row">
               <span class="setting-label">API Endpoint</span>
-              <mat-form-field appearance="outline" class="full-width">
+              <mat-form-field appearance="outline" floatLabel="always" class="full-width">
                 <mat-label>Backend URL</mat-label>
-                <input matInput [(ngModel)]="appSettings.apiEndpoint" placeholder="Enter API endpoint">
+                <input matInput [(ngModel)]="appSettings.apiEndpoint">
               </mat-form-field>
             </div>
 
             <div class="setting-row">
               <span class="setting-label">Session Timeout (minutes)</span>
-              <mat-form-field appearance="outline" class="full-width">
+              <mat-form-field appearance="outline" floatLabel="always" class="full-width">
                 <mat-label>Timeout</mat-label>
                 <input matInput type="number" [(ngModel)]="appSettings.sessionTimeoutMinutes" min="5" max="480">
               </mat-form-field>
@@ -151,7 +151,7 @@ interface SystemUser {
           <mat-card-content>
             <div class="setting-row">
               <span class="setting-label">Log Retention (days)</span>
-              <mat-form-field appearance="outline" class="full-width">
+              <mat-form-field appearance="outline" floatLabel="always" class="full-width">
                 <mat-label>Days</mat-label>
                 <input matInput type="number" [(ngModel)]="appSettings.logRetentionDays" min="7" max="365">
               </mat-form-field>
@@ -159,7 +159,7 @@ interface SystemUser {
 
             <div class="setting-row">
               <span class="setting-label">Max Upload Size (MB)</span>
-              <mat-form-field appearance="outline" class="full-width">
+              <mat-form-field appearance="outline" floatLabel="always" class="full-width">
                 <mat-label>Size</mat-label>
                 <input matInput type="number" [(ngModel)]="appSettings.maxUploadSizeMB" min="1" max="1000">
               </mat-form-field>
@@ -323,55 +323,65 @@ interface SystemUser {
 
     /* Keep sections compact to reduce vertical overflow */
     .admin-header {
-      margin-bottom: 20px;
-    }
-
-    .admin-header {
       margin-bottom: 32px;
+      padding: 0 24px;
     }
 
     .admin-header h1 {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin: 0 0 12px 0;
+      margin: 0 0 8px 0;
+      padding: 0;
       font-size: 28px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: var(--color-text, #1a1a1a);
     }
 
     .admin-header h1 mat-icon {
-      color: #d71920;
+      color: var(--ts-red, #d71920);
       font-size: 32px;
       width: 32px;
       height: 32px;
     }
 
     .subtitle {
-      color: #666;
+      color: var(--muted-text, #666);
       margin: 0;
+      padding: 0;
       font-size: 14px;
-      line-height: 1.5;
+      line-height: 1.6;
+      letter-spacing: 0.3px;
     }
 
     .settings-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+      padding: 0 24px;
     }
 
     .settings-card {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.08));
       border-radius: 8px;
       height: 100%;
+      background: var(--card-bg, white);
+      border: 1px solid var(--border-color, transparent);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .settings-card mat-card-content {
+      padding: 24px;
+      flex: 1;
     }
 
     .settings-card mat-card-header {
-      border-bottom: 1px solid #e0e0e0;
-      padding: 20px;
-      margin: -16px -16px 0 -16px;
-      background: #fafafa;
+      border-bottom: 1px solid var(--border-color, #e0e0e0);
+      padding: 20px 24px;
+      margin: 0;
+      background: var(--color-surface, #fafafa);
     }
 
     .settings-card mat-card-title {
@@ -381,11 +391,11 @@ interface SystemUser {
       margin: 0;
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: var(--color-text, #1a1a1a);
     }
 
     .settings-card mat-card-title mat-icon {
-      color: #d71920;
+      color: var(--ts-red, #d71920);
       font-size: 24px;
       width: 24px;
       height: 24px;
@@ -394,8 +404,12 @@ interface SystemUser {
     .setting-row {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .setting-row:last-child {
+      margin-bottom: 0;
     }
 
     .setting-row.toggle {
@@ -411,15 +425,18 @@ interface SystemUser {
 
     .setting-label {
       font-weight: 600;
-      color: #1a1a1a;
+      color: var(--color-text);
       font-size: 14px;
-      line-height: 1.4;
+      line-height: 1.5;
+      margin-bottom: 4px;
     }
 
     .help-text {
       font-size: 12px;
-      color: #999;
-      margin: 4px 0 0 0;
+      color: var(--muted-text);
+      margin: 0;
+      padding: 0;
+      line-height: 1.4;
     }
 
     .full-width {
@@ -431,7 +448,7 @@ interface SystemUser {
       justify-content: space-between;
       align-items: center;
       padding: 14px 0;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid var(--border-color);
       font-size: 14px;
     }
 
@@ -441,13 +458,13 @@ interface SystemUser {
     }
 
     .info-row .label {
-      color: #666;
+      color: var(--muted-text);
       font-weight: 500;
       line-height: 1.4;
     }
 
     .info-row .value {
-      color: #1a1a1a;
+      color: var(--color-text);
       font-weight: 600;
       line-height: 1.4;
     }
@@ -456,7 +473,7 @@ interface SystemUser {
       display: flex;
       align-items: center;
       gap: 6px;
-      color: #4caf50;
+      color: var(--ts-green, #4caf50);
     }
 
     .status-active mat-icon {
@@ -469,7 +486,8 @@ interface SystemUser {
       display: flex;
       gap: 16px;
       justify-content: flex-end;
-      margin-top: 24px;
+      margin-top: 32px;
+      padding: 0 24px 24px 24px;
     }
 
     .action-buttons button {
@@ -487,7 +505,8 @@ interface SystemUser {
     }
 
     .admin-tabs {
-      margin-top: 24px;
+      margin-top: 32px;
+      margin-bottom: 0;
     }
 
     .tab-icon {
@@ -495,23 +514,30 @@ interface SystemUser {
     }
 
     .users-container {
-      padding: 12px 0 8px;
+      padding: 24px;
     }
 
     .users-card {
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.1));
       border-radius: 8px;
       overflow: hidden;
+      background: var(--card-bg, white);
+      border: 1px solid var(--border-color, transparent);
+    }
+
+    .users-card mat-card-content {
+      padding: 0;
     }
 
     .users-card mat-card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px;
-      border-bottom: 1px solid #e0e0e0;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color, #e0e0e0);
       margin: 0;
-      background: #fafafa;
+      background: var(--color-surface, #fafafa);
+      gap: 16px;
     }
 
     .users-card mat-card-title {
@@ -521,11 +547,11 @@ interface SystemUser {
       margin: 0;
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: var(--color-text, #1a1a1a);
     }
 
     .users-card mat-card-title mat-icon {
-      color: #d71920;
+      color: var(--ts-red, #d71920);
       font-size: 24px;
       width: 24px;
       height: 24px;
@@ -548,27 +574,31 @@ interface SystemUser {
 
     .users-table {
       width: 100%;
-      margin-top: 0;
+      margin: 0;
       table-layout: fixed;
       word-break: break-word;
       font-size: 14px;
+      border-collapse: collapse;
     }
 
     .users-table th {
-      background: #f5f5f5;
-      color: #1a1a1a;
+      background: var(--table-header-bg, #f5f5f5);
+      color: var(--table-header-text, var(--color-text));
       font-weight: 600;
-      padding: 12px 16px;
+      padding: 16px 24px;
       text-align: left;
       white-space: normal;
       font-size: 13px;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border-color, #e0e0e0);
     }
 
     .users-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #e0e0e0;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color, #e0e0e0);
       white-space: normal;
       vertical-align: middle;
+      color: var(--color-text);
     }
 
     .role-badge {
@@ -580,21 +610,22 @@ interface SystemUser {
       text-transform: uppercase;
       white-space: nowrap;
       line-height: 1.4;
+      border: 1px solid var(--border-color, transparent);
     }
 
     .role-superadmin {
-      background: #fff3cd;
-      color: #856404;
+      background: var(--chip-bg, #fff3cd);
+      color: var(--chip-text, #856404);
     }
 
     .role-broker {
-      background: #d4edff;
-      color: #0c5aa0;
+      background: var(--chip-bg, #d4edff);
+      color: var(--chip-text, #0c5aa0);
     }
 
     .role-carrier {
-      background: #d4edda;
-      color: #155724;
+      background: var(--chip-bg, #d4edda);
+      color: var(--chip-text, #155724);
     }
 
     .status-badge {
@@ -607,6 +638,7 @@ interface SystemUser {
       font-weight: 600;
       white-space: nowrap;
       line-height: 1.4;
+      border: 1px solid var(--border-color, transparent);
     }
 
     .status-badge mat-icon {
@@ -616,17 +648,17 @@ interface SystemUser {
     }
 
     .status-badge.active {
-      background: #d4edda;
-      color: #155724;
+      background: var(--chip-bg, #d4edda);
+      color: var(--accent-green, #155724);
     }
 
     .status-badge.inactive {
-      background: #f8d7da;
-      color: #721c24;
+      background: var(--chip-bg, #f8d7da);
+      color: var(--accent-red, #721c24);
     }
 
     .action-btn {
-      color: #d71920;
+      color: var(--ts-red, #d71920);
       padding: 4px;
     }
 
@@ -643,7 +675,7 @@ interface SystemUser {
     }
 
     .delete-action {
-      color: #d71920 !important;
+      color: var(--ts-red, #d71920) !important;
     }
 
     /* Override Material toggle colors to use Truckstop red */
@@ -664,12 +696,40 @@ interface SystemUser {
         padding: 16px;
       }
 
+      .admin-header {
+        padding: 0;
+        margin-bottom: 24px;
+      }
+
+      .admin-header h1 {
+        font-size: 24px;
+        margin-bottom: 4px;
+      }
+
       .settings-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 0;
+        margin-bottom: 24px;
+      }
+
+      .settings-card mat-card-header {
+        padding: 16px;
+      }
+
+      .settings-card mat-card-content {
+        padding: 16px;
+      }
+
+      .setting-row {
+        margin-bottom: 16px;
       }
 
       .action-buttons {
         flex-direction: column;
+        padding: 0 0 16px 0;
+        margin-top: 24px;
+        gap: 12px;
       }
 
       .action-buttons button {
@@ -677,10 +737,19 @@ interface SystemUser {
         justify-content: center;
       }
 
+      .users-container {
+        padding: 16px;
+      }
+
       .users-card mat-card-header {
         flex-direction: column;
         gap: 12px;
         align-items: flex-start;
+        padding: 16px;
+      }
+
+      .users-card mat-card-title {
+        width: 100%;
       }
 
       .add-user-btn {
@@ -692,8 +761,17 @@ interface SystemUser {
         font-size: 12px;
       }
 
+      .users-table th {
+        padding: 12px 12px;
+        font-size: 12px;
+      }
+
       .users-table td {
-        padding: 8px;
+        padding: 12px;
+      }
+
+      .admin-tabs {
+        margin-top: 24px;
       }
     }
   `]

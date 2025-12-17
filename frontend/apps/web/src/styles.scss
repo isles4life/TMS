@@ -91,6 +91,29 @@ $ts-dark-theme: mat.define-dark-theme((
   @include mat.all-component-colors($ts-dark-theme);
 }
 
+/* Force slide toggle primary color (red) instead of accent (amber) */
+.mat-mdc-slide-toggle.mat-primary {
+  --mdc-switch-selected-track-color: #d71920;
+  --mdc-switch-selected-handle-color: #d71920;
+  --mdc-switch-selected-hover-track-color: #b31218;
+  --mdc-switch-selected-hover-handle-color: #b31218;
+  --mdc-switch-selected-focus-track-color: #d71920;
+  --mdc-switch-selected-focus-handle-color: #d71920;
+  --mdc-switch-selected-pressed-track-color: #b31218;
+  --mdc-switch-selected-pressed-handle-color: #b31218;
+}
+
+:root.dark-mode .mat-mdc-slide-toggle.mat-primary {
+  --mdc-switch-selected-track-color: #ff4444;
+  --mdc-switch-selected-handle-color: #ff4444;
+  --mdc-switch-selected-hover-track-color: #dd3333;
+  --mdc-switch-selected-hover-handle-color: #dd3333;
+  --mdc-switch-selected-focus-track-color: #ff4444;
+  --mdc-switch-selected-focus-handle-color: #ff4444;
+  --mdc-switch-selected-pressed-track-color: #dd3333;
+  --mdc-switch-selected-pressed-handle-color: #dd3333;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -336,4 +359,253 @@ button .mat-icon,
   display: inline-flex;
   gap: var(--ts-spacing-sm);
   flex-wrap: wrap;
+}
+
+/* Admin Dashboard Dark Mode Enhancements */
+:root.dark-mode {
+  /* Admin container and general */
+  .admin-container {
+    background: var(--ts-page-bg);
+    color: var(--ts-ink);
+  }
+
+  /* Admin tabs */
+  .admin-tabs .mat-mdc-tab-header {
+    border-bottom-color: var(--ts-border);
+  }
+  .admin-tabs .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+    color: var(--ts-red);
+  }
+  .admin-tabs .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label {
+    color: var(--ts-ink-secondary);
+  }
+
+  /* Settings and info cards */
+  .settings-card {
+    background: var(--ts-surface-secondary);
+    border-color: var(--ts-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  .settings-card mat-card-header {
+    background: var(--ts-surface);
+    border-bottom-color: var(--ts-border);
+  }
+  .settings-card mat-card-title {
+    color: var(--ts-ink);
+  }
+  .settings-card mat-card-content {
+    color: var(--ts-ink);
+  }
+
+  /* Users card */
+  .users-card {
+    background: var(--ts-surface-secondary);
+    border-color: var(--ts-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  .users-card mat-card-header {
+    background: var(--ts-surface);
+    border-bottom-color: var(--ts-border);
+  }
+  .users-card mat-card-title {
+    color: var(--ts-ink);
+  }
+
+  /* Form fields */
+  .settings-card .mat-mdc-form-field,
+  .users-card .mat-mdc-form-field {
+    color: var(--ts-ink);
+  }
+  .settings-card .mdc-text-field,
+  .users-card .mdc-text-field {
+    background: var(--ts-surface);
+  }
+  .settings-card .mdc-text-field__input,
+  .users-card .mdc-text-field__input {
+    color: var(--ts-ink) !important;
+  }
+  .settings-card .mdc-text-field__input::placeholder,
+  .users-card .mdc-text-field__input::placeholder {
+    color: var(--ts-ink-secondary);
+    opacity: 0.7;
+  }
+  .settings-card .mdc-notched-outline__leading,
+  .users-card .mdc-notched-outline__leading,
+  .settings-card .mdc-notched-outline__notch,
+  .users-card .mdc-notched-outline__notch,
+  .settings-card .mdc-notched-outline__trailing,
+  .users-card .mdc-notched-outline__trailing {
+    border-color: var(--ts-border) !important;
+  }
+
+  /* Tables */
+  .users-table {
+    background: var(--ts-surface-secondary);
+    color: var(--ts-ink);
+  }
+  .users-table thead {
+    background: var(--ts-surface);
+  }
+  .users-table th {
+    background: var(--ts-surface);
+    color: var(--ts-ink);
+    border-bottom-color: var(--ts-border);
+  }
+  .users-table td {
+    border-bottom-color: var(--ts-border);
+    color: var(--ts-ink);
+  }
+  .users-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Badges and status indicators */
+  .role-badge,
+  .status-badge {
+    border-color: var(--ts-border);
+  }
+  .role-superadmin {
+    background: rgba(255, 180, 77, 0.2);
+    color: var(--ts-amber);
+  }
+  .role-broker {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--ts-green);
+  }
+  .role-carrier {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--ts-green);
+  }
+  .status-badge.active {
+    background: rgba(38, 212, 142, 0.2);
+    color: var(--ts-green);
+  }
+  .status-badge.inactive {
+    background: rgba(255, 68, 68, 0.2);
+    color: var(--ts-red);
+  }
+
+  /* Dividers */
+  .admin-container mat-divider,
+  .settings-card mat-divider,
+  .users-card mat-divider {
+    border-top-color: var(--ts-border);
+  }
+
+  /* Info rows */
+  .info-row {
+    border-bottom-color: var(--ts-border);
+  }
+
+  /* Action buttons */
+  .action-btn {
+    color: var(--ts-red);
+  }
+  .delete-action {
+    color: var(--ts-red) !important;
+  }
+
+  /* Menu panels */
+  .mat-mdc-menu-panel {
+    background: var(--ts-surface-secondary);
+    color: var(--ts-ink);
+  }
+  .mat-mdc-menu-item {
+    color: var(--ts-ink);
+  }
+  .mat-mdc-menu-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Dialog overrides for admin components */
+  .mat-mdc-dialog-container {
+    background: var(--ts-surface-secondary);
+    color: var(--ts-ink);
+  }
+  .mat-mdc-dialog-title {
+    color: var(--ts-ink);
+  }
+
+  /* Slide toggle in admin */
+  .ts-toggle.mat-mdc-slide-toggle.mat-primary {
+    --mdc-switch-selected-track-color: var(--ts-red);
+    --mdc-switch-selected-handle-color: var(--ts-red);
+  }
+
+  /* System information card */
+  .info-row {
+    color: var(--ts-ink);
+  }
+  .info-row .label {
+    color: var(--ts-ink-secondary);
+  }
+  .info-row .value {
+    color: var(--ts-ink);
+  }
+  .status-active {
+    color: var(--ts-green) !important;
+  }
+  .status-active mat-icon {
+    color: var(--ts-green) !important;
+  }
+
+  /* Users card header and content */
+  .users-card mat-card-header {
+    background: var(--ts-surface);
+    border-bottom-color: var(--ts-border);
+  }
+  .users-card mat-card-title {
+    color: var(--ts-ink);
+  }
+  .users-card mat-card-title mat-icon {
+    color: var(--ts-red);
+  }
+  .users-card .add-user-btn {
+    color: var(--ts-ink);
+  }
+
+  /* Material Data Table Headers in dark mode */
+  .mat-mdc-header-row,
+  .mdc-data-table__header-row {
+    background: var(--ts-surface);
+    border-bottom: 2px solid var(--ts-border);
+  }
+
+  .mat-mdc-header-cell,
+  .mdc-data-table__header-cell {
+    background: var(--ts-surface) !important;
+    color: var(--ts-ink) !important;
+    border-bottom: 2px solid var(--ts-border) !important;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 16px 24px !important;
+  }
+
+  /* Specific column headers */
+  .mat-column-email,
+  .mat-column-name,
+  .mat-column-role,
+  .mat-column-status,
+  .mat-column-lastLogin,
+  .mat-column-actions {
+    color: var(--ts-ink) !important;
+  }
+
+  /* Table rows in dark mode */
+  .mat-mdc-row,
+  .mdc-data-table__row {
+    background: var(--ts-surface-secondary) !important;
+    border-bottom: 1px solid var(--ts-border) !important;
+  }
+
+  .mat-mdc-row:hover,
+  .mdc-data-table__row:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .mat-mdc-cell,
+  .mdc-data-table__cell {
+    color: var(--ts-ink) !important;
+    padding: 16px 24px !important;
+  }
 }
