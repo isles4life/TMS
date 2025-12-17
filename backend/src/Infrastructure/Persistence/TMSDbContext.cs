@@ -10,6 +10,7 @@ using TMS.Domain.Entities.Loads;
 using TMS.Domain.Entities.Trips;
 using TMS.Domain.Entities.Users;
 using TMS.Domain.Entities.Tracking;
+using TMS.Domain.Entities.Notes;
 
 /// <summary>
 /// Database context for TMS
@@ -34,6 +35,8 @@ public class TMSDbContext : DbContext
     public DbSet<GeofenceAlert> GeofenceAlerts { get; set; }
     public DbSet<ProofOfDelivery> ProofsOfDelivery { get; set; }
     public DbSet<PODPhoto> PODPhotos { get; set; }
+    public DbSet<CheckCall> CheckCalls { get; set; }
+    public DbSet<Note> Notes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -118,6 +121,32 @@ public class TMSDbContext : DbContext
             .WithMany()
             .HasForeignKey(d => d.DriverId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // CheckCall relationships
+        modelBuilder.Entity<CheckCall>()
+            .HasOne(cc => cc.Load)
+            .WithMany(l => l.CheckCalls)
+            .HasForeignKey(cc => cc.LoadId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<CheckCall>()
+            .HasOne(cc => cc.Driver)
+            .WithMany(d => d.CheckCalls)
+            .HasForeignKey(cc => cc.DriverId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Note relationships (self-referencing for threading)
+        modelBuilder.Entity<Note>()
+            .HasOne(n => n.ParentNote)
+            .WithMany(n => n.Replies)
+            .HasForeignKey(n => n.ParentNoteId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Note>()
+            .HasIndex(n => new { n.EntityType, n.EntityId });
+
+        modelBuilder.Entity<Note>()
+            .HasIndex(n => n.IsPinned);
 
         modelBuilder.Entity<Dispatch>()
             .HasOne(d => d.Tractor)

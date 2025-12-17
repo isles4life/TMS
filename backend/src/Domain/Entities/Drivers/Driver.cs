@@ -7,6 +7,7 @@ using TMS.Domain.Common;
 using TMS.Domain.ValueObjects;
 using TMS.Domain.Entities.Companies;
 using TMS.Domain.Entities.Trips;
+using TMS.Domain.Entities.Loads;
 
 /// <summary>
 /// Driver entity with CDL and compliance tracking
@@ -28,6 +29,7 @@ public class Driver : BaseEntity
     public Carrier? Carrier { get; set; }
     public ICollection<Trip> Trips { get; set; } = [];
     public ICollection<ComplianceDocument> ComplianceDocuments { get; set; } = [];
+    public ICollection<CheckCall> CheckCalls { get; set; } = [];
 }
 
 public enum DriverStatus

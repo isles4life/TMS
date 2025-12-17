@@ -359,6 +359,70 @@ namespace TMS.Infrastructure.Migrations
                     b.ToTable("PowerOnlyTractors");
                 });
 
+            modelBuilder.Entity("TMS.Domain.Entities.Loads.CheckCall", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CheckInTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactMethod")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("DriverId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ETA")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsTruckEmpty")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("LoadId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("TrailerTemperature")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("LoadId");
+
+                    b.ToTable("CheckCalls");
+                });
+
             modelBuilder.Entity("TMS.Domain.Entities.Loads.Dispatch", b =>
                 {
                     b.Property<Guid>("Id")
@@ -535,7 +599,7 @@ namespace TMS.Infrastructure.Migrations
                     b.Property<DateTime>("CapturedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasDefaultValue(new DateTime(2025, 12, 11, 19, 58, 49, 206, DateTimeKind.Utc).AddTicks(5648));
+                        .HasDefaultValue(new DateTime(2025, 12, 17, 22, 14, 31, 570, DateTimeKind.Utc).AddTicks(3922));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
@@ -711,6 +775,67 @@ namespace TMS.Infrastructure.Migrations
                     b.HasIndex("EquipmentId");
 
                     b.ToTable("MaintenanceRecords");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Notes.Note", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPinned")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsVisibleToCustomer")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("ParentNoteId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsPinned");
+
+                    b.HasIndex("ParentNoteId");
+
+                    b.HasIndex("EntityType", "EntityId");
+
+                    b.ToTable("Notes");
                 });
 
             modelBuilder.Entity("TMS.Domain.Entities.Tracking.DriverLocation", b =>
@@ -1233,6 +1358,25 @@ namespace TMS.Infrastructure.Migrations
                     b.Navigation("Carrier");
                 });
 
+            modelBuilder.Entity("TMS.Domain.Entities.Loads.CheckCall", b =>
+                {
+                    b.HasOne("TMS.Domain.Entities.Drivers.Driver", "Driver")
+                        .WithMany("CheckCalls")
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Domain.Entities.Loads.Load", "Load")
+                        .WithMany("CheckCalls")
+                        .HasForeignKey("LoadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Load");
+                });
+
             modelBuilder.Entity("TMS.Domain.Entities.Loads.Dispatch", b =>
                 {
                     b.HasOne("TMS.Domain.Entities.Drivers.Driver", "Driver")
@@ -1407,6 +1551,16 @@ namespace TMS.Infrastructure.Migrations
                     b.Navigation("Equipment");
                 });
 
+            modelBuilder.Entity("TMS.Domain.Entities.Notes.Note", b =>
+                {
+                    b.HasOne("TMS.Domain.Entities.Notes.Note", "ParentNote")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentNoteId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentNote");
+                });
+
             modelBuilder.Entity("TMS.Domain.Entities.Tracking.DriverLocation", b =>
                 {
                     b.HasOne("TMS.Domain.Entities.Loads.Dispatch", "Dispatch")
@@ -1482,6 +1636,8 @@ namespace TMS.Infrastructure.Migrations
 
             modelBuilder.Entity("TMS.Domain.Entities.Drivers.Driver", b =>
                 {
+                    b.Navigation("CheckCalls");
+
                     b.Navigation("ComplianceDocuments");
 
                     b.Navigation("Trips");
@@ -1496,6 +1652,8 @@ namespace TMS.Infrastructure.Migrations
 
             modelBuilder.Entity("TMS.Domain.Entities.Loads.Load", b =>
                 {
+                    b.Navigation("CheckCalls");
+
                     b.Navigation("Documents");
 
                     b.Navigation("Trips");
@@ -1504,6 +1662,11 @@ namespace TMS.Infrastructure.Migrations
             modelBuilder.Entity("TMS.Domain.Entities.Loads.ProofOfDelivery", b =>
                 {
                     b.Navigation("Photos");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Notes.Note", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("TMS.Domain.Entities.Trailer", b =>

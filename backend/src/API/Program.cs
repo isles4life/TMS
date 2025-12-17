@@ -190,6 +190,8 @@ try
     app.RegisterTrackingEndpoints();
     app.RegisterRouteEndpoints();
     app.MapProofOfDeliveryEndpoints();
+    app.RegisterCheckCallEndpoints();
+    app.RegisterNoteEndpoints();
 
     // Register SignalR hubs
     app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");

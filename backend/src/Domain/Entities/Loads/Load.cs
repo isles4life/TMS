@@ -52,6 +52,7 @@ public class Load : BaseEntity
     public ICollection<Trip> Trips { get; set; } = [];
     public ICollection<Document> Documents { get; set; } = [];
     public ProofOfDelivery? ProofOfDelivery { get; set; }
+    public ICollection<CheckCall> CheckCalls { get; set; } = [];
 }
 
 public enum LoadType
