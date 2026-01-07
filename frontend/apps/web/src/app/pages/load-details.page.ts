@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../components/page-header.component';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -51,6 +52,7 @@ const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
     MatIconModule,
     MatChipsModule,
     MatTabsModule,
+    MatSnackBarModule,
     PageHeaderComponent
   ],
   template: `
@@ -60,7 +62,10 @@ const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
         [title]="load?.id ?? 'Loading...'"
         [description]="load?.origin + ' to ' + load?.destination"
         [hasActions]="true">
-        <button mat-stroked-button color="primary">Share</button>
+        <button mat-stroked-button color="primary" (click)="shareLoad()">
+          <mat-icon>share</mat-icon>
+          Share
+        </button>
       </app-ts-page-header>
 
       
@@ -184,7 +189,10 @@ export class LoadDetailsPage implements OnInit, OnDestroy {
   load: LoadDetail | undefined;
   private destroy$ = new Subject<void>();
 
-  constructor(private readonly route: ActivatedRoute) {}
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
@@ -201,5 +209,53 @@ export class LoadDetailsPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  async shareLoad(): Promise<void> {
+    if (!this.load) {
+      this.snackBar.open('No load details to share', 'OK', { duration: 3000 });
+      return;
+    }
+
+    const shareText = `Load ${this.load.id}: ${this.load.origin} → ${this.load.destination}
+Equipment: ${this.load.equipment}
+Rate: ${this.load.rate}
+Pickup: ${this.load.pickup}
+Status: ${this.load.status}`;
+
+    const shareUrl = window.location.href;
+
+    // Try native Web Share API first (mobile browsers)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Load ${this.load.id}`,
+          text: shareText,
+          url: shareUrl
+        });
+        this.snackBar.open('Load shared successfully!', 'OK', { duration: 3000 });
+      } catch (error: any) {
+        // User cancelled share or error occurred
+        if (error.name !== 'AbortError') {
+          console.error('Share error:', error);
+          this.fallbackCopyToClipboard(shareText, shareUrl);
+        }
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      this.fallbackCopyToClipboard(shareText, shareUrl);
+    }
+  }
+
+  private async fallbackCopyToClipboard(text: string, url: string): Promise<void> {
+    const fullText = `${text}\n\nView details: ${url}`;
+    
+    try {
+      await navigator.clipboard.writeText(fullText);
+      this.snackBar.open('Load details copied to clipboard!', 'OK', { duration: 3000 });
+    } catch (error) {
+      console.error('Clipboard error:', error);
+      this.snackBar.open('Unable to share load details', 'OK', { duration: 3000 });
+    }
   }
 }
