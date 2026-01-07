@@ -83,6 +83,13 @@ export class InvoiceViewComponent implements OnInit {
     }
   }
 
+  markAsUnread(): void {
+    if (this.invoice) {
+      this.updateStatus('sent');
+      this.snackBar.open('Invoice marked as unread', 'Close', { duration: 3000 });
+    }
+  }
+
   getStatusColor(status: string): string {
     const statusColors: Record<string, string> = {
       'draft': 'accent',

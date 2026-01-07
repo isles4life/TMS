@@ -39,6 +39,10 @@
           <mat-icon>visibility</mat-icon>
           <span>Mark as Viewed</span>
         </button>
+        <button mat-menu-item (click)="markAsUnread()" [disabled]="invoice.status !== 'viewed'">
+          <mat-icon>mark_email_unread</mat-icon>
+          <span>Mark as Unread</span>
+        </button>
         <button mat-menu-item (click)="updateStatus('paid')" [disabled]="invoice.status === 'paid'">
           <mat-icon>check_circle</mat-icon>
           <span>Mark as Paid</span>
@@ -184,6 +188,10 @@
             <button mat-stroked-button (click)="updateStatus('viewed')" [disabled]="invoice.status === 'viewed'">
               <mat-icon>visibility</mat-icon>
               Viewed
+            </button>
+            <button mat-stroked-button (click)="markAsUnread()" [disabled]="invoice.status !== 'viewed'">
+              <mat-icon>mark_email_unread</mat-icon>
+              Mark Unread
             </button>
             <button mat-stroked-button (click)="updateStatus('paid')" [disabled]="invoice.status === 'paid'">
               <mat-icon>check_circle</mat-icon>

@@ -143,6 +143,11 @@
             <mat-icon>visibility</mat-icon>
             <span>Mark as Viewed</span>
           </button>
+          <button mat-menu-item (click)="updateStatus(invoice.id, 'sent', invoice.invoiceNumber)"
+                  [disabled]="invoice.status !== 'viewed'">
+            <mat-icon>mark_email_unread</mat-icon>
+            <span>Mark as Unviewed</span>
+          </button>
           <button mat-menu-item (click)="updateStatus(invoice.id, 'paid', invoice.invoiceNumber)"
                   [disabled]="invoice.status === 'paid'">
             <mat-icon>check_circle</mat-icon>
