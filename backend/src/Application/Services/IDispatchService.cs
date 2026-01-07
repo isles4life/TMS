@@ -12,6 +12,7 @@ public interface IDispatchService
     Task<DispatchResponse> AssignLoadAsync(DispatchRequest request);
     Task<DispatchResponse> AcceptDispatchAsync(Guid dispatchId);
     Task<DispatchResponse> RejectDispatchAsync(Guid dispatchId, string reason);
+    Task<DispatchResponse> CancelDispatchAsync(Guid dispatchId);
     Task<List<DispatchResponse>> GetActiveDispatchesAsync(Guid? driverId = null);
     Task<DriverAvailabilityResponse> UpdateDriverAvailabilityAsync(DriverAvailabilityRequest request);
     Task<DispatchResponse> CompleteDeliveryAsync(Guid dispatchId, Guid loadId);

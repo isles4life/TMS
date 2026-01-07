@@ -46,11 +46,10 @@ export interface DriverMatchResponse {
   performanceScore: number;
   distanceFromPickupMiles: number;
   hoursAvailable: number;
-  onTimeDeliveryRate: number;
+  onTimeRate: number; // Backend uses onTimeRate instead of onTimeDeliveryRate
   acceptanceRate: number;
-  completedLoadsCount: number;
   currentLocation?: string;
-  status: 'Available' | 'OnDuty' | 'OffDuty' | 'OnBreak' | 'Maintenance' | 'OutOfService';
+  availabilityStatus: 'Available' | 'OnDuty' | 'OffDuty' | 'OnBreak' | 'Maintenance' | 'OutOfService'; // Backend uses availabilityStatus
   isRecommended: boolean;
 }
 
@@ -96,11 +95,10 @@ const MOCK_DRIVER_MATCHES: DriverMatchResponse[] = [
     performanceScore: 92.5,
     distanceFromPickupMiles: 15.3,
     hoursAvailable: 10.5,
-    onTimeDeliveryRate: 0.96,
+    onTimeRate: 0.96,
     acceptanceRate: 0.92,
-    completedLoadsCount: 247,
-    currentLocation: 'Boise, ID',
-    status: 'Available',
+    currentLocation: 'Nampa, ID',
+    availabilityStatus: 'Available',
     isRecommended: true
   },
   {
@@ -117,11 +115,10 @@ const MOCK_DRIVER_MATCHES: DriverMatchResponse[] = [
     performanceScore: 88.0,
     distanceFromPickupMiles: 45.7,
     hoursAvailable: 11.0,
-    onTimeDeliveryRate: 0.94,
+    onTimeRate: 0.94,
     acceptanceRate: 0.88,
-    completedLoadsCount: 189,
     currentLocation: 'Nampa, ID',
-    status: 'OnDuty',
+    availabilityStatus: 'OnDuty',
     isRecommended: false
   },
   {
@@ -138,11 +135,10 @@ const MOCK_DRIVER_MATCHES: DriverMatchResponse[] = [
     performanceScore: 89.0,
     distanceFromPickupMiles: 32.1,
     hoursAvailable: 8.5,
-    onTimeDeliveryRate: 0.95,
+    onTimeRate: 0.95,
     acceptanceRate: 0.85,
-    completedLoadsCount: 312,
     currentLocation: 'Meridian, ID',
-    status: 'Available',
+    availabilityStatus: 'Available',
     isRecommended: false
   },
   {
@@ -159,11 +155,10 @@ const MOCK_DRIVER_MATCHES: DriverMatchResponse[] = [
     performanceScore: 86.5,
     distanceFromPickupMiles: 68.4,
     hoursAvailable: 9.5,
-    onTimeDeliveryRate: 0.91,
-    acceptanceRate: 0.82,
-    completedLoadsCount: 156,
+    onTimeRate: 0.94,
+    acceptanceRate: 0.89,
     currentLocation: 'Caldwell, ID',
-    status: 'OnBreak',
+    availabilityStatus: 'OnDuty',
     isRecommended: false
   },
   {
@@ -180,11 +175,10 @@ const MOCK_DRIVER_MATCHES: DriverMatchResponse[] = [
     performanceScore: 79.5,
     distanceFromPickupMiles: 92.6,
     hoursAvailable: 10.0,
-    onTimeDeliveryRate: 0.87,
+    onTimeRate: 0.87,
     acceptanceRate: 0.79,
-    completedLoadsCount: 98,
     currentLocation: 'Twin Falls, ID',
-    status: 'Available',
+    availabilityStatus: 'Available',
     isRecommended: false
   },
   {
@@ -201,11 +195,10 @@ const MOCK_DRIVER_MATCHES: DriverMatchResponse[] = [
     performanceScore: 90.5,
     distanceFromPickupMiles: 21.8,
     hoursAvailable: 9.0,
-    onTimeDeliveryRate: 0.93,
+    onTimeRate: 0.93,
     acceptanceRate: 0.90,
-    completedLoadsCount: 203,
     currentLocation: 'Eagle, ID',
-    status: 'OnDuty',
+    availabilityStatus: 'OnDuty',
     isRecommended: false
   },
   {
@@ -222,11 +215,10 @@ const MOCK_DRIVER_MATCHES: DriverMatchResponse[] = [
     performanceScore: 79.0,
     distanceFromPickupMiles: 105.2,
     hoursAvailable: 8.0,
-    onTimeDeliveryRate: 0.84,
+    onTimeRate: 0.84,
     acceptanceRate: 0.76,
-    completedLoadsCount: 134,
     currentLocation: 'Pocatello, ID',
-    status: 'Maintenance',
+    availabilityStatus: 'Maintenance',
     isRecommended: false
   },
   {
@@ -243,11 +235,10 @@ const MOCK_DRIVER_MATCHES: DriverMatchResponse[] = [
     performanceScore: 86.0,
     distanceFromPickupMiles: 38.9,
     hoursAvailable: 10.5,
-    onTimeDeliveryRate: 0.92,
+    onTimeRate: 0.92,
     acceptanceRate: 0.86,
-    completedLoadsCount: 178,
     currentLocation: 'Kuna, ID',
-    status: 'Available',
+    availabilityStatus: 'Available',
     isRecommended: false
   }
 ];
@@ -443,6 +434,32 @@ export class DispatchService {
         };
         
         return of(mockResponse).pipe(delay(300));
+      })
+    );
+  }
+
+  /**
+   * Cancel a dispatch assignment
+   */
+  cancelDispatch(dispatchId: string): Observable<DispatchResponse> {
+    return this.http.post<DispatchResponse>(
+      `${this.apiUrl}/${dispatchId}/cancel`,
+      {}
+    ).pipe(
+      tap(() => this.refreshActiveDispatches()),
+      catchError(error => {
+        console.warn('Backend offline, simulating cancellation:', error);
+        const index = MOCK_ACTIVE_DISPATCHES.findIndex(d => d.id === dispatchId);
+        if (index === -1) {
+          return throwError(() => new Error('Dispatch not found'));
+        }
+        
+        const dispatch = MOCK_ACTIVE_DISPATCHES[index];
+        dispatch.status = 'Cancelled';
+        MOCK_ACTIVE_DISPATCHES.splice(index, 1);
+        this.activeDispatchesSubject.next([...MOCK_ACTIVE_DISPATCHES]);
+        
+        return of(dispatch).pipe(delay(300));
       })
     );
   }

@@ -37,6 +37,11 @@ public static class DispatchEndpoints
             .WithName("RejectDispatch")
             .Produces<DispatchResponse>(StatusCodes.Status200OK);
 
+        // Cancel dispatch
+        group.MapPost("/{dispatchId}/cancel", CancelDispatch)
+            .WithName("CancelDispatch")
+            .Produces<DispatchResponse>(StatusCodes.Status200OK);
+
         // Get active dispatches
         group.MapGet("/active", GetActiveDispatches)
             .WithName("GetActiveDispatches")
@@ -88,6 +93,14 @@ public static class DispatchEndpoints
             DispatchId = dispatchId,
             Reason = request.Reason 
         };
+        var dispatch = await mediator.Send(command);
+        
+        return Results.Ok(dispatch);
+    }
+
+    private static async Task<IResult> CancelDispatch(Guid dispatchId, IMediator mediator)
+    {
+        var command = new CancelDispatchCommand { DispatchId = dispatchId };
         var dispatch = await mediator.Send(command);
         
         return Results.Ok(dispatch);

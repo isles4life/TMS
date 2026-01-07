@@ -146,9 +146,9 @@ import { Router } from '@angular/router';
               <th mat-header-cell *matHeaderCellDef>Status</th>
               <td mat-cell *matCellDef="let match">
                 <mat-chip 
-                  [ngClass]="['status-chip', 'status-' + getStatusNormalized(match.status)]"
-                  [matTooltip]="'Driver is ' + match.status">
-                  {{ match.status }}
+                  [ngClass]="['status-chip', 'status-' + getStatusNormalized(match.availabilityStatus)]"
+                  [matTooltip]="'Driver is ' + match.availabilityStatus">
+                  {{ match.availabilityStatus }}
                 </mat-chip>
               </td>
             </ng-container>
@@ -218,9 +218,8 @@ import { Router } from '@angular/router';
               <th mat-header-cell *matHeaderCellDef>Performance</th>
               <td mat-cell *matCellDef="let match">
                 <div class="performance-info">
-                  <small>On-Time: {{ (match.onTimeDeliveryRate * 100).toFixed(0) }}%</small>
+                  <small>On-Time: {{ (match.onTimeRate * 100).toFixed(0) }}%</small>
                   <small>Acceptance: {{ (match.acceptanceRate * 100).toFixed(0) }}%</small>
-                  <small>Loads: {{ match.completedLoadsCount }}</small>
                 </div>
               </td>
             </ng-container>
@@ -685,6 +684,8 @@ export class DispatchDashboardComponent implements OnInit {
     this.dispatchService.findDriverMatches(this.currentLoadId, 10)
       .subscribe({
         next: (matches: DriverMatchResponse[]) => {
+          console.log('Received driver matches:', matches);
+          console.log('First driver availabilityStatus:', matches[0]?.availabilityStatus);
           this.driverMatches = matches;
           this.loading = false;
           if (matches.length === 0) {
@@ -739,46 +740,51 @@ export class DispatchDashboardComponent implements OnInit {
       return;
     }
 
-    // Remove from active dispatches immediately (optimistic update)
-    this.activeDispatches = this.activeDispatches.filter(d => d.id !== dispatch.id);
-    
-    // Add the driver back to available matches if they had score data
-    if (dispatch.totalScore) {
-      const restoredMatch: DriverMatchResponse = {
-        driverId: dispatch.driverId,
-        driverName: `Driver ${dispatch.driverId}`,
-        tractorId: dispatch.tractorId,
-        trailerId: dispatch.trailerId,
-        totalScore: dispatch.totalScore,
-        proximityScore: dispatch.proximityScore || 0,
-        availabilityScore: dispatch.availabilityScore || 0,
-        performanceScore: dispatch.performanceScore || 0,
-        distanceFromPickupMiles: 0,
-        hoursAvailable: 10,
-        onTimeDeliveryRate: 0.95,
-        acceptanceRate: 0.90,
-        completedLoadsCount: 0,
-        status: 'Available',
-        isRecommended: false
-      };
-      
-      // Add back to the list if not already present
-      if (!this.driverMatches.find(m => m.driverId === dispatch.driverId)) {
-        this.driverMatches = [...this.driverMatches, restoredMatch];
+    this.dispatchService.cancelDispatch(dispatch.id).subscribe({
+      next: () => {
+        // Remove from active dispatches
+        this.activeDispatches = this.activeDispatches.filter(d => d.id !== dispatch.id);
+        
+        // Add the driver back to available matches if they had score data
+        if (dispatch.totalScore) {
+          const restoredMatch: DriverMatchResponse = {
+            driverId: dispatch.driverId,
+            driverName: dispatch.driverName || this.getDriverName(dispatch.driverId),
+            tractorId: dispatch.tractorId,
+            trailerId: dispatch.trailerId,
+            totalScore: dispatch.totalScore,
+            proximityScore: dispatch.proximityScore || 0,
+            availabilityScore: dispatch.availabilityScore || 0,
+            performanceScore: dispatch.performanceScore || 0,
+            distanceFromPickupMiles: 0,
+            hoursAvailable: 10,
+            onTimeRate: 0.95,
+            acceptanceRate: 0.90,
+            availabilityStatus: 'Available',
+            isRecommended: false
+          };
+          
+          // Add back to the list if not already present
+          if (!this.driverMatches.find(m => m.driverId === dispatch.driverId)) {
+            this.driverMatches = [...this.driverMatches, restoredMatch];
+          }
+        }
+        
+        this.snackBar.open(
+          `Cancelled dispatch for Load ${dispatch.loadId}`,
+          'Close',
+          { duration: 3000 }
+        );
+      },
+      error: (error: unknown) => {
+        console.error('Error cancelling dispatch:', error);
+        this.snackBar.open('Error cancelling dispatch', 'Close', { duration: 3000 });
       }
-    }
-    
-    this.snackBar.open(
-      `Cancelled dispatch for Load ${dispatch.loadId}`,
-      'Close',
-      { duration: 3000 }
-    );
-    
-    // In a real implementation, you would call the backend to cancel:
-    // this.dispatchService.cancelDispatch(dispatch.id).subscribe(...)
+    });
   }
 
-  getStatusNormalized(status: string): string {
+  getStatusNormalized(status: string | undefined): string {
+    if (!status) return 'unknown';
     return status.toLowerCase().replace(/\s+/g, '-');
   }
 

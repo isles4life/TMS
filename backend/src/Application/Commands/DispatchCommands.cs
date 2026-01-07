@@ -79,6 +79,29 @@ public class RejectDispatchHandler : IRequestHandler<RejectDispatchCommand, Disp
 }
 
 /// <summary>
+/// Command to cancel a dispatch assignment
+/// </summary>
+public class CancelDispatchCommand : IRequest<DispatchResponse>
+{
+    public Guid DispatchId { get; set; }
+}
+
+public class CancelDispatchHandler : IRequestHandler<CancelDispatchCommand, DispatchResponse>
+{
+    private readonly IDispatchService _dispatchService;
+
+    public CancelDispatchHandler(IDispatchService dispatchService)
+    {
+        _dispatchService = dispatchService;
+    }
+
+    public async Task<DispatchResponse> Handle(CancelDispatchCommand request, CancellationToken cancellationToken)
+    {
+        return await _dispatchService.CancelDispatchAsync(request.DispatchId);
+    }
+}
+
+/// <summary>
 /// Command to update driver availability and location
 /// </summary>
 public class UpdateDriverAvailabilityCommand : IRequest<DriverAvailabilityResponse>

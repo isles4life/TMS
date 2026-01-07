@@ -249,6 +249,47 @@ public class DispatchService : IDispatchService
         };
     }
 
+    public async Task<DispatchResponse> CancelDispatchAsync(Guid dispatchId)
+    {
+        _logger.LogInformation("Cancelling dispatch {DispatchId}", dispatchId);
+
+        var dispatch = await _context.Dispatches
+            .Include(d => d.Load)
+            .Include(d => d.Driver)
+            .FirstOrDefaultAsync(d => d.Id == dispatchId);
+        if (dispatch == null)
+        {
+            throw new InvalidOperationException($"Dispatch {dispatchId} not found");
+        }
+
+        dispatch.Status = DispatchStatus.Cancelled;
+        dispatch.UpdatedAt = DateTime.UtcNow;
+
+        // Return driver to Available status
+        var driverAvailability = await _context.DriverAvailabilities
+            .FirstOrDefaultAsync(d => d.DriverId == dispatch.DriverId);
+        
+        if (driverAvailability != null)
+        {
+            driverAvailability.Status = AvailabilityStatus.Available;
+            driverAvailability.UpdatedAt = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new DispatchResponse
+        {
+            Id = dispatch.Id,
+            LoadId = dispatch.LoadId,
+            LoadNumber = dispatch.Load.LoadNumber,
+            DriverId = dispatch.DriverId,
+            DriverName = $"{dispatch.Driver.FirstName} {dispatch.Driver.LastName}",
+            Status = dispatch.Status.ToString(),
+            Method = dispatch.Method.ToString(),
+            AssignedAt = dispatch.AssignedAt
+        };
+    }
+
     public async Task<List<DispatchResponse>> GetActiveDispatchesAsync(Guid? driverId = null)
     {
         var query = _context.Dispatches
