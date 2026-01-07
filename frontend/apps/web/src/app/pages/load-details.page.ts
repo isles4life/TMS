@@ -78,7 +78,7 @@ const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
           <div class="panel__header">
             <div>
               <p class="eyebrow">Route</p>
-                <h3>{{ load?.origin }} → {{ load?.destination }}</h3>
+                <h3>{{ load?.origin }} &rarr; {{ load?.destination }}</h3>
             </div>
             <mat-chip color="primary" selected>{{ load?.status }}</mat-chip>
           </div>
