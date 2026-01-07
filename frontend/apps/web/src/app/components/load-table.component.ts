@@ -52,7 +52,7 @@ export interface LoadRow {
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Status</th>
           <td mat-cell *matCellDef="let row">
-            <mat-chip [color]="row.status === 'Available' ? 'primary' : row.status === 'Pending' ? 'accent' : undefined" selected>{{ row.status }}</mat-chip>
+            <mat-chip [ngClass]="'status-' + row.status.toLowerCase()">{{ row.status }}</mat-chip>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -73,7 +73,7 @@ export interface LoadRow {
           <mat-card class="load-card" (click)="navigate(row)" role="button" tabindex="0">
           <div class="load-card__header">
             <span class="id">#{{ row.id }}</span>
-            <mat-chip [color]="row.status === 'Available' ? 'primary' : row.status === 'Pending' ? 'accent' : undefined" selected>{{ row.status }}</mat-chip>
+            <mat-chip [ngClass]="'status-' + row.status.toLowerCase()">{{ row.status }}</mat-chip>
           </div>
           <div class="pair"><mat-icon>trip_origin</mat-icon><span>{{ row.origin }}</span></div>
           <div class="pair"><mat-icon>flag</mat-icon><span>{{ row.destination }}</span></div>
@@ -93,6 +93,24 @@ export interface LoadRow {
     mat-chip { font-weight: 700; }
     .clickable { cursor: pointer; }
     .clickable:hover { background: rgba(0,0,0,0.02); }
+
+    mat-chip.status-available {
+      background-color: #10b981 !important;
+      color: white !important;
+      font-weight: 600;
+    }
+
+    mat-chip.status-pending {
+      background-color: #f59e0b !important;
+      color: white !important;
+      font-weight: 600;
+    }
+
+    mat-chip.status-booked {
+      background-color: #3b82f6 !important;
+      color: white !important;
+      font-weight: 600;
+    }
     .load-card {
       border: 1px solid var(--ts-border);
       border-radius: 12px;

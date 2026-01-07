@@ -24,12 +24,44 @@
       display: grid;
       grid-template-columns: auto 1fr;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      box-shadow: var(--shadow-sm);
+      border: 3px solid var(--border-color);
+      border-radius: 10px;
+      padding: 18px 20px;
+      box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.12), 
+        0 2px 4px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--ts-red) 0%, #b31218 100%);
+        opacity: 0.6;
+      }
+
+      &:hover {
+        box-shadow: 
+          0 8px 16px rgba(0, 0, 0, 0.15), 
+          0 4px 8px rgba(0, 0, 0, 0.1),
+          0 0 0 2px rgba(215, 25, 32, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        transform: translateY(-3px) scale(1.02);
+        border-color: var(--ts-red);
+
+        &::after {
+          height: 5px;
+          opacity: 1;
+        }
+      }
 
       .stat-icon {
         width: 40px;
@@ -143,38 +175,74 @@
   .invoices-list {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 24px;
 
     .invoice-card {
       background: var(--card-bg);
-      border-radius: var(--radius-md);
-      transition: all 0.3s ease;
-      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 3px solid var(--border-color);
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.15), 
+        0 2px 6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: linear-gradient(180deg, var(--ts-red) 0%, #b31218 100%);
+        opacity: 0.8;
+      }
 
       &:hover {
-        box-shadow: var(--shadow-sm);
-        border-color: var(--border-color);
+        box-shadow: 
+          0 12px 24px rgba(0, 0, 0, 0.2), 
+          0 6px 12px rgba(0, 0, 0, 0.15),
+          0 0 0 3px rgba(215, 25, 32, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        border-color: var(--ts-red);
+        transform: translateY(-4px) scale(1.01);
         background: var(--table-row-hover-bg);
+
+        &::before {
+          width: 6px;
+          opacity: 1;
+        }
       }
 
       mat-card-header {
         display: flex;
         align-items: flex-start;
-        padding: 16px;
-        border-bottom: 1px solid var(--border-color);
+        padding: 20px 24px 20px 28px;
+        border-bottom: 3px solid var(--border-color);
+        background: linear-gradient(135deg, 
+          var(--card-bg) 0%, 
+          var(--surface-secondary) 50%,
+          var(--card-bg) 100%);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
         .header-left {
           flex: 1;
 
           mat-card-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: var(--color-text);
+            letter-spacing: -0.02em;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
           }
 
           mat-card-subtitle {
             font-size: 14px;
             color: var(--muted-text);
+            font-weight: 500;
           }
         }
 
@@ -229,7 +297,7 @@
       }
 
       mat-card-content {
-          padding: 16px;
+          padding: 24px 24px 24px 28px;
 
         .invoice-details {
           display: grid;
