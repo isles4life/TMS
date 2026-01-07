@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -67,7 +67,7 @@ import { MatIconModule } from '@angular/material/icon';
   `]
 })
 export class LoginPage {
-  private fb = inject(FormBuilder);
+  constructor(private fb: FormBuilder) {}
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],

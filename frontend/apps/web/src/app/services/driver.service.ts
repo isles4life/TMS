@@ -16,7 +16,7 @@ export interface Driver {
   providedIn: 'root'
 })
 export class DriverService {
-  private api = inject(ApiService);
+  constructor(private api: ApiService) {}
 
   getAllDrivers(): Observable<Driver[]> {
     return this.api.get<Driver[]>('drivers');

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -448,8 +448,6 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
   `]
 })
 export class LiveTrackingDashboardComponent implements OnInit, OnDestroy {
-  private readonly trackingService = inject(RealTimeTrackingService);
-  private readonly snackBar = inject(MatSnackBar);
   private destroy$ = new Subject<void>();
 
   activeTrackers: ActiveTracker[] = [];
@@ -457,6 +455,11 @@ export class LiveTrackingDashboardComponent implements OnInit, OnDestroy {
   isConnected = false;
   isTracking = false;
   isLoading = true;
+
+  constructor(
+    private readonly trackingService: RealTimeTrackingService,
+    private readonly snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.initializeTracking();

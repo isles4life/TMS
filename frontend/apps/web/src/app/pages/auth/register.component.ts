@@ -28,16 +28,16 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
-  private formBuilder = inject(FormBuilder);
-  private authService = inject(AuthService);
-  private router = inject(Router);
-
   registerForm: FormGroup;
   loading = false;
   error: string | null = null;
   passwordMismatch = false;
 
-  constructor() {
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.registerForm = this.formBuilder.group(
       {
         firstName: ['', [Validators.required]],

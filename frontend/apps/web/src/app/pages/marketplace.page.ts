@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -344,8 +344,8 @@ export class MarketplacePage implements OnInit {
   ];
 
   apiKeyForms = new Map<string, FormGroup>();
-  private snackBar = inject(MatSnackBar);
-  private fb = inject(FormBuilder);
+
+  constructor(private snackBar: MatSnackBar, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.initializeForms();

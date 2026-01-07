@@ -3,6 +3,10 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "paths": {
+      "@tms/core": ["libs/core/src"],
+      "@tms/features/drivers": ["libs/features/drivers/src"]
+    },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,

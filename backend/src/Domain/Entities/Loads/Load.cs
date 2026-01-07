@@ -53,6 +53,7 @@ public class Load : BaseEntity
     public ICollection<Document> Documents { get; set; } = [];
     public ProofOfDelivery? ProofOfDelivery { get; set; }
     public ICollection<CheckCall> CheckCalls { get; set; } = [];
+    public ICollection<LoadStatusHistory> StatusHistory { get; set; } = [];
 }
 
 public enum LoadType
@@ -66,11 +67,40 @@ public enum LoadType
 
 public enum LoadStatus
 {
-    Booked,
-    Dispatched,
-    PickedUp,
-    InTransit,
-    Delivered,
-    Completed,
-    Cancelled
+    // Initial states
+    Draft = 0,
+    Pending = 1,
+    Booked = 2,
+    
+    // Assignment states
+    AwaitingAssignment = 10,
+    Assigned = 11,
+    Dispatched = 12,
+    DriverEnRoute = 13,
+    
+    // Pickup states
+    AtPickup = 20,
+    Loading = 21,
+    PickedUp = 22,
+    
+    // In-transit states
+    InTransit = 30,
+    AtStop = 31,
+    Delayed = 32,
+    
+    // Delivery states
+    AtDelivery = 40,
+    Unloading = 41,
+    Delivered = 42,
+    
+    // Completion states
+    PendingPOD = 50,
+    PODReceived = 51,
+    Invoiced = 52,
+    Completed = 53,
+    
+    // Exception states
+    OnHold = 60,
+    Cancelled = 61,
+    Problem = 62
 }

@@ -590,6 +590,66 @@ namespace TMS.Infrastructure.Migrations
                     b.ToTable("Loads");
                 });
 
+            modelBuilder.Entity("TMS.Domain.Entities.Loads.LoadStatusHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ChangedByUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsAutomatic")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("LoadId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("NewStatus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PreviousStatus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangedAt");
+
+                    b.HasIndex("LoadId");
+
+                    b.ToTable("LoadStatusHistories");
+                });
+
             modelBuilder.Entity("TMS.Domain.Entities.Loads.PODPhoto", b =>
                 {
                     b.Property<Guid>("Id")
@@ -599,7 +659,7 @@ namespace TMS.Infrastructure.Migrations
                     b.Property<DateTime>("CapturedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasDefaultValue(new DateTime(2025, 12, 17, 22, 14, 31, 570, DateTimeKind.Utc).AddTicks(3922));
+                        .HasDefaultValue(new DateTime(2025, 12, 17, 22, 21, 5, 312, DateTimeKind.Utc).AddTicks(7756));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
@@ -1529,6 +1589,17 @@ namespace TMS.Infrastructure.Migrations
                     b.Navigation("Trailer");
                 });
 
+            modelBuilder.Entity("TMS.Domain.Entities.Loads.LoadStatusHistory", b =>
+                {
+                    b.HasOne("TMS.Domain.Entities.Loads.Load", "Load")
+                        .WithMany("StatusHistory")
+                        .HasForeignKey("LoadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Load");
+                });
+
             modelBuilder.Entity("TMS.Domain.Entities.Loads.PODPhoto", b =>
                 {
                     b.HasOne("TMS.Domain.Entities.Loads.ProofOfDelivery", "ProofOfDelivery")
@@ -1655,6 +1726,8 @@ namespace TMS.Infrastructure.Migrations
                     b.Navigation("CheckCalls");
 
                     b.Navigation("Documents");
+
+                    b.Navigation("StatusHistory");
 
                     b.Navigation("Trips");
                 });

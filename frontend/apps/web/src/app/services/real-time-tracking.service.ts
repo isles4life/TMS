@@ -1,4 +1,4 @@
-import { Injectable, NgZone, inject } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
@@ -52,11 +52,10 @@ export interface GeofenceAlert {
   providedIn: 'root'
 })
 export class RealTimeTrackingService {
-  private readonly http = inject(HttpClient);
-  private readonly ngZone = inject(NgZone);
-  
   private readonly apiUrl = 'http://localhost:5000/api/tracking';
   private readonly hubUrl = 'http://localhost:5000/hubs/tracking';
+  
+  constructor(private readonly http: HttpClient, private readonly ngZone: NgZone) {}
   
   private connection: signalR.HubConnection | null = null;
   private connectionStateSubject = new BehaviorSubject<boolean>(false);

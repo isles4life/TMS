@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -105,7 +105,7 @@ export interface FuelPriceInfo {
 export class RouteOptimizationService {
   private readonly apiUrl = `${environment.apiUrl}/routes`;
 
-  private http = inject(HttpClient);
+  constructor(private http: HttpClient) {}
 
   /**
    * Calculate optimized route between two points

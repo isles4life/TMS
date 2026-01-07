@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -316,8 +316,7 @@ export class NotificationsPage implements OnInit {
   notifications: Notification[] = [];
   unreadNotifications: Notification[] = [];
 
-  private notificationService = inject(NotificationService);
-  private router = inject(Router);
+  constructor(private notificationService: NotificationService, private router: Router) {}
 
   ngOnInit() {
     this.loadNotifications();

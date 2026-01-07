@@ -294,9 +294,11 @@ export class DispatchDashboardComponent implements OnInit {
   // Mock load ID for testing - in real app, this would come from route params or selection
   currentLoadId = '00000000-0000-0000-0000-000000000001';
 
-  private dispatchService = inject(DispatchService);
-  private snackBar = inject(MatSnackBar);
-  private router = inject(Router);
+  constructor(
+    private dispatchService: DispatchService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     // Auto-load matches on init

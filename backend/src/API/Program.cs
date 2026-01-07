@@ -88,12 +88,12 @@ builder.Services.AddSignalR();
 // Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        builder.WithOrigins("http://localhost:4200", "http://localhost:3000")
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
+        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200", "http://localhost:3000")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
@@ -192,6 +192,7 @@ try
     app.MapProofOfDeliveryEndpoints();
     app.RegisterCheckCallEndpoints();
     app.RegisterNoteEndpoints();
+    app.RegisterLoadStatusEndpoints();
 
     // Register SignalR hubs
     app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,7 +14,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
-import { AuthService, UserRole } from '../../services/auth.service';
+import { AuthService, UserRole, User } from '../../services/auth.service';
 import { UserDialogComponent, SystemUserPayload } from './user-dialog.component';
 import { EmailService } from '../../services/email.service';
 import { PasswordResetDialogComponent } from './password-reset-dialog.component';
@@ -777,16 +777,20 @@ interface SystemUser {
   `]
 })
 export class AdminDashboardComponent implements OnInit {
-  private authService = inject(AuthService);
-  private snackBar = inject(MatSnackBar);
-  private dialog = inject(MatDialog);
-  private emailService = inject(EmailService);
-
-  currentUser = this.authService.getCurrentUser();
+  currentUser: User | null;
   lastUpdated = new Date();
 
   displayedColumns: string[] = ['email', 'name', 'role', 'status', 'lastLogin', 'actions'];
   systemUsers: SystemUser[] = [];
+
+  constructor(
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private emailService: EmailService
+  ) {
+    this.currentUser = this.authService.getCurrentUser();
+  }
 
   appSettings: AppSettings = {
     maintenanceMode: false,

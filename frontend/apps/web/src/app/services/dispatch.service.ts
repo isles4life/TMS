@@ -85,7 +85,8 @@ export class DispatchService {
   private readonly apiUrl = 'http://localhost:5000/api/dispatch';
   private activeDispatchesSubject = new BehaviorSubject<DispatchResponse[]>([]);
   public activeDispatches$ = this.activeDispatchesSubject.asObservable();
-  private http = inject(HttpClient);
+
+  constructor(private http: HttpClient) {}
 
   /**
    * Find best driver matches for a load using auto-dispatch algorithm

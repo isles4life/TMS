@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -45,10 +45,6 @@ export class InvoicesListComponent implements OnInit {
   selectedStatus = 'all';
   searchQuery = '';
   
-  private invoiceService = inject(InvoiceService);
-  private router = inject(Router);
-  private snackBar = inject(MatSnackBar);
-
   statusOptions = [
     { value: 'all', label: 'All Invoices' },
     { value: 'draft', label: 'Drafts' },
@@ -58,6 +54,12 @@ export class InvoicesListComponent implements OnInit {
     { value: 'overdue', label: 'Overdue' },
     { value: 'cancelled', label: 'Cancelled' }
   ];
+
+  constructor(
+    private invoiceService: InvoiceService,
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.loadInvoices();

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -21,7 +21,7 @@ export interface EmailResponse {
 export class EmailService {
   private apiUrl = 'http://localhost:5000/api/email';
 
-  private http = inject(HttpClient);
+  constructor(private http: HttpClient) {}
 
   sendWelcomeEmail(email: string, firstName: string, lastName: string, tempPassword: string): Observable<EmailResponse> {
     console.log('📧 Sending welcome email to:', email);

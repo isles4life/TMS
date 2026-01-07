@@ -1,11 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTabsModule } from '@angular/material/tabs';
 import { PageHeaderComponent } from '../components/page-header.component';
 import { ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 interface LoadDetail {
   id: string;
@@ -20,6 +22,9 @@ interface LoadDetail {
 };
 
 const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
+  'LB-4821': { id: 'LB-4821', origin: 'Boise, ID', destination: 'Portland, OR', equipment: 'Van', rate: '$2.45 / mile', pickup: 'Today 2:00p', status: 'Available', notes: 'No tarps required. Call 30 minutes before arrival. Facility requires safety vest.', tags: ['Live load', 'Appointment', 'No tarp'] },
+  'LB-4822': { id: 'LB-4822', origin: 'Dallas, TX', destination: 'Denver, CO', equipment: 'Reefer', rate: '$2.92 / mile', pickup: 'Today 5:00p', status: 'Pending', notes: 'Pre-cool to 36F. Lumper included. Temperature monitoring required.', tags: ['Reefer', 'Lumper included', 'Temp monitor'] },
+  'LB-4823': { id: 'LB-4823', origin: 'Atlanta, GA', destination: 'Chicago, IL', equipment: 'Flatbed', rate: '$2.15 / mile', pickup: 'Tomorrow 9:00a', status: 'Booked', notes: 'Straps and edge protectors needed. FCFS until 8p.', tags: ['FCFS', 'Straps', 'Booked'] },
   'LB-6010': { id: 'LB-6010', origin: 'Boise, ID', destination: 'Salt Lake City, UT', equipment: 'Van', rate: '$2.35 / mile', pickup: 'Today 1:00p', status: 'Available', notes: 'No tarps required. Call 30 minutes before arrival. Facility requires safety vest.', tags: ['Live load', 'Appointment', 'No tarp'] },
   'LB-6011': { id: 'LB-6011', origin: 'Seattle, WA', destination: 'Spokane, WA', equipment: 'Flatbed', rate: '$2.18 / mile', pickup: 'Today 4:30p', status: 'Pending', notes: 'Straps and edge protectors needed. FCFS until 8p.', tags: ['FCFS', 'Straps'] },
   'LB-6012': { id: 'LB-6012', origin: 'Dallas, TX', destination: 'Phoenix, AZ', equipment: 'Reefer', rate: '$2.90 / mile', pickup: 'Tomorrow 8:00a', status: 'Available', notes: 'Pre-cool to 36F. Lumper included.', tags: ['Reefer', 'Lumper included'] },
@@ -38,17 +43,27 @@ const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
 @Component({
   selector: 'app-load-details-page',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, PageHeaderComponent],
+  encapsulation: ViewEncapsulation.None,
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    MatTabsModule,
+    PageHeaderComponent
+  ],
   template: `
     <div class="page">
       <app-ts-page-header 
         eyebrow="Load detail" 
-        [title]="title"
-        [description]="description"
+        [title]="load?.id ?? 'Loading...'"
+        [description]="load?.origin + ' to ' + load?.destination"
         [hasActions]="true">
         <button mat-stroked-button color="primary">Share</button>
       </app-ts-page-header>
 
+      
       <div class="detail-grid">
         <mat-card class="panel">
           <div class="panel__header">
@@ -137,41 +152,54 @@ const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
           </div>
         </mat-card>
       </div>
+      
+
+      <!-- New Features Section -->
+      <!--
+      <mat-tab-group class="features-tabs" animationDuration="300ms">
+        <mat-tab label="Status Timeline">
+          <div class="tab-content">
+            <tms-status-timeline [loadId]="loadId"></tms-status-timeline>
+          </div>
+        </mat-tab>
+        
+        <mat-tab label="Check Calls">
+          <div class="tab-content">
+            <tms-check-call-list [loadId]="loadId" [driverId]="'DRV-001'"></tms-check-call-list>
+          </div>
+        </mat-tab>
+        
+        <mat-tab label="Notes">
+          <div class="tab-content">
+            <tms-notes [entityType]="'Load'" [entityId]="loadId"></tms-notes>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+      -->
     </div>
   `,
-  styles: [`
-    .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--ts-spacing-lg); }
-    .panel { padding: var(--ts-spacing-lg); border: 1px solid var(--ts-border); border-radius: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); background: #fff; display: grid; gap: var(--ts-spacing-sm); }
-    .wide { grid-column: span 2; }
-    .detail-list { display: flex; flex-direction: column; gap: var(--ts-spacing-md); }
-    .detail-item { display: flex; align-items: flex-start; gap: var(--ts-spacing-md); }
-    .detail-item mat-icon { flex-shrink: 0; margin-top: 2px; }
-    .detail-content { display: flex; flex-direction: column; gap: 4px; }
-    .detail-label { font-weight: 600; color: var(--ts-ink); }
-    .detail-value { color: var(--ts-stone); font-weight: 600; }
-    .chips { display: flex; gap: var(--ts-spacing-sm); flex-wrap: wrap; align-items: center; }
-    .chip { background: var(--ts-red); color: #fff; padding: 6px 12px; border-radius: 4px; font-weight: 600; font-size: clamp(12px, 2vw, 14px); white-space: nowrap; flex: 0 1 auto; }
-    @media (max-width: 960px) { 
-      .wide { grid-column: span 1; }
-      .chip { padding: 5px 10px; font-size: 12px; }
-    }
-    @media (max-width: 640px) {
-      .chips { gap: var(--ts-spacing-xs, 4px); }
-      .chip { padding: 4px 8px; font-size: 11px; }
-    }
-  `]
+  styleUrl: './load-details.page.scss'
 })
-export class LoadDetailsPage implements OnInit {
-  private route = inject(ActivatedRoute);
-
-  loadId = '';
+export class LoadDetailsPage implements OnInit, OnDestroy {
   load: LoadDetail | undefined;
-  title = '';
-  description = 'Flat, clean, WCAG-aligned layout with grouped information.';
+  private destroy$ = new Subject<void>();
+
+  constructor(private readonly route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.loadId = this.route.snapshot.paramMap.get('id') ?? 'Load';
-    this.load = MOCK_LOAD_DETAILS[this.loadId] ?? Object.values(MOCK_LOAD_DETAILS)[0];
-    this.title = `${this.load?.id ?? this.loadId} · ${this.load?.origin} → ${this.load?.destination}`;
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const loadId = params.get('id');
+      console.log('Load ID from route:', loadId);
+      console.log('Available load IDs:', Object.keys(MOCK_LOAD_DETAILS));
+      if (loadId) {
+        this.load = MOCK_LOAD_DETAILS[loadId];
+        console.log('Loaded data:', this.load);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

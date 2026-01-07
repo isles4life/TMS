@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -222,12 +222,13 @@ export class RouteOptimizerCardComponent implements OnChanges {
   fuelEstimate: FuelCostEstimate | null = null;
   fuelPriceInfo: FuelPriceInfo | null = null;
   isLoading = false;
+  
 
-  private readonly fb = inject(FormBuilder);
-  private readonly routeService = inject(RouteOptimizationService);
-  private readonly snackBar = inject(MatSnackBar);
-
-  constructor() {
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly routeService: RouteOptimizationService,
+    private readonly snackBar: MatSnackBar
+  ) {
     this.form = this.fb.group({
       originLatitude: [this.defaultOrigin?.lat, [Validators.required, Validators.min(-90), Validators.max(90)]],
       originLongitude: [this.defaultOrigin?.lng, [Validators.required, Validators.min(-180), Validators.max(180)]],

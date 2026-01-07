@@ -65,8 +65,8 @@
           "options": {
             "poll": 2000,
             "hmr": false,
-            "liveReload": true,
-            "host": "0.0.0.0",
+            "liveReload": false,
+            "host": "127.0.0.1",
             "port": 4200,
             "open": false,
             "ssl": false,

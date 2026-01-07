@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using TMS.Application.DTOs.PowerOnly;
 using TMS.Domain.Entities.Loads;
+using TMS.Infrastructure.Persistence;
 
 namespace TMS.Application.Queries.PowerOnly;
 
@@ -24,39 +27,56 @@ public class GetPowerOnlyLoadsQuery : IRequest<List<PowerOnlyLoadResponse>>
 /// </summary>
 public class GetPowerOnlyLoadsHandler : IRequestHandler<GetPowerOnlyLoadsQuery, List<PowerOnlyLoadResponse>>
 {
+    private readonly TMSDbContext _db;
+
+    public GetPowerOnlyLoadsHandler(TMSDbContext db)
+    {
+        _db = db;
+    }
+
     public async Task<List<PowerOnlyLoadResponse>> Handle(GetPowerOnlyLoadsQuery request, CancellationToken cancellationToken)
     {
-        var mockLoads = new List<PowerOnlyLoadResponse>
+        var query = _db.Loads
+            .AsNoTracking()
+            .Include(l => l.Driver)
+            .Include(l => l.Tractor)
+            .Where(l => l.CarrierId == request.CarrierId);
+
+        if (!string.IsNullOrWhiteSpace(request.Status) && Enum.TryParse<LoadStatus>(request.Status, true, out var status))
         {
-            new()
-            {
-                Id = Guid.NewGuid(),
-                LoadNumber = "PO-20241208-0001",
-                Status = "Booked",
-                PickupAddress = "Chicago, IL",
-                DeliveryAddress = "Dallas, TX",
-                PickupDateTime = DateTime.UtcNow.AddHours(2),
-                DeliveryDateTime = DateTime.UtcNow.AddHours(26),
-                TotalRevenue = 1700m
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                LoadNumber = "PO-20241208-0002",
-                Status = "Dispatched",
-                PickupAddress = "Atlanta, GA",
-                DeliveryAddress = "Miami, FL",
-                PickupDateTime = DateTime.UtcNow.AddHours(4),
-                DeliveryDateTime = DateTime.UtcNow.AddHours(12),
-                DriverName = "John Doe",
-                TractorNumber = "CAT-123",
-                TotalRevenue = 1320m
-            }
-        };
-        
-        await Task.CompletedTask;
-        return mockLoads;
+            query = query.Where(l => l.Status == status);
+        }
+
+        var page = Math.Max(1, request.PageNumber);
+        var size = Math.Clamp(request.PageSize, 1, 200);
+
+        var loads = await query
+            .OrderByDescending(l => l.CreatedAt)
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToListAsync(cancellationToken);
+
+        var results = loads.Select(l => new PowerOnlyLoadResponse
+        {
+            Id = l.Id,
+            LoadNumber = l.LoadNumber,
+            Status = l.Status.ToString(),
+            TotalRevenue = l.TotalRevenue,
+            DriverName = l.Driver != null ? ($"{l.Driver.FirstName} {l.Driver.LastName}") : null,
+            TractorNumber = l.Tractor != null ? l.Tractor.UnitNumber : null,
+            PickupDateTime = l.PickupDateTime,
+            DeliveryDateTime = l.DeliveryDateTime,
+            PickupAddress = FormatAddress(l.PickupLocation),
+            DeliveryAddress = FormatAddress(l.DeliveryLocation)
+        }).ToList();
+
+        return results;
     }
+
+    private static string FormatAddress(TMS.Domain.ValueObjects.Address a)
+        => string.IsNullOrWhiteSpace(a.City) || string.IsNullOrWhiteSpace(a.State)
+            ? a.Street
+            : $"{a.City}, {a.State}";
 }
 
 /// <summary>
@@ -72,21 +92,39 @@ public class GetPowerOnlyLoadByIdQuery : IRequest<PowerOnlyLoadResponse>
 /// </summary>
 public class GetPowerOnlyLoadByIdHandler : IRequestHandler<GetPowerOnlyLoadByIdQuery, PowerOnlyLoadResponse>
 {
+    private readonly TMSDbContext _db;
+
+    public GetPowerOnlyLoadByIdHandler(TMSDbContext db)
+    {
+        _db = db;
+    }
+
     public async Task<PowerOnlyLoadResponse> Handle(GetPowerOnlyLoadByIdQuery request, CancellationToken cancellationToken)
     {
-        var mockLoad = new PowerOnlyLoadResponse
+        var l = await _db.Loads
+            .AsNoTracking()
+            .Include(x => x.Driver)
+            .Include(x => x.Tractor)
+            .FirstOrDefaultAsync(x => x.Id == request.LoadId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Load {request.LoadId} not found");
+
+        return new PowerOnlyLoadResponse
         {
-            Id = request.LoadId,
-            LoadNumber = "PO-20241208-0001",
-            Status = "Booked",
-            PickupAddress = "Chicago, IL",
-            DeliveryAddress = "Dallas, TX",
-            PickupDateTime = DateTime.UtcNow.AddHours(2),
-            DeliveryDateTime = DateTime.UtcNow.AddHours(26),
-            TotalRevenue = 1700m
+            Id = l.Id,
+            LoadNumber = l.LoadNumber,
+            Status = l.Status.ToString(),
+            TotalRevenue = l.TotalRevenue,
+            DriverName = l.Driver != null ? ($"{l.Driver.FirstName} {l.Driver.LastName}") : null,
+            TractorNumber = l.Tractor != null ? l.Tractor.UnitNumber : null,
+            PickupDateTime = l.PickupDateTime,
+            DeliveryDateTime = l.DeliveryDateTime,
+            PickupAddress = FormatAddress(l.PickupLocation),
+            DeliveryAddress = FormatAddress(l.DeliveryLocation)
         };
-        
-        await Task.CompletedTask;
-        return mockLoad;
     }
+
+    private static string FormatAddress(TMS.Domain.ValueObjects.Address a)
+        => string.IsNullOrWhiteSpace(a.City) || string.IsNullOrWhiteSpace(a.State)
+            ? a.Street
+            : $"{a.City}, {a.State}";
 }

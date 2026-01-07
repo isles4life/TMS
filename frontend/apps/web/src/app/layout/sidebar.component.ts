@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output, inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
 import { Router, RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -177,11 +178,12 @@ export class SidebarComponent implements OnInit {
   @Input() items: NavItem[] = [];
   @Output() closed = new EventEmitter<void>();
 
-  private authService = inject(AuthService);
-  private router = inject(Router);
-
-  isAuthenticated$ = this.authService.currentUser$;
+  isAuthenticated$: Observable<User | null>;
   currentUser: User | null = null;
+
+  constructor(private authService: AuthService, private router: Router) {
+    this.isAuthenticated$ = this.authService.currentUser$;
+  }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {

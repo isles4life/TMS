@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -343,8 +343,7 @@ export class ProfilePage implements OnInit {
   companyForm!: FormGroup;
   securityForm!: FormGroup;
 
-  private fb = inject(FormBuilder);
-  private authService = inject(AuthService);
+  constructor(private fb: FormBuilder, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.initializeForms();

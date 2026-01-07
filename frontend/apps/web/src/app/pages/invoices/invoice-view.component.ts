@@ -36,10 +36,12 @@ export class InvoiceViewComponent implements OnInit {
   invoice: Invoice | null = null;
   invoiceId = '';
 
-  private invoiceService = inject(InvoiceService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private snackBar = inject(MatSnackBar);
+  constructor(
+    private invoiceService: InvoiceService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.invoiceId = this.route.snapshot.paramMap.get('id') || '';

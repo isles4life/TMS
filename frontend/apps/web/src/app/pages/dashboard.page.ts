@@ -119,7 +119,7 @@ import { ExportService } from '../services/export.service';
   `]
 })
 export class DashboardPage {
-  private exportService = inject(ExportService);
+  constructor(private exportService: ExportService) {}
 
   metrics: Metric[] = [
     { label: 'Revenue (WTD)', value: '$186,400', delta: '+6.4%', trend: 'up' },

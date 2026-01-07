@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -56,7 +56,7 @@ import { PageHeaderComponent } from '../components/page-header.component';
   `]
 })
 export class SettingsPage {
-  private fb = inject(FormBuilder);
+  constructor(private fb: FormBuilder) {}
 
   defaults = { company: 'Truckstop Logistics', email: 'ops@truckstop.com', alerts: true };
   form = this.fb.group({

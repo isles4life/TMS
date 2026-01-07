@@ -19,7 +19,7 @@ public static class PowerOnlyEndpoints
 {
     public static void RegisterPowerOnlyEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/poweronly")
+        var group = app.MapGroup("/api/v1/power-only")
             .WithName("PowerOnly");
 
         group.MapPost("/loads", CreatePowerOnlyLoad)

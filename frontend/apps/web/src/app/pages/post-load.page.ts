@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -243,8 +243,7 @@ import { PageHeaderComponent } from '../components/page-header.component';
 export class PostLoadPage implements OnInit {
   loadForm!: FormGroup;
 
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
+  constructor(private fb: FormBuilder, private router: Router) {}
 
   ngOnInit(): void {
     this.loadForm = this.fb.group({

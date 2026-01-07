@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -40,10 +40,12 @@ export class CreateInvoiceComponent implements OnInit {
   invoiceForm!: FormGroup;
   currencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'];
   
-  private formBuilder = inject(FormBuilder);
-  private invoiceService = inject(InvoiceService);
-  private snackBar = inject(MatSnackBar);
-  private router = inject(Router);
+  constructor(
+    private formBuilder: FormBuilder,
+    private invoiceService: InvoiceService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.initializeForm();

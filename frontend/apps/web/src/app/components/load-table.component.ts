@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, inject } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
@@ -123,7 +123,8 @@ export class LoadTableComponent implements OnChanges {
   pageSize = 5;
   pageSizeOptions = [5, 10, 25];
   visibleRows: LoadRow[] = [];
-  private router = inject(Router);
+
+  constructor(private router: Router) {}
 
   ngOnChanges(): void {
     this.pageIndex = 0;

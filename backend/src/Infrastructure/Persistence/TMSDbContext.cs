@@ -37,6 +37,7 @@ public class TMSDbContext : DbContext
     public DbSet<PODPhoto> PODPhotos { get; set; }
     public DbSet<CheckCall> CheckCalls { get; set; }
     public DbSet<Note> Notes { get; set; }
+    public DbSet<LoadStatusHistory> LoadStatusHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -147,6 +148,19 @@ public class TMSDbContext : DbContext
 
         modelBuilder.Entity<Note>()
             .HasIndex(n => n.IsPinned);
+
+        // LoadStatusHistory relationships
+        modelBuilder.Entity<LoadStatusHistory>()
+            .HasOne(h => h.Load)
+            .WithMany(l => l.StatusHistory)
+            .HasForeignKey(h => h.LoadId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<LoadStatusHistory>()
+            .HasIndex(h => h.LoadId);
+
+        modelBuilder.Entity<LoadStatusHistory>()
+            .HasIndex(h => h.ChangedAt);
 
         modelBuilder.Entity<Dispatch>()
             .HasOne(d => d.Tractor)

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 
@@ -17,7 +17,7 @@ export interface Equipment {
   providedIn: 'root'
 })
 export class EquipmentService {
-  private api = inject(ApiService);
+  constructor(private api: ApiService) {}
 
   getAllEquipment(): Observable<Equipment[]> {
     return this.api.get<Equipment[]>('equipment/power-only');

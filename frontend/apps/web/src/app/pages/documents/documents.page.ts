@@ -557,12 +557,12 @@ export class DocumentsPage implements OnInit {
   isDragging = false;
   pendingNotifications: { id: string; title: string; message: string; timestamp: Date }[] = [];
 
-  private fb = inject(FormBuilder);
-  private documentService = inject(DocumentService);
-  private notificationService = inject(NotificationService);
-  private snackBar = inject(MatSnackBar);
-
-  constructor() {
+  constructor(
+    private fb: FormBuilder,
+    private documentService: DocumentService,
+    private notificationService: NotificationService,
+    private snackBar: MatSnackBar
+  ) {
     this.uploadForm = this.fb.group({
       type: ['', Validators.required],
       loadId: [''],

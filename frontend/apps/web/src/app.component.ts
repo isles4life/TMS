@@ -1,4 +1,4 @@
-import { Component, ViewChild, inject } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
@@ -57,11 +57,11 @@ export class AppComponent {
 
   navItems: NavItem[] = [];
 
-  private authService = inject(AuthService);
-  private breakpoint = inject(BreakpointObserver);
-  private themeService = inject(ThemeService);
-
-  constructor() {
+  constructor(
+    private authService: AuthService,
+    private breakpoint: BreakpointObserver,
+    private themeService: ThemeService
+  ) {
     // Initialize theme service on app startup
     this.themeService;
     this.breakpoint

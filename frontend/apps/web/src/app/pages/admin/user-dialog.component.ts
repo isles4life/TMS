@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -331,10 +331,10 @@ export class UserDialogComponent {
     isActive: true
   };
 
-  private dialogRef = inject(MatDialogRef<UserDialogComponent>);
-  public data = inject<UserDialogData>(MAT_DIALOG_DATA);
-
-  constructor() {
+  constructor(
+    private dialogRef: MatDialogRef<UserDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: UserDialogData
+  ) {
     if (this.data.user) {
       this.form = { ...this.data.user };
     }

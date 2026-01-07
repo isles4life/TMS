@@ -1,0 +1,135 @@
+.detail-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  margin-bottom: 2rem;
+}
+
+.panel {
+  padding: 1.5rem;
+  
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    
+    @media (prefers-color-scheme: dark) {
+      border-bottom-color: rgba(255, 255, 255, 0.12);
+    }
+    
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.87);
+      
+      @media (prefers-color-scheme: dark) {
+        color: rgba(255, 255, 255, 0.95);
+      }
+    }
+  }
+}
+
+.detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detail-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  @media (prefers-color-scheme: dark) {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.detail-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+  
+  @media (prefers-color-scheme: dark) {
+    color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+.chips {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  
+  @media (prefers-color-scheme: dark) {
+    border-top-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.chip {
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+  
+  @media (prefers-color-scheme: dark) {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  
+  @media (prefers-color-scheme: dark) {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.body {
+  line-height: 1.8;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 1rem;
+  
+  @media (prefers-color-scheme: dark) {
+    color: rgba(255, 255, 255, 0.87);
+  }
+}
+
+.features-tabs {
+  margin-top: 2rem;
+}
+
+.tab-content {
+  padding: 2rem 0;
+}
+

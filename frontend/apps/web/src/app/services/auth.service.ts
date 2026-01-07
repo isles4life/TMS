@@ -37,7 +37,8 @@ export class AuthService {
 
   private impersonationSubject = new BehaviorSubject<ImpersonationData | null>(this.getImpersonationFromStorage());
   public impersonation$ = this.impersonationSubject.asObservable();
-  private http = inject(HttpClient);
+
+  constructor(private http: HttpClient) {}
 
   login(email: string, password: string): Observable<LoginResponse> {
     // Demo credentials for offline testing

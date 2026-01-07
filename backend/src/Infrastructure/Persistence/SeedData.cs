@@ -322,82 +322,182 @@ public static class SeedData
         context.Trailers.AddRange(trailers);
         await context.SaveChangesAsync();
 
-        // Create test loads
-        var loads = new List<Load>
+        // Create test loads - 15 comprehensive loads with various statuses
+        var loads = new List<Load>();
+        var loadStatuses = new[] { LoadStatus.Booked, LoadStatus.Dispatched, LoadStatus.InTransit, LoadStatus.Delivered, LoadStatus.Completed };
+        
+        // Define pickup and delivery city pairs
+        var cityPairs = new (string pickupCity, string pickupState, double pickupLat, double pickupLon, 
+                             string deliveryCity, string deliveryState, double deliveryLat, double deliveryLon)[]
         {
-            new Load
-            {
-                Id = Guid.NewGuid(),
-                LoadNumber = "LOAD-001",
-                CarrierId = carrier.Id,
-                CustomerId = Guid.NewGuid(),
-                LoadType = LoadType.PowerOnly,
-                Status = LoadStatus.Booked,
-                PickupLocation = new Address
-                {
-                    Street = "100 Pickup Ln",
-                    City = "Boise",
-                    State = "ID",
-                    PostalCode = "83702",
-                    Country = "USA",
-                    Latitude = 43.6150,
-                    Longitude = -116.2023
-                },
-                PickupDateTime = DateTime.UtcNow.AddHours(2),
-                DeliveryLocation = new Address
-                {
-                    Street = "200 Delivery Ave",
-                    City = "Seattle",
-                    State = "WA",
-                    PostalCode = "98101",
-                    Country = "USA",
-                    Latitude = 47.6062,
-                    Longitude = -122.3321
-                },
-                DeliveryDateTime = DateTime.UtcNow.AddHours(18),
-                BaseRate = 1500m,
-                FuelSurcharge = 150m,
-                AccessorialCharges = 50m,
-                CreatedAt = DateTime.UtcNow
-            },
-            new Load
-            {
-                Id = Guid.NewGuid(),
-                LoadNumber = "LOAD-002",
-                CarrierId = carrier.Id,
-                CustomerId = Guid.NewGuid(),
-                LoadType = LoadType.PowerOnly,
-                Status = LoadStatus.Booked,
-                PickupLocation = new Address
-                {
-                    Street = "101 Pickup Ln",
-                    City = "Seattle",
-                    State = "WA",
-                    PostalCode = "98101",
-                    Country = "USA",
-                    Latitude = 47.6062,
-                    Longitude = -122.3321
-                },
-                PickupDateTime = DateTime.UtcNow.AddHours(1),
-                DeliveryLocation = new Address
-                {
-                    Street = "201 Delivery Ave",
-                    City = "Salt Lake City",
-                    State = "UT",
-                    PostalCode = "84101",
-                    Country = "USA",
-                    Latitude = 40.7608,
-                    Longitude = -111.8910
-                },
-                DeliveryDateTime = DateTime.UtcNow.AddHours(15),
-                BaseRate = 2000m,
-                FuelSurcharge = 200m,
-                AccessorialCharges = 100m,
-                CreatedAt = DateTime.UtcNow
-            }
+            ("Boise", "ID", 43.6150, -116.2023, "Seattle", "WA", 47.6062, -122.3321),
+            ("Seattle", "WA", 47.6062, -122.3321, "Portland", "OR", 45.5152, -122.6784),
+            ("Portland", "OR", 45.5152, -122.6784, "Sacramento", "CA", 38.5816, -121.4944),
+            ("Sacramento", "CA", 38.5816, -121.4944, "Los Angeles", "CA", 34.0522, -118.2437),
+            ("Los Angeles", "CA", 34.0522, -118.2437, "Las Vegas", "NV", 36.1699, -115.1398),
+            ("Las Vegas", "NV", 36.1699, -115.1398, "Phoenix", "AZ", 33.4484, -112.0742),
+            ("Phoenix", "AZ", 33.4484, -112.0742, "Albuquerque", "NM", 35.0853, -106.6504),
+            ("Salt Lake City", "UT", 40.7608, -111.8910, "Denver", "CO", 39.7392, -104.9903),
+            ("Denver", "CO", 39.7392, -104.9903, "Cheyenne", "WY", 41.1400, -104.8202),
+            ("Cheyenne", "WY", 41.1400, -104.8202, "Billings", "MT", 45.7833, -103.2807)
         };
+
+        for (int i = 1; i <= 15; i++)
+        {
+            var cityPair = cityPairs[(i - 1) % cityPairs.Length];
+            var status = loadStatuses[(i - 1) % loadStatuses.Length];
+            var driverAssigned = (i % 3 == 0) ? drivers[(i - 1) % drivers.Count].Id : (Guid?)null;
+            var tractorAssigned = (i % 3 == 0) ? tractors[(i - 1) % tractors.Count].Id : (Guid?)null;
+            var trailerAssigned = (i % 3 == 0) ? trailers[(i - 1) % trailers.Count].Id : (Guid?)null;
+
+            var pickupTime = DateTime.UtcNow.AddHours(i * 2);
+            var deliveryTime = pickupTime.AddHours(16 + (i % 8));
+            var pickedUpTime = (status != LoadStatus.Booked) ? pickupTime.AddHours(1 + (i % 3)) : (DateTime?)null;
+            var deliveredTime = (status == LoadStatus.Delivered || status == LoadStatus.Completed) 
+                ? deliveryTime.AddHours(-(i % 2)).AddMinutes(-(i % 30))
+                : (DateTime?)null;
+
+            var load = new Load
+            {
+                Id = Guid.NewGuid(),
+                LoadNumber = $"LOAD-{i:D3}",
+                CarrierId = carrier.Id,
+                CustomerId = Guid.NewGuid(),
+                LoadType = LoadType.PowerOnly,
+                Status = status,
+                PickupLocation = new Address
+                {
+                    Street = $"{100 + i} Pickup Ln",
+                    City = cityPair.pickupCity,
+                    State = cityPair.pickupState,
+                    PostalCode = "12345",
+                    Country = "USA",
+                    Latitude = cityPair.pickupLat,
+                    Longitude = cityPair.pickupLon
+                },
+                PickupDateTime = pickupTime,
+                DeliveryLocation = new Address
+                {
+                    Street = $"{200 + i} Delivery Ave",
+                    City = cityPair.deliveryCity,
+                    State = cityPair.deliveryState,
+                    PostalCode = "54321",
+                    Country = "USA",
+                    Latitude = cityPair.deliveryLat,
+                    Longitude = cityPair.deliveryLon
+                },
+                DeliveryDateTime = deliveryTime,
+                BaseRate = 1500m + (i * 100),
+                FuelSurcharge = 150m + (i * 10),
+                AccessorialCharges = (i % 2 == 0) ? 50m + (i * 5) : 0,
+                DriverId = driverAssigned,
+                TractorId = tractorAssigned,
+                TrailerId = trailerAssigned,
+                PickedUpAt = pickedUpTime,
+                DeliveredAt = deliveredTime,
+                CreatedAt = DateTime.UtcNow.AddDays(-(i / 3))
+            };
+
+            loads.Add(load);
+        }
 
         context.Loads.AddRange(loads);
         await context.SaveChangesAsync();
+
+        // Create check calls for loads with assigned drivers
+        var checkCalls = new List<CheckCall>();
+        foreach (var load in loads.Where(l => l.DriverId.HasValue))
+        {
+            // 2-3 check calls per load
+            for (int j = 1; j <= (load.Id.GetHashCode() % 2) + 2; j++)
+            {
+                var checkCallTime = load.PickupDateTime.AddHours(j * 4);
+                checkCalls.Add(new CheckCall
+                {
+                    Id = Guid.NewGuid(),
+                    LoadId = load.Id,
+                    DriverId = load.DriverId.Value,
+                    CheckInTime = checkCallTime,
+                    ContactMethod = (j % 3 == 0) ? "App" : ((j % 3 == 1) ? "Phone" : "Text"),
+                    Notes = $"Check call #{j} - Status update from driver",
+                    Latitude = (decimal)(load.PickupLocation.Latitude + (j * 0.5)),
+                    Longitude = (decimal)(load.PickupLocation.Longitude + (j * 0.5)),
+                    Location = $"Mile Marker {j * 50}",
+                    CreatedAt = checkCallTime
+                });
+            }
+        }
+
+        if (checkCalls.Any())
+        {
+            context.CheckCalls.AddRange(checkCalls);
+            await context.SaveChangesAsync();
+        }
+
+        // Create load status history for loads with non-Booked status
+        var statusHistory = new List<LoadStatusHistory>();
+        foreach (var load in loads.Where(l => l.Status != LoadStatus.Booked))
+        {
+            var currentTime = load.CreatedAt;
+            
+            statusHistory.Add(new LoadStatusHistory
+            {
+                Id = Guid.NewGuid(),
+                LoadId = load.Id,
+                PreviousStatus = LoadStatus.Booked,
+                NewStatus = LoadStatus.Dispatched,
+                ChangedAt = currentTime.AddMinutes(30),
+                Reason = "Load dispatched to driver",
+                CreatedAt = currentTime.AddMinutes(30)
+            });
+
+            if (load.Status != LoadStatus.Dispatched)
+            {
+                statusHistory.Add(new LoadStatusHistory
+                {
+                    Id = Guid.NewGuid(),
+                    LoadId = load.Id,
+                    PreviousStatus = LoadStatus.Dispatched,
+                    NewStatus = LoadStatus.InTransit,
+                    ChangedAt = load.PickupDateTime.AddMinutes(15),
+                    Reason = "Load picked up and in transit",
+                    CreatedAt = load.PickupDateTime.AddMinutes(15)
+                });
+            }
+
+            if (load.Status == LoadStatus.Delivered || load.Status == LoadStatus.Completed)
+            {
+                statusHistory.Add(new LoadStatusHistory
+                {
+                    Id = Guid.NewGuid(),
+                    LoadId = load.Id,
+                    PreviousStatus = LoadStatus.InTransit,
+                    NewStatus = LoadStatus.Delivered,
+                    ChangedAt = load.DeliveryDateTime.AddMinutes(-30),
+                    Reason = "Load delivered to customer",
+                    CreatedAt = load.DeliveryDateTime.AddMinutes(-30)
+                });
+            }
+
+            if (load.Status == LoadStatus.Completed)
+            {
+                statusHistory.Add(new LoadStatusHistory
+                {
+                    Id = Guid.NewGuid(),
+                    LoadId = load.Id,
+                    PreviousStatus = LoadStatus.Delivered,
+                    NewStatus = LoadStatus.Completed,
+                    ChangedAt = load.DeliveryDateTime.AddHours(1),
+                    Reason = "Load marked as completed",
+                    CreatedAt = load.DeliveryDateTime.AddHours(1)
+                });
+            }
+        }
+
+        if (statusHistory.Any())
+        {
+            context.LoadStatusHistories.AddRange(statusHistory);
+            await context.SaveChangesAsync();
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
@@ -8,8 +8,7 @@ export type UserRole = 'SuperAdmin' | 'Broker' | 'Carrier';
   providedIn: 'root'
 })
 export class RoleGuard implements CanActivate {
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const currentUser = this.authService.getCurrentUser();

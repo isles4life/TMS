@@ -156,13 +156,15 @@ export class NavbarComponent {
   @Output() menu = new EventEmitter<void>();
   unreadCount$: Observable<number>;
   impersonation$: Observable<ImpersonationData | null>;
+  themeService: ThemeService;
 
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private notificationService = inject(NotificationService);
-  themeService = inject(ThemeService);
-
-  constructor() {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private notificationService: NotificationService,
+    themeService: ThemeService
+  ) {
+    this.themeService = themeService;
     this.unreadCount$ = this.notificationService.unreadCount$;
     this.impersonation$ = this.authService.impersonation$;
   }
