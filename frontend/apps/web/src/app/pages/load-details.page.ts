@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -62,6 +62,10 @@ const MOCK_LOAD_DETAILS: Record<string, LoadDetail> = {
         [title]="load?.id ?? 'Loading...'"
         [description]="load?.origin + ' to ' + load?.destination"
         [hasActions]="true">
+        <button mat-stroked-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Back
+        </button>
         <button mat-stroked-button color="primary" (click)="shareLoad()">
           <mat-icon>share</mat-icon>
           Share
@@ -191,7 +195,8 @@ export class LoadDetailsPage implements OnInit, OnDestroy {
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly snackBar: MatSnackBar
+    private readonly snackBar: MatSnackBar,
+    private readonly location: Location
   ) {}
 
   ngOnInit(): void {
@@ -209,6 +214,10 @@ export class LoadDetailsPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   async shareLoad(): Promise<void> {
