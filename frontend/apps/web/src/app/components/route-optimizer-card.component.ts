@@ -154,25 +154,123 @@ import { RouteOptimizationService, RouteRequest, RouteResponse, FuelCostEstimate
   `,
   styles: [`
     .route-card {
-      margin-top: 16px;
+      margin-top: 20px;
+      background: var(--card-bg);
+      border: 3px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.15), 
+        0 2px 6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: linear-gradient(180deg, var(--ts-red) 0%, #b31218 100%);
+        opacity: 0.8;
+      }
+
+      &:hover {
+        box-shadow: 
+          0 8px 16px rgba(0, 0, 0, 0.18), 
+          0 4px 8px rgba(0, 0, 0, 0.12),
+          0 0 0 2px rgba(215, 25, 32, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        border-color: var(--ts-red);
+        transform: translateY(-2px);
+
+        &::before {
+          width: 6px;
+          opacity: 1;
+        }
+      }
+    }
+
+    mat-card-header {
+      padding: 20px 24px 16px 28px;
+      background: linear-gradient(135deg, 
+        var(--card-bg) 0%, 
+        var(--surface-secondary) 50%,
+        var(--card-bg) 100%);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border-bottom: 2px solid var(--border-color);
     }
 
     mat-card-title {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--color-text);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+      mat-icon {
+        color: var(--ts-red);
+      }
+    }
+
+    mat-card-subtitle {
+      color: var(--muted-text);
+      font-weight: 500;
+      margin-top: 6px;
+    }
+
+    mat-card-content {
+      padding: 24px 24px 24px 28px;
     }
 
     .route-form {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
     }
 
     .row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
+      gap: 16px;
+    }
+
+    mat-form-field {
+      width: 100%;
+
+      ::ng-deep {
+        .mat-mdc-text-field-wrapper {
+          background-color: var(--card-bg);
+        }
+
+        .mat-mdc-form-field-focus-overlay {
+          background-color: transparent;
+        }
+
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--border-color) !important;
+          border-width: 2px !important;
+        }
+
+        &.mat-focused {
+          .mdc-notched-outline__leading,
+          .mdc-notched-outline__notch,
+          .mdc-notched-outline__trailing {
+            border-color: var(--ts-red) !important;
+            border-width: 2px !important;
+          }
+        }
+
+        .mat-mdc-form-field-error {
+          color: var(--accent-red);
+        }
+      }
     }
 
     .actions {
@@ -180,37 +278,95 @@ import { RouteOptimizationService, RouteRequest, RouteResponse, FuelCostEstimate
       gap: 12px;
       justify-content: flex-end;
       align-items: center;
+      padding-top: 8px;
+      flex-wrap: wrap;
+
+      button {
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 0 20px;
+        
+        mat-icon {
+          margin-right: 6px;
+        }
+      }
     }
 
     .loader {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 0;
+      gap: 16px;
+      padding: 20px 0;
+      color: var(--color-text);
+      font-weight: 500;
     }
 
     .results {
-      margin-top: 12px;
+      margin-top: 20px;
+      padding: 20px;
+      background: linear-gradient(135deg, 
+        var(--surface-secondary) 0%, 
+        var(--card-bg) 100%);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
     .result-row {
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
+      font-size: 15px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-color);
+
+      &:last-child {
+        border-bottom: none;
+      }
     }
 
     .label {
-      color: rgba(0,0,0,0.6);
+      color: var(--muted-text);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .value {
+      color: var(--color-text);
+      font-weight: 700;
+      font-size: 15px;
     }
 
     .fuel, .warnings {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 8px;
+      gap: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 2px solid var(--border-color);
+    }
+
+    .fuel mat-chip {
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
+
+        button {
+          width: 100%;
+        }
+      }
     }
   `]
 })

@@ -9,7 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
-import { RealTimeTrackingService, ActiveTracker, GeofenceAlert } from '../services/real-time-tracking.service';
+import { RealTimeTrackingService, ActiveTracker, GeofenceAlert, DriverLocationUpdate } from '../services/real-time-tracking.service';
 import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.component';
 
 @Component({
@@ -81,11 +81,16 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
           @if (!isLoading && activeTrackers.length > 0) {
             <div class="trackers-grid">
               @for (tracker of activeTrackers; track tracker.id) {
-                <mat-card class="tracker-card">
+                <mat-card class="tracker-card" [ngClass]="{'watching': isWatching(tracker.driverId)}">
               <mat-card-header>
                 <div class="tracker-header">
                   <div class="driver-info">
-                    <h3>{{ tracker.driverName }}</h3>
+                    <h3>
+                      {{ tracker.driverName }}
+                      @if (isWatching(tracker.driverId)) {
+                        <mat-icon class="watching-icon" matTooltip="Live tracking active">visibility</mat-icon>
+                      }
+                    </h3>
                     <p class="phone">{{ tracker.driverPhone }}</p>
                   </div>
                   <mat-chip 
@@ -145,9 +150,12 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
                   <mat-icon>history</mat-icon>
                   History
                 </button>
-                <button mat-button (click)="watchDriver(tracker.driverId)">
-                  <mat-icon>visibility</mat-icon>
-                  Watch
+                <button 
+                  mat-button 
+                  [color]="isWatching(tracker.driverId) ? 'warn' : 'primary'"
+                  (click)="watchDriver(tracker.driverId)">
+                  <mat-icon>{{ isWatching(tracker.driverId) ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  {{ isWatching(tracker.driverId) ? 'Unwatch' : 'Watch' }}
                 </button>
               </mat-card-actions>
             </mat-card>
@@ -185,6 +193,52 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
                       matTooltip="Acknowledge alert">
                       <mat-icon>check_circle</mat-icon>
                     </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Driver History Panel -->
+      @if (showHistoryPanel && driverHistory.length > 0) {
+        <mat-card class="history-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>history</mat-icon>
+              Driver Location History
+              <mat-chip class="history-badge">{{ driverHistory.length }} points</mat-chip>
+            </mat-card-title>
+            <button mat-icon-button (click)="closeHistoryPanel()" class="close-button">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="history-list">
+              @for (location of driverHistory; track location.id) {
+                <div class="history-item">
+                  <div class="history-time">
+                    {{ location.recordedAt | date: 'short' }}
+                  </div>
+                  <div class="history-details">
+                    <div class="history-location">
+                      <mat-icon>place</mat-icon>
+                      <span>{{ location.city }}, {{ location.state }}</span>
+                    </div>
+                    <div class="history-address">{{ location.address }}</div>
+                    <div class="history-meta">
+                      <mat-chip class="speed-chip">
+                        <mat-icon>speed</mat-icon>
+                        {{ location.speedMph }} mph
+                      </mat-chip>
+                      @if (location.loadNumber) {
+                        <mat-chip class="load-chip">
+                          <mat-icon>local_shipping</mat-icon>
+                          {{ location.loadNumber }}
+                        </mat-chip>
+                      }
+                    </div>
                   </div>
                 </div>
               }
@@ -245,17 +299,73 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
     .trackers-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 16px;
+      gap: 20px;
     }
 
     .tracker-card {
       background: var(--card-bg);
       color: var(--color-text);
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
+      border: 3px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.15), 
+        0 2px 6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: linear-gradient(180deg, var(--ts-red) 0%, #b31218 100%);
+        opacity: 0.8;
+        transition: all 0.3s;
+      }
+
+      &.watching {
+        border-color: #10b981;
+        box-shadow: 
+          0 6px 16px rgba(16, 185, 129, 0.2), 
+          0 3px 8px rgba(16, 185, 129, 0.15),
+          0 0 0 3px rgba(16, 185, 129, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        animation: pulse-watching 2s ease-in-out infinite;
+
+        &::before {
+          background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+          width: 6px;
+          opacity: 1;
+        }
+      }
+
+      &:hover {
+        box-shadow: 
+          0 12px 24px rgba(0, 0, 0, 0.2), 
+          0 6px 12px rgba(0, 0, 0, 0.15),
+          0 0 0 3px rgba(215, 25, 32, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        border-color: var(--ts-red);
+        transform: translateY(-4px) scale(1.01);
+
+        &::before {
+          width: 6px;
+          opacity: 1;
+        }
+      }
 
       mat-card-header {
         margin-bottom: 16px;
+        padding-left: 8px;
+        background: linear-gradient(135deg, 
+          var(--card-bg) 0%, 
+          var(--surface-secondary) 50%,
+          var(--card-bg) 100%);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       }
 
       .tracker-header {
@@ -267,7 +377,20 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
         .driver-info {
           h3 {
             margin: 0 0 4px 0;
-            font-size: 18px;
+            font-size: 19px;
+            font-weight: 800;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .watching-icon {
+              color: #10b981;
+              font-size: 20px;
+              width: 20px;
+              height: 20px;
+              animation: pulse-icon 1.5s ease-in-out infinite;
+            }
           }
 
           .phone {
@@ -302,6 +425,7 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
       display: flex;
       flex-direction: column;
       gap: 12px;
+      padding-left: 8px;
     }
 
     .detail-row {
@@ -439,11 +563,198 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
       }
     }
 
+    .history-card {
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      border: 3px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.15), 
+        0 2px 6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: linear-gradient(180deg, var(--ts-red) 0%, #b31218 100%);
+        opacity: 0.8;
+      }
+
+      mat-card-header {
+        padding: 20px 24px 16px 28px;
+        background: linear-gradient(135deg, 
+          var(--card-bg) 0%, 
+          var(--surface-secondary) 50%,
+          var(--card-bg) 100%);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-bottom: 2px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--color-text);
+        flex: 1;
+
+        mat-icon {
+          color: var(--ts-red);
+        }
+
+        .history-badge {
+          margin-left: 8px;
+          background: var(--ts-red);
+          color: white;
+          font-size: 12px;
+          font-weight: 600;
+        }
+      }
+
+      .close-button {
+        mat-icon {
+          color: var(--muted-text);
+        }
+
+        &:hover mat-icon {
+          color: var(--ts-red);
+        }
+      }
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .history-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: var(--ts-red);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .history-time {
+        font-weight: 700;
+        color: var(--ts-red);
+        min-width: 130px;
+        font-size: 13px;
+      }
+
+      .history-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .history-location {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 600;
+          color: var(--color-text);
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            color: var(--ts-red);
+          }
+        }
+
+        .history-address {
+          color: var(--muted-text);
+          font-size: 13px;
+          padding-left: 26px;
+        }
+
+        .history-meta {
+          display: flex;
+          gap: 8px;
+          padding-left: 26px;
+
+          .speed-chip, .load-chip {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            height: 28px;
+            padding: 0 10px;
+
+            mat-icon {
+              font-size: 16px;
+              width: 16px;
+              height: 16px;
+            }
+          }
+
+          .speed-chip {
+            background: #10b981;
+            color: white;
+          }
+
+          .load-chip {
+            background: #3b82f6;
+            color: white;
+          }
+        }
+      }
+    }
+
     mat-card-actions {
       display: flex;
       gap: 8px;
       justify-content: flex-end;
       padding: 12px;
+    }
+
+    @keyframes pulse-watching {
+      0%, 100% {
+        box-shadow: 
+          0 6px 16px rgba(16, 185, 129, 0.2), 
+          0 3px 8px rgba(16, 185, 129, 0.15),
+          0 0 0 3px rgba(16, 185, 129, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      }
+      50% {
+        box-shadow: 
+          0 8px 20px rgba(16, 185, 129, 0.3), 
+          0 4px 10px rgba(16, 185, 129, 0.2),
+          0 0 0 5px rgba(16, 185, 129, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    @keyframes pulse-icon {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+      }
     }
   `]
 })
@@ -452,9 +763,13 @@ export class LiveTrackingDashboardComponent implements OnInit, OnDestroy {
 
   activeTrackers: ActiveTracker[] = [];
   pendingAlerts: GeofenceAlert[] = [];
+  driverHistory: DriverLocationUpdate[] = [];
+  selectedDriverId: string | null = null;
+  showHistoryPanel = false;
   isConnected = false;
   isTracking = false;
   isLoading = true;
+  watchedDriverIds: Set<string> = new Set();
 
   constructor(
     private readonly trackingService: RealTimeTrackingService,
@@ -522,6 +837,40 @@ export class LiveTrackingDashboardComponent implements OnInit, OnDestroy {
         this.snackBar.open(`Tracking error: ${error}`, 'Close', {duration: 5000});
       });
 
+    this.trackingService.driverLocationHistory$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(history => {
+        this.driverHistory = history;
+        if (history.length > 0) {
+          this.showHistoryPanel = true;
+        }
+      });
+
+    // Subscribe to real-time driver location updates
+    this.trackingService.driverLocationUpdated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(update => {
+        // Update the tracker in the activeTrackers array
+        const index = this.activeTrackers.findIndex(t => t.driverId === update.driverId);
+        if (index !== -1) {
+          this.activeTrackers[index] = {
+            ...this.activeTrackers[index],
+            latitude: update.latitude,
+            longitude: update.longitude,
+            speedMph: update.speedMph,
+            lastUpdated: update.recordedAt
+          };
+          this.activeTrackers = [...this.activeTrackers]; // Trigger change detection
+          
+          // Show notification for watched driver
+          this.snackBar.open(
+            `${update.driverName} location updated - ${update.speedMph.toFixed(0)} mph`, 
+            'Close', 
+            {duration: 3000}
+          );
+        }
+      });
+
     this.trackingService.watchAllTrackers();
     this.trackingService.getPendingAlerts();
   }
@@ -532,13 +881,33 @@ export class LiveTrackingDashboardComponent implements OnInit, OnDestroy {
   }
 
   watchDriver(driverId: string): void {
-    this.trackingService.watchDriver(driverId);
-    this.snackBar.open('Now watching driver', 'Close', {duration: 3000});
+    if (this.watchedDriverIds.has(driverId)) {
+      // Unwatch
+      this.trackingService.stopWatchingDriver(driverId);
+      this.watchedDriverIds.delete(driverId);
+      this.snackBar.open('Stopped watching driver', 'Close', {duration: 2000});
+    } else {
+      // Watch
+      this.trackingService.watchDriver(driverId);
+      this.watchedDriverIds.add(driverId);
+      this.snackBar.open('Now watching driver for live updates', 'Close', {duration: 3000});
+    }
+  }
+
+  isWatching(driverId: string): boolean {
+    return this.watchedDriverIds.has(driverId);
   }
 
   viewDriverHistory(driverId: string): void {
+    this.selectedDriverId = driverId;
     this.trackingService.getDriverHistory(driverId, 60);
     this.snackBar.open('Loading driver history...', 'Close', {duration: 2000});
+  }
+
+  closeHistoryPanel(): void {
+    this.showHistoryPanel = false;
+    this.driverHistory = [];
+    this.selectedDriverId = null;
   }
 
   async acknowledgeAlert(alertId: string): Promise<void> {

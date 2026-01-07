@@ -80,6 +80,12 @@ export class RealTimeTrackingService {
   private errorSubject = new Subject<string>();
   public error$ = this.errorSubject.asObservable();
 
+  private driverLocationHistorySubject = new BehaviorSubject<DriverLocationUpdate[]>([]);
+  public driverLocationHistory$ = this.driverLocationHistorySubject.asObservable();
+
+  // Track mock update intervals for cleanup
+  private mockWatchIntervals: Map<string, any> = new Map();
+
   /**
    * Initialize SignalR connection
    */
@@ -246,6 +252,10 @@ export class RealTimeTrackingService {
    * Disconnect from SignalR
    */
   async disconnect(): Promise<void> {
+    // Clear all mock watch intervals
+    this.mockWatchIntervals.forEach(interval => clearInterval(interval));
+    this.mockWatchIntervals.clear();
+
     if (this.connection) {
       await this.connection.stop();
       this.connectionStateSubject.next(false);
@@ -283,6 +293,13 @@ export class RealTimeTrackingService {
     this.connection.on('PickupZoneAlert', (alert: GeofenceAlert) => {
       this.ngZone.run(() => {
         this.pickupZoneAlertSubject.next(alert);
+      });
+    });
+
+    // Driver location history
+    this.connection.on('DriverLocationHistory', (history: DriverLocationUpdate[]) => {
+      this.ngZone.run(() => {
+        this.driverLocationHistorySubject.next(history);
       });
     });
 
@@ -334,16 +351,80 @@ export class RealTimeTrackingService {
    */
   async watchDriver(driverId: string): Promise<void> {
     if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
-      throw new Error('Not connected to tracking hub');
+      // Simulate watching with mock data
+      this.simulateMockDriverUpdates(driverId);
+      return;
     }
 
     await this.connection.invoke('WatchDriver', driverId);
   }
 
   /**
+   * Simulate real-time updates for a watched driver (mock data)
+   */
+  private simulateMockDriverUpdates(driverId: string): void {
+    // Clear any existing interval for this driver
+    if (this.mockWatchIntervals.has(driverId)) {
+      clearInterval(this.mockWatchIntervals.get(driverId));
+    }
+
+    const tracker = this.activeTrackersSubject.value.find(t => t.driverId === driverId);
+    if (!tracker) return;
+
+    // Simulate location updates every 5 seconds
+    let updateCount = 0;
+    const maxUpdates = 10; // Stop after 10 updates (50 seconds)
+    
+    const interval = setInterval(() => {
+      if (updateCount >= maxUpdates) {
+        clearInterval(interval);
+        this.mockWatchIntervals.delete(driverId);
+        return;
+      }
+
+      // Simulate movement by slightly adjusting coordinates and speed
+      const speedVariation = Math.random() * 10 - 5; // -5 to +5 mph
+      const latVariation = (Math.random() - 0.5) * 0.01; // Small lat change
+      const lngVariation = (Math.random() - 0.5) * 0.01; // Small lng change
+
+      const update: DriverLocationUpdate = {
+        id: `update-${Date.now()}`,
+        driverId: tracker.driverId,
+        driverName: tracker.driverName,
+        latitude: tracker.latitude + latVariation,
+        longitude: tracker.longitude + lngVariation,
+        speedMph: Math.max(0, tracker.speedMph + speedVariation),
+        heading: tracker.status === 'OnDuty' ? Math.floor(Math.random() * 360) : 0,
+        address: tracker.pickupLocation || 'Unknown',
+        city: tracker.pickupLocation?.split(',')[0] || 'Unknown',
+        state: tracker.pickupLocation?.split(',')[1]?.trim() || 'Unknown',
+        recordedAt: new Date(),
+        dispatchId: tracker.dispatchId,
+        loadNumber: tracker.loadNumber
+      };
+
+      this.ngZone.run(() => {
+        this.driverLocationUpdatedSubject.next(update);
+      });
+
+      updateCount++;
+    }, 5000); // Update every 5 seconds
+
+    // Store the interval so we can clear it later
+    this.mockWatchIntervals.set(driverId, interval);
+  }
+
+  /**
    * Stop watching a specific driver
    */
   async stopWatchingDriver(driverId: string): Promise<void> {
+    // Clear mock interval if it exists
+    if (this.mockWatchIntervals.has(driverId)) {
+      clearInterval(this.mockWatchIntervals.get(driverId));
+      this.mockWatchIntervals.delete(driverId);
+      return;
+    }
+
     if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
       return;
     }
@@ -389,10 +470,83 @@ export class RealTimeTrackingService {
    */
   async getDriverHistory(driverId: string, lastMinutes = 60): Promise<void> {
     if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
-      throw new Error('Not connected to tracking hub');
+      // Load mock history data when not connected
+      this.loadMockDriverHistory(driverId, lastMinutes);
+      return;
     }
 
     await this.connection.invoke('GetDriverHistory', driverId, lastMinutes);
+  }
+
+  /**   * Load mock driver location history for demonstration
+   */
+  private loadMockDriverHistory(driverId: string, lastMinutes: number): void {
+    const now = new Date();
+    const mockHistory: DriverLocationUpdate[] = [];
+    
+    // Generate location points every 5 minutes for the requested time period
+    const dataPoints = Math.min(lastMinutes / 5, 20); // Max 20 points
+    
+    // Define a route path (simulating a trip from pickup to delivery)
+    const routeCoordinates = [
+      { lat: 40.7128, lng: -74.0060, city: 'New York', state: 'NY', speed: 0 },
+      { lat: 40.7580, lng: -73.9855, city: 'New York', state: 'NY', speed: 35 },
+      { lat: 40.8448, lng: -73.8648, city: 'Bronx', state: 'NY', speed: 55 },
+      { lat: 41.0534, lng: -73.5387, city: 'Stamford', state: 'CT', speed: 62 },
+      { lat: 41.3083, lng: -72.9279, city: 'New Haven', state: 'CT', speed: 65 },
+      { lat: 41.7658, lng: -72.6734, city: 'Hartford', state: 'CT', speed: 60 },
+      { lat: 42.1015, lng: -72.5898, city: 'Springfield', state: 'MA', speed: 58 },
+      { lat: 42.3601, lng: -71.0589, city: 'Boston', state: 'MA', speed: 45 },
+      { lat: 42.3736, lng: -71.1097, city: 'Cambridge', state: 'MA', speed: 30 },
+      { lat: 42.3770, lng: -71.1167, city: 'Cambridge', state: 'MA', speed: 0 }
+    ];
+
+    for (let i = 0; i < dataPoints; i++) {
+      const minutesAgo = lastMinutes - (i * (lastMinutes / dataPoints));
+      const timestamp = new Date(now.getTime() - minutesAgo * 60000);
+      const routeIndex = Math.floor((i / dataPoints) * (routeCoordinates.length - 1));
+      const location = routeCoordinates[routeIndex];
+      
+      mockHistory.push({
+        id: `hist-${driverId}-${i}`,
+        driverId: driverId,
+        driverName: this.getDriverNameById(driverId),
+        latitude: location.lat,
+        longitude: location.lng,
+        speedMph: location.speed,
+        heading: this.calculateHeading(i, dataPoints),
+        address: `${Math.floor(Math.random() * 9999)} Main St`,
+        city: location.city,
+        state: location.state,
+        recordedAt: timestamp,
+        dispatchId: `DSP-${5500 + parseInt(driverId.split('-')[1] || '0')}`,
+        loadNumber: `LB-${4820 + parseInt(driverId.split('-')[1] || '0')}`
+      });
+    }
+
+    // Sort by time (oldest first)
+    mockHistory.sort((a, b) => a.recordedAt.getTime() - b.recordedAt.getTime());
+    
+    this.driverLocationHistorySubject.next(mockHistory);
+  }
+
+  /**
+   * Get driver name by ID from active trackers
+   */
+  private getDriverNameById(driverId: string): string {
+    const trackers = this.activeTrackersSubject.value;
+    const tracker = trackers.find(t => t.driverId === driverId);
+    return tracker?.driverName || 'Unknown Driver';
+  }
+
+  /**
+   * Calculate heading based on progress through route
+   */
+  private calculateHeading(index: number, total: number): number {
+    // Simplified heading calculation (0-360 degrees)
+    // Generally northeast direction for this route
+    const progress = index / total;
+    return Math.floor(30 + progress * 15); // 30-45 degrees (northeast)
   }
 
   /**
