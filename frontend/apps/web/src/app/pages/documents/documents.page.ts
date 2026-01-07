@@ -43,88 +43,147 @@ import { NotificationService } from '../../services/notification.service';
       <mat-tab-group class="documents-tabs">
         <mat-tab label="Upload Documents">
           <div class="upload-section">
-            <mat-card class="upload-card">
-              <div class="upload-dropzone" 
-                   (drop)="onDrop($event)" 
-                   (dragover)="onDragOver($event)"
-                   (dragleave)="onDragLeave($event)"
-                   [class.dragover]="isDragging">
-                <mat-icon class="upload-icon">cloud_upload</mat-icon>
-                <h3>Drag and drop files here</h3>
-                <p>or click to browse</p>
-                <input type="file" 
-                       #fileInput 
-                       hidden 
-                       multiple 
-                       (change)="onFileSelected($event)"
-                       accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.zip">
-                <button mat-raised-button color="primary" (click)="fileInput.click()">
-                  <mat-icon>attach_file</mat-icon>
-                  Select Files
-                </button>
-              </div>
-            </mat-card>
+            <div class="upload-grid">
+              <mat-card class="upload-card">
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>cloud_upload</mat-icon>
+                    Upload Files
+                  </mat-card-title>
+                  <mat-card-subtitle>Drag & drop or click to select</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="upload-dropzone" 
+                       (drop)="onDrop($event)" 
+                       (dragover)="onDragOver($event)"
+                       (dragleave)="onDragLeave($event)"
+                       [class.dragover]="isDragging">
+                    <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                    <h3>Drop files here</h3>
+                    <p>Supports PDF, DOC, XLS, images and ZIP files</p>
+                    <input type="file" 
+                           #fileInput 
+                           hidden 
+                           multiple 
+                           (change)="onFileSelected($event)"
+                           accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.zip">
+                    <button mat-raised-button color="primary" (click)="fileInput.click()">
+                      <mat-icon>attach_file</mat-icon>
+                      Browse Files
+                    </button>
+                  </div>
+                </mat-card-content>
+              </mat-card>
 
-            <mat-card class="upload-form-card">
-              <h3>Document Details</h3>
-              <form [formGroup]="uploadForm" (ngSubmit)="uploadDocument()">
-                <mat-form-field appearance="fill" class="full-width">
-                  <mat-label>Document Type</mat-label>
-                  <mat-select formControlName="type">
-                    <mat-option value="proof-of-delivery">Proof of Delivery</mat-option>
-                    <mat-option value="bill-of-lading">Bill of Lading</mat-option>
-                    <mat-option value="invoice">Invoice</mat-option>
-                    <mat-option value="manifest">Manifest</mat-option>
-                    <mat-option value="license">License/Permit</mat-option>
-                    <mat-option value="inspection">Inspection Report</mat-option>
-                    <mat-option value="other">Other</mat-option>
-                  </mat-select>
-                </mat-form-field>
+              <mat-card class="upload-form-card">
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>description</mat-icon>
+                    Document Information
+                  </mat-card-title>
+                  <mat-card-subtitle>Provide details about your documents</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <form [formGroup]="uploadForm" (ngSubmit)="uploadDocument()">
+                    <div class="form-grid">
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Document Type</mat-label>
+                        <mat-select formControlName="type">
+                          <mat-option value="proof-of-delivery">
+                            <mat-icon>check_circle</mat-icon>
+                            Proof of Delivery
+                          </mat-option>
+                          <mat-option value="bill-of-lading">
+                            <mat-icon>receipt_long</mat-icon>
+                            Bill of Lading
+                          </mat-option>
+                          <mat-option value="invoice">
+                            <mat-icon>receipt</mat-icon>
+                            Invoice
+                          </mat-option>
+                          <mat-option value="manifest">
+                            <mat-icon>list_alt</mat-icon>
+                            Manifest
+                          </mat-option>
+                          <mat-option value="license">
+                            <mat-icon>card_membership</mat-icon>
+                            License/Permit
+                          </mat-option>
+                          <mat-option value="inspection">
+                            <mat-icon>fact_check</mat-icon>
+                            Inspection Report
+                          </mat-option>
+                          <mat-option value="other">
+                            <mat-icon>description</mat-icon>
+                            Other
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
 
-                <mat-form-field appearance="fill" class="full-width" floatLabel="always">
-                  <mat-label>Related Load (Optional)</mat-label>
-                  <input matInput formControlName="loadId">
-                  <mat-hint>Load #12345</mat-hint>
-                </mat-form-field>
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Related Load</mat-label>
+                        <input matInput formControlName="loadId" placeholder="e.g., 12345">
+                        <mat-icon matPrefix>local_shipping</mat-icon>
+                        <mat-hint>Optional - Link to a load number</mat-hint>
+                      </mat-form-field>
+                    </div>
 
-                <mat-form-field appearance="fill" class="full-width" floatLabel="always">
-                  <mat-label>Notes</mat-label>
-                  <textarea matInput formControlName="notes"></textarea>
-                  <mat-hint>Add any notes about this document</mat-hint>
-                </mat-form-field>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Notes</mat-label>
+                      <textarea matInput formControlName="notes" rows="3" placeholder="Add any relevant notes or comments"></textarea>
+                      <mat-icon matPrefix>note</mat-icon>
+                    </mat-form-field>
 
-                <div class="selected-files">
-                  @if (selectedFiles.length > 0) {
-                    <h4>Selected Files ({{ selectedFiles.length }})</h4>
-                  }
-                  @for (file of selectedFiles; track file.name) {
-                    <div class="file-item">
-                      <mat-icon>description</mat-icon>
-                      <div class="file-info">
-                        <span class="file-name">{{ file.name }}</span>
-                        <span class="file-size">{{ formatFileSize(file.size) }}</span>
-                      </div>
-                      <button mat-icon-button type="button" (click)="removeFile(file)">
-                        <mat-icon>close</mat-icon>
+                    <div class="selected-files">
+                      @if (selectedFiles.length > 0) {
+                        <div class="files-header">
+                          <h4>
+                            <mat-icon>attach_file</mat-icon>
+                            Selected Files ({{ selectedFiles.length }})
+                          </h4>
+                          <button mat-button type="button" (click)="clearFiles()" class="clear-all-btn">
+                            <mat-icon>clear_all</mat-icon>
+                            Clear All
+                          </button>
+                        </div>
+                        @for (file of selectedFiles; track file.name) {
+                          <div class="file-item">
+                            <div class="file-icon-wrapper">
+                              <mat-icon>{{ getFileIcon(file.name) }}</mat-icon>
+                            </div>
+                            <div class="file-info">
+                              <span class="file-name">{{ file.name }}</span>
+                              <span class="file-size">{{ formatFileSize(file.size) }}</span>
+                            </div>
+                            <button mat-icon-button type="button" (click)="removeFile(file)" class="remove-btn">
+                              <mat-icon>close</mat-icon>
+                            </button>
+                          </div>
+                        }
+                      } @else {
+                        <div class="no-files">
+                          <mat-icon>info</mat-icon>
+                          <p>No files selected yet</p>
+                        </div>
+                      }
+                    </div>
+
+                    <div class="form-actions">
+                      <button mat-raised-button color="primary" 
+                              [disabled]="selectedFiles.length === 0 || uploadForm.invalid"
+                              type="submit">
+                        <mat-icon>cloud_upload</mat-icon>
+                        Upload {{ selectedFiles.length > 0 ? selectedFiles.length + ' ' + (selectedFiles.length === 1 ? 'File' : 'Files') : 'Documents' }}
+                      </button>
+                      <button mat-stroked-button type="button" (click)="clearForm()" [disabled]="selectedFiles.length === 0">
+                        <mat-icon>refresh</mat-icon>
+                        Reset Form
                       </button>
                     </div>
-                  }
-                </div>
-
-                <div class="form-actions">
-                  <button mat-raised-button color="primary" 
-                          [disabled]="selectedFiles.length === 0"
-                          type="submit">
-                    <mat-icon>upload</mat-icon>
-                    Upload {{ selectedFiles.length }} {{ selectedFiles.length === 1 ? 'File' : 'Files' }}
-                  </button>
-                  <button mat-stroked-button type="button" (click)="clearForm()">
-                    <mat-icon>clear</mat-icon>
-                    Clear
-                  </button>
-                </div>
-              </form>
-            </mat-card>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            </div>
           </div>
         </mat-tab>
 
@@ -139,56 +198,66 @@ import { NotificationService } from '../../services/notification.service';
 
             @for (doc of documents; track doc.filename) {
               <div class="document-item">
-                <mat-card>
-                  <div class="document-header">
-                    <div class="document-info">
+                <mat-card class="document-card">
+                  <mat-card-header>
+                    <div class="header-left">
                       <mat-icon class="doc-icon">
                         {{ getDocumentIcon(doc.type) }}
                       </mat-icon>
                       <div class="doc-details">
-                        <h4>{{ doc.filename }}</h4>
-                        <p class="doc-type">{{ formatDocType(doc.type) }}</p>
+                        <mat-card-title>{{ doc.filename }}</mat-card-title>
+                        <mat-card-subtitle>{{ formatDocType(doc.type) }}</mat-card-subtitle>
                       </div>
                     </div>
-                    <div class="document-meta">
-                      <span class="doc-size">{{ formatFileSize(doc.size) }}</span>
-                      <span class="doc-date">{{ formatDate(doc.uploadDate) }}</span>
+                    <div class="header-right">
                       <mat-chip-set>
                         <mat-chip [ngClass]="'status-' + doc.status">
                           {{ doc.status | titlecase }}
                         </mat-chip>
                       </mat-chip-set>
                     </div>
-                  </div>
+                  </mat-card-header>
 
-                  <mat-divider></mat-divider>
-
-                  @if (doc.notes) {
-                    <div class="document-body">
-                      <p><strong>Notes:</strong> {{ doc.notes }}</p>
+                  <mat-card-content>
+                    <div class="document-details">
+                      <div class="detail-row">
+                        <span class="label">Size</span>
+                        <span class="value">{{ formatFileSize(doc.size) }}</span>
+                      </div>
+                      <div class="detail-row">
+                        <span class="label">Upload Date</span>
+                        <span class="value">{{ formatDate(doc.uploadDate) }}</span>
+                      </div>
+                      @if (doc.loadId) {
+                        <div class="detail-row">
+                          <span class="label">Related Load</span>
+                          <span class="value">#{{ doc.loadId }}</span>
+                        </div>
+                      }
                     </div>
-                  }
 
-                  @if (doc.loadId) {
-                    <div class="document-body">
-                      <p><strong>Related Load:</strong> #{{ doc.loadId }}</p>
-                    </div>
-                  }
+                    @if (doc.notes) {
+                      <div class="document-notes">
+                        <div class="label">Notes</div>
+                        <div class="value">{{ doc.notes }}</div>
+                      </div>
+                    }
+                  </mat-card-content>
 
-                  <div class="document-actions">
-                    <button mat-button color="primary">
+                  <mat-card-actions>
+                    <button mat-button color="primary" (click)="downloadDocument(doc)">
                       <mat-icon>download</mat-icon>
                       Download
                     </button>
-                    <button mat-button color="primary">
+                    <button mat-button color="primary" (click)="previewDocument(doc)">
                       <mat-icon>preview</mat-icon>
                       Preview
                     </button>
-                    <button mat-button color="warn">
+                    <button mat-button color="warn" (click)="deleteDocument(doc)">
                       <mat-icon>delete</mat-icon>
                       Delete
                     </button>
-                  </div>
+                  </mat-card-actions>
                 </mat-card>
               </div>
             }
@@ -238,9 +307,8 @@ import { NotificationService } from '../../services/notification.service';
   `,
   styles: [`
     .documents-container {
-      padding: 24px;
-      max-width: 1200px;
-      margin: 0 auto;
+      padding: 1rem;
+      box-sizing: border-box;
     }
 
     .page-header {
@@ -268,118 +336,393 @@ import { NotificationService } from '../../services/notification.service';
       padding: 24px 0;
     }
 
+    .upload-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 24px;
+      align-items: start;
+
+      @media (max-width: 1200px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .upload-card, .upload-form-card {
-      margin-bottom: 24px;
-      background: var(--card-bg, var(--ts-surface-secondary));
-      color: var(--color-text, var(--ts-ink));
+      background: var(--card-bg);
+      color: var(--color-text);
+      border: 3px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.15), 
+        0 2px 6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: visible;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: linear-gradient(180deg, var(--ts-red) 0%, #b31218 100%);
+        opacity: 0.8;
+        border-radius: 12px 0 0 12px;
+      }
+
+      &:hover {
+        box-shadow: 
+          0 8px 16px rgba(0, 0, 0, 0.18), 
+          0 4px 8px rgba(0, 0, 0, 0.12),
+          0 0 0 2px rgba(215, 25, 32, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        border-color: var(--ts-red);
+        transform: translateY(-2px);
+
+        &::before {
+          width: 6px;
+          opacity: 1;
+        }
+      }
+
+      mat-card-header {
+        display: flex;
+        flex-direction: column;
+        padding: 20px 24px 16px 28px;
+        background: linear-gradient(135deg, 
+          var(--card-bg) 0%, 
+          var(--surface-secondary) 50%,
+          var(--card-bg) 100%);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--color-text);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        margin-bottom: 6px;
+
+        mat-icon {
+          color: var(--ts-red);
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      mat-card-subtitle {
+        color: var(--muted-text);
+        font-weight: 500;
+        font-size: 14px;
+        margin: 0;
+        padding-left: 36px;
+      }
+
+      mat-card-content {
+        padding: 28px 24px 28px 28px;
+      }
     }
 
     .upload-dropzone {
-      border: 2px dashed var(--border-color, #ccc);
-      border-radius: 8px;
-      padding: 40px 20px;
+      border: 3px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 40px 24px;
       text-align: center;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
-      background-color: var(--ts-surface-secondary, #fafafa);
+      background: var(--surface-secondary);
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--color-text);
+      }
+
+      p {
+        margin: 0 0 20px 0;
+        color: var(--muted-text);
+        font-size: 13px;
+        max-width: 250px;
+      }
+
+      button {
+        margin-top: 4px;
+      }
     }
 
     .upload-dropzone:hover {
-      border-color: var(--ts-red, #1976d2);
-      background-color: var(--ts-surface, #f0f7ff);
+      border-color: var(--ts-red);
+      background: var(--card-bg);
+      box-shadow: 
+        0 4px 12px rgba(215, 25, 32, 0.08),
+        inset 0 0 40px rgba(215, 25, 32, 0.03);
+      transform: scale(1.01);
     }
 
     .upload-dropzone.dragover {
-      border-color: var(--ts-red, #1976d2);
-      background-color: var(--ts-surface, #e3f2fd);
-      box-shadow: 0 0 0 8px rgba(215, 25, 32, 0.1);
+      border-color: var(--ts-red);
+      border-width: 4px;
+      background: linear-gradient(135deg, 
+        rgba(215, 25, 32, 0.05) 0%, 
+        rgba(215, 25, 32, 0.02) 100%);
+      box-shadow: 
+        0 8px 24px rgba(215, 25, 32, 0.15),
+        0 0 0 6px rgba(215, 25, 32, 0.08),
+        inset 0 0 60px rgba(215, 25, 32, 0.05);
+      transform: scale(1.02);
+
+      .upload-icon {
+        animation: bounce 0.6s ease-in-out infinite;
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     .upload-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-      color: var(--ts-red, #1976d2);
+      font-size: 56px;
+      width: 56px;
+      height: 56px;
+      color: var(--ts-red);
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .upload-dropzone:hover .upload-icon {
+      transform: scale(1.08);
+      filter: drop-shadow(0 4px 8px rgba(215, 25, 32, 0.3));
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
       margin-bottom: 16px;
     }
 
-    .upload-dropzone h3 {
-      margin: 0 0 8px 0;
-      font-size: 18px;
-      font-weight: 500;
-      color: var(--color-text, var(--ts-ink));
-    }
+    mat-form-field {
+      &.full-width {
+        width: 100%;
+      }
 
-    .upload-dropzone p {
-      margin: 0 0 16px 0;
-      color: var(--muted-text, #666);
-    }
+      ::ng-deep {
+        .mat-mdc-text-field-wrapper {
+          background: var(--card-bg);
+        }
 
-    .upload-form-card h3 {
-      margin-top: 0;
-      font-size: 18px;
-      font-weight: 500;
-      color: var(--color-text, var(--ts-ink));
-    }
+        .mat-icon {
+          color: var(--ts-red);
+        }
 
-    .full-width {
-      width: 100%;
-      margin-bottom: 16px;
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--border-color) !important;
+        }
+
+        &.mat-focused {
+          .mdc-notched-outline__leading,
+          .mdc-notched-outline__notch,
+          .mdc-notched-outline__trailing {
+            border-color: var(--ts-red) !important;
+            border-width: 2px !important;
+          }
+        }
+      }
     }
 
     .selected-files {
       margin: 24px 0;
-    }
+      padding: 20px;
+      background: var(--surface-secondary);
+      border-radius: 8px;
+      border: 2px solid var(--border-color);
 
-    .selected-files h4 {
-      margin: 0 0 12px 0;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted-text, #666);
+      .files-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--border-color);
+
+        h4 {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin: 0;
+          font-size: 16px;
+          font-weight: 700;
+          color: var(--color-text);
+
+          mat-icon {
+            color: var(--ts-red);
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        .clear-all-btn {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--ts-red);
+        }
+      }
+
+      .no-files {
+        text-align: center;
+        padding: 32px 16px;
+        color: var(--muted-text);
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          opacity: 0.3;
+          margin-bottom: 12px;
+        }
+
+        p {
+          margin: 0;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
     }
 
     .file-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px;
-      background-color: var(--card-bg, #f5f5f5);
-      border: 1px solid var(--border-color, transparent);
-      border-radius: 4px;
+      padding: 12px 14px;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-left: 4px solid var(--ts-red);
+      border-radius: 8px;
       margin-bottom: 8px;
-    }
+      transition: all 0.2s ease;
 
-    .file-item mat-icon {
-      color: var(--ts-red, #1976d2);
-      flex-shrink: 0;
-    }
+      &:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        border-color: var(--ts-red);
+      }
 
-    .file-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
+      .file-icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, rgba(215, 25, 32, 0.1), rgba(215, 25, 32, 0.05));
+        border-radius: 8px;
+        flex-shrink: 0;
 
-    .file-name {
-      font-weight: 500;
-      font-size: 14px;
-      color: var(--color-text, var(--ts-ink));
-    }
+        mat-icon {
+          color: var(--ts-red);
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+      }
 
-    .file-size {
-      font-size: 12px;
-      color: var(--muted-text, #999);
+      .file-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .file-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--color-text);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .file-size {
+          font-size: 12px;
+          color: var(--muted-text);
+          font-weight: 500;
+        }
+      }
+
+      .remove-btn {
+        flex-shrink: 0;
+        color: var(--muted-text);
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: var(--ts-red);
+          background: rgba(215, 25, 32, 0.1);
+        }
+      }
     }
 
     .form-actions {
       display: flex;
       gap: 12px;
-      margin-top: 24px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 2px solid var(--border-color);
+
+      button {
+        flex: 1;
+        font-weight: 600;
+        padding: 12px 20px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        height: 48px;
+
+        mat-icon {
+          margin-right: 6px;
+        }
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(215, 25, 32, 0.2);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      @media (max-width: 600px) {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+        }
+      }
     }
 
     .documents-list {
       padding: 24px 0;
       min-height: 400px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+      gap: 24px;
+      align-items: start;
     }
 
     .empty-state {
@@ -403,76 +746,159 @@ import { NotificationService } from '../../services/notification.service';
     }
 
     .document-item {
-      margin-bottom: 16px;
-    }
+      .document-card {
+        background: var(--card-bg);
+        border: 3px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: 
+          0 4px 12px rgba(0, 0, 0, 0.15), 
+          0 2px 6px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    .document-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 8px;
-    }
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 5px;
+          background: linear-gradient(180deg, var(--ts-red) 0%, #b31218 100%);
+          opacity: 0.8;
+        }
 
-    .document-info {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      flex: 1;
-    }
+        &:hover {
+          box-shadow: 
+            0 8px 16px rgba(0, 0, 0, 0.18), 
+            0 4px 8px rgba(0, 0, 0, 0.12),
+            0 0 0 2px rgba(215, 25, 32, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+          border-color: var(--ts-red);
+          transform: translateY(-2px);
 
-    .doc-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      color: var(--ts-red, #1976d2);
-      flex-shrink: 0;
-    }
+          &::before {
+            width: 6px;
+            opacity: 1;
+          }
+        }
 
-    .doc-details h4 {
-      margin: 0 0 4px 0;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--color-text, var(--ts-ink));
-    }
+        mat-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 20px 24px 16px 28px;
+          background: linear-gradient(135deg, 
+            var(--card-bg) 0%, 
+            var(--surface-secondary) 50%,
+            var(--card-bg) 100%);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+          border-bottom: 2px solid var(--border-color);
 
-    .doc-type {
-      margin: 0;
-      font-size: 12px;
-      color: var(--muted-text, #666);
-    }
+          .header-left {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 16px;
 
-    .document-meta {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-    }
+            .doc-icon {
+              font-size: 32px;
+              width: 32px;
+              height: 32px;
+              color: var(--ts-red);
+              flex-shrink: 0;
+            }
 
-    .doc-size {
-      font-size: 12px;
-      color: var(--muted-text, #999);
-    }
+            .doc-details {
+              mat-card-title {
+                font-size: 20px;
+                font-weight: 800;
+                margin-bottom: 4px;
+                color: var(--color-text);
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+              }
 
-    .doc-date {
-      font-size: 12px;
-      color: var(--muted-text, #999);
-    }
+              mat-card-subtitle {
+                color: var(--muted-text);
+                font-weight: 500;
+                margin-top: 6px;
+              }
+            }
+          }
 
-    .document-body {
-      padding: 12px 8px;
-      font-size: 14px;
-      color: var(--color-text, var(--ts-ink));
-    }
+          .header-right {
+            mat-chip-set {
+              mat-chip {
+                font-weight: 600;
+              }
+            }
+          }
+        }
 
-    .document-body p {
-      margin: 0;
-    }
+        mat-card-content {
+          padding: 24px 24px 24px 28px;
 
-    .document-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-start;
-      padding-top: 12px;
+          .document-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+
+            .detail-row {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 8px 0;
+              border-bottom: 1px solid var(--border-color);
+
+              .label {
+                font-weight: 500;
+                color: var(--muted-text);
+                font-size: 13px;
+              }
+
+              .value {
+                font-weight: 600;
+                color: var(--color-text);
+                text-align: right;
+                font-size: 13px;
+              }
+            }
+          }
+
+          .document-notes {
+            padding: 12px 16px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--ts-red);
+            margin-top: 16px;
+
+            .label {
+              font-weight: 600;
+              color: var(--muted-text);
+              font-size: 12px;
+              margin-bottom: 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .value {
+              font-size: 14px;
+              color: var(--color-text);
+              line-height: 1.5;
+            }
+          }
+        }
+
+        mat-card-actions {
+          display: flex;
+          gap: 12px;
+          padding: 16px 24px 16px 28px;
+          border-top: 1px solid var(--border-color);
+          background: var(--surface-secondary);
+        }
+      }
     }
 
     .pending-item {
@@ -708,6 +1134,27 @@ export class DocumentsPage implements OnInit {
     return icons[type] || 'description';
   }
 
+  getFileIcon(filename: string): string {
+    const ext = filename.split('.').pop()?.toLowerCase() || '';
+    const iconMap: Record<string, string> = {
+      'pdf': 'picture_as_pdf',
+      'doc': 'description',
+      'docx': 'description',
+      'xls': 'table_chart',
+      'xlsx': 'table_chart',
+      'jpg': 'image',
+      'jpeg': 'image',
+      'png': 'image',
+      'gif': 'image',
+      'zip': 'folder_zip'
+    };
+    return iconMap[ext] || 'description';
+  }
+
+  clearFiles() {
+    this.selectedFiles = [];
+  }
+
   goToDocumentUpload() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -716,5 +1163,127 @@ export class DocumentsPage implements OnInit {
     this.notificationService.markAsRead(notification.id);
     this.loadPendingNotifications();
     this.snackBar.open('Marked as done', 'Close', { duration: 2000 });
+  }
+
+  downloadDocument(doc: any) {
+    // For now, create a simple text file with document info
+    const content = `Document: ${doc.filename}
+Type: ${this.formatDocType(doc.type)}
+Upload Date: ${this.formatDate(doc.uploadDate)}
+${doc.loadId ? 'Load ID: ' + doc.loadId : ''}
+${doc.notes ? 'Notes: ' + doc.notes : ''}`;
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = doc.filename;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    
+    this.snackBar.open(`Downloading ${doc.filename}`, 'Close', { duration: 3000 });
+  }
+
+  previewDocument(doc: any) {
+    // For preview, open document info in a new window
+    const content = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Document Preview - ${doc.filename}</title>
+  <style>
+    body { 
+      font-family: system-ui, -apple-system, sans-serif; 
+      max-width: 800px; 
+      margin: 40px auto; 
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 { color: #d32f2f; margin-top: 0; }
+    .info-row { 
+      margin: 15px 0; 
+      padding: 12px;
+      background: #fafafa;
+      border-left: 3px solid #d32f2f;
+      border-radius: 4px;
+    }
+    .label { 
+      font-weight: 600; 
+      color: #666;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .value { 
+      color: #333;
+      font-size: 16px;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .status.approved { background: #4caf50; color: white; }
+    .status.pending { background: #ff9800; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📄 ${doc.filename}</h1>
+    <div class="info-row">
+      <div class="label">Document Type</div>
+      <div class="value">${this.formatDocType(doc.type)}</div>
+    </div>
+    <div class="info-row">
+      <div class="label">Upload Date</div>
+      <div class="value">${this.formatDate(doc.uploadDate)}</div>
+    </div>
+    <div class="info-row">
+      <div class="label">File Size</div>
+      <div class="value">${this.formatFileSize(doc.size)}</div>
+    </div>
+    <div class="info-row">
+      <div class="label">Status</div>
+      <div class="value">
+        <span class="status ${doc.status}">${doc.status.toUpperCase()}</span>
+      </div>
+    </div>
+    ${doc.loadId ? `
+    <div class="info-row">
+      <div class="label">Load ID</div>
+      <div class="value">${doc.loadId}</div>
+    </div>
+    ` : ''}
+    ${doc.notes ? `
+    <div class="info-row">
+      <div class="label">Notes</div>
+      <div class="value">${doc.notes}</div>
+    </div>
+    ` : ''}
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([content], { type: 'text/html' });
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => window.URL.revokeObjectURL(url), 100);
+  }
+
+  deleteDocument(doc: any) {
+    if (confirm(`Are you sure you want to delete ${doc.filename}?`)) {
+      this.documentService.deleteDocument(doc.id);
+      this.loadDocuments();
+      this.snackBar.open(`Deleted ${doc.filename}`, 'Close', { duration: 3000 });
+    }
   }
 }
