@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Pipe, PipeTransform } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +12,18 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
 import { RealTimeTrackingService, ActiveTracker, GeofenceAlert, DriverLocationUpdate } from '../services/real-time-tracking.service';
 import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.component';
+
+@Pipe({
+  name: 'trustUrl',
+  standalone: true
+})
+export class TrustUrlPipe implements PipeTransform {
+  constructor(private sanitizer: DomSanitizer) {}
+  
+  transform(url: string): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+}
 
 @Component({
   selector: 'app-live-tracking-dashboard',
@@ -25,7 +38,8 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
     MatProgressSpinnerModule,
     MatBadgeModule,
     MatSnackBarModule,
-    RouteOptimizerCardComponent
+    RouteOptimizerCardComponent,
+    TrustUrlPipe
   ],
   template: `
     <div class="tracking-dashboard">
@@ -102,45 +116,63 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
               </mat-card-header>
 
               <mat-card-content class="tracker-details">
-                <div class="detail-row">
-                  <div class="detail-item">
-                    <span class="label">Speed</span>
-                    <span class="value">{{ tracker.speedMph | number: '1.0-0' }} mph</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="label">Load</span>
-                    <span class="value">{{ tracker.loadNumber || 'N/A' }}</span>
-                  </div>
-                </div>
-
-                @if (tracker.loadNumber) {
-                  <div class="detail-row">
-                    <div class="detail-item">
-                      <span class="label">Pickup</span>
-                      <span class="value">{{ tracker.pickupLocation }}</span>
+                <div class="tracker-content-wrapper">
+                  <div class="tracker-info">
+                    <div class="detail-row">
+                      <div class="detail-item">
+                        <span class="label">Speed</span>
+                        <span class="value">{{ tracker.speedMph | number: '1.0-0' }} mph</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="label">Load</span>
+                        <span class="value">{{ tracker.loadNumber || 'N/A' }}</span>
+                      </div>
                     </div>
-                    <div class="detail-item">
-                      <span class="label">Delivery</span>
-                      <span class="value">{{ tracker.deliveryLocation }}</span>
+
+                    @if (tracker.loadNumber) {
+                      <div class="detail-row">
+                        <div class="detail-item">
+                          <span class="label">Pickup</span>
+                          <span class="value">{{ tracker.pickupLocation }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label">Delivery</span>
+                          <span class="value">{{ tracker.deliveryLocation }}</span>
+                        </div>
+                      </div>
+                    }
+
+                    <div class="detail-row">
+                      <div class="detail-item">
+                        <span class="label">Coordinates</span>
+                        <span class="value">{{ tracker.latitude | number: '1.4-4' }}, {{ tracker.longitude | number: '1.4-4' }}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="label">ETA</span>
+                        <span class="value">{{ tracker.eta_minutes }} min</span>
+                      </div>
+                    </div>
+
+                    <div class="detail-row">
+                      <div class="detail-item">
+                        <span class="label">Last Update</span>
+                        <span class="value">{{ tracker.lastUpdated | date: 'short' }}</span>
+                      </div>
                     </div>
                   </div>
-                }
 
-                <div class="detail-row">
-                  <div class="detail-item">
-                    <span class="label">Coordinates</span>
-                    <span class="value">{{ tracker.latitude | number: '1.4-4' }}, {{ tracker.longitude | number: '1.4-4' }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="label">ETA</span>
-                    <span class="value">{{ tracker.eta_minutes }} min</span>
-                  </div>
-                </div>
-
-                <div class="detail-row">
-                  <div class="detail-item">
-                    <span class="label">Last Update</span>
-                    <span class="value">{{ tracker.lastUpdated | date: 'short' }}</span>
+                  <div class="mini-map">
+                    <iframe
+                      [src]="'https://www.openstreetmap.org/export/embed.html?bbox=' + 
+                        (tracker.longitude - 0.05) + ',' + (tracker.latitude - 0.05) + ',' + 
+                        (tracker.longitude + 0.05) + ',' + (tracker.latitude + 0.05) + 
+                        '&layer=mapnik&marker=' + tracker.latitude + ',' + tracker.longitude | trustUrl"
+                      width="100%"
+                      height="100%"
+                      frameborder="0"
+                      style="border:0"
+                      loading="lazy">
+                    </iframe>
                   </div>
                 </div>
               </mat-card-content>
@@ -401,21 +433,55 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
         }
 
         .status-chip {
-          font-weight: 500;
+          font-weight: 700;
+          font-size: 12px;
+          padding: 6px 14px;
+          border-radius: 16px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+          border: 2px solid transparent;
 
           &.status-onduty {
-            background-color: var(--chip-bg);
-            color: var(--accent-green, var(--chip-text));
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: #059669;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
           }
 
           &.status-offduty {
-            background-color: var(--chip-bg);
-            color: var(--accent-red);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border-color: #dc2626;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
           }
 
           &.status-onbreak {
-            background-color: var(--chip-bg);
-            color: var(--accent-amber, var(--chip-text));
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border-color: #d97706;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+          }
+
+          &.status-available {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+          }
+
+          &.status-maintenance {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border-color: #7c3aed;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+          }
+
+          &.status-outofservice {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            border-color: #4b5563;
+            box-shadow: 0 2px 8px rgba(107, 114, 128, 0.4);
           }
         }
       }
@@ -428,11 +494,62 @@ import { RouteOptimizerCardComponent } from '../components/route-optimizer-card.
       padding-left: 8px;
     }
 
+    .tracker-content-wrapper {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .tracker-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mini-map {
+      flex: 0 0 200px;
+      height: 200px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: var(--ts-red);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: scale(1.02);
+      }
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+      }
+    }
+
     .detail-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       font-size: 12px;
+    }
+
+    /* Responsive: Stack map below details on small screens */
+    @media (max-width: 768px) {
+      .tracker-content-wrapper {
+        flex-direction: column;
+      }
+
+      .mini-map {
+        flex: 0 0 auto;
+        width: 100%;
+        height: 250px;
+      }
+
+      .trackers-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .detail-item {
