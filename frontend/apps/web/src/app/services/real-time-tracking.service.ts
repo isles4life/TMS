@@ -102,10 +102,144 @@ export class RealTimeTrackingService {
       this.ngZone.run(() => this.connectionStateSubject.next(true));
       console.log('SignalR connected for real-time tracking');
     } catch (err) {
-      console.error('SignalR connection error:', err);
-      this.ngZone.run(() => this.connectionStateSubject.next(false));
+      console.warn('SignalR connection error, using mock data:', err);
+      this.ngZone.run(() => {
+        this.connectionStateSubject.next(false);
+        // Load mock data when connection fails
+        this.loadMockData();
+      });
       throw err;
     }
+  }
+
+  /**
+   * Load mock seed data for demonstration
+   */
+  private loadMockData(): void {
+    const mockTrackers: ActiveTracker[] = [
+      {
+        id: 'tracker-001',
+        driverId: 'DRV-101',
+        driverName: 'Mike Johnson',
+        driverPhone: '(555) 123-4567',
+        latitude: 40.7128,
+        longitude: -74.0060,
+        speedMph: 62,
+        status: 'OnDuty',
+        dispatchId: 'DSP-5501',
+        loadNumber: 'LB-4821',
+        pickupLocation: 'Boise, ID',
+        deliveryLocation: 'Portland, OR',
+        eta_minutes: 145,
+        lastUpdated: new Date()
+      },
+      {
+        id: 'tracker-002',
+        driverId: 'DRV-102',
+        driverName: 'Sarah Williams',
+        driverPhone: '(555) 234-5678',
+        latitude: 34.0522,
+        longitude: -118.2437,
+        speedMph: 58,
+        status: 'OnDuty',
+        dispatchId: 'DSP-5502',
+        loadNumber: 'LB-4822',
+        pickupLocation: 'Dallas, TX',
+        deliveryLocation: 'Denver, CO',
+        eta_minutes: 218,
+        lastUpdated: new Date()
+      },
+      {
+        id: 'tracker-003',
+        driverId: 'DRV-103',
+        driverName: 'James Brown',
+        driverPhone: '(555) 345-6789',
+        latitude: 41.8781,
+        longitude: -87.6298,
+        speedMph: 0,
+        status: 'OnBreak',
+        dispatchId: 'DSP-5503',
+        loadNumber: 'LB-4823',
+        pickupLocation: 'Atlanta, GA',
+        deliveryLocation: 'Chicago, IL',
+        eta_minutes: 35,
+        lastUpdated: new Date()
+      },
+      {
+        id: 'tracker-004',
+        driverId: 'DRV-104',
+        driverName: 'Emily Davis',
+        driverPhone: '(555) 456-7890',
+        latitude: 29.7604,
+        longitude: -95.3698,
+        speedMph: 65,
+        status: 'OnDuty',
+        dispatchId: 'DSP-5504',
+        loadNumber: 'LB-6010',
+        pickupLocation: 'Houston, TX',
+        deliveryLocation: 'Miami, FL',
+        eta_minutes: 312,
+        lastUpdated: new Date()
+      },
+      {
+        id: 'tracker-005',
+        driverId: 'DRV-105',
+        driverName: 'Robert Martinez',
+        driverPhone: '(555) 567-8901',
+        latitude: 33.4484,
+        longitude: -112.0740,
+        speedMph: 55,
+        status: 'OnDuty',
+        dispatchId: 'DSP-5505',
+        loadNumber: 'LB-6012',
+        pickupLocation: 'Phoenix, AZ',
+        deliveryLocation: 'Seattle, WA',
+        eta_minutes: 425,
+        lastUpdated: new Date()
+      },
+      {
+        id: 'tracker-006',
+        driverId: 'DRV-106',
+        driverName: 'Lisa Anderson',
+        driverPhone: '(555) 678-9012',
+        latitude: 39.7392,
+        longitude: -104.9903,
+        speedMph: 0,
+        status: 'OffDuty',
+        dispatchId: 'DSP-5506',
+        loadNumber: '',
+        pickupLocation: '',
+        deliveryLocation: '',
+        eta_minutes: 0,
+        lastUpdated: new Date()
+      }
+    ];
+
+    const mockAlerts: GeofenceAlert[] = [
+      {
+        id: 'alert-001',
+        driverId: 'DRV-102',
+        driverName: 'Sarah Williams',
+        dispatchId: 'DSP-5502',
+        alertType: 'EnteredPickupZone',
+        zoneName: 'Dallas Distribution Center',
+        alertedAt: new Date(Date.now() - 15 * 60000),
+        isAcknowledged: false
+      },
+      {
+        id: 'alert-002',
+        driverId: 'DRV-103',
+        driverName: 'James Brown',
+        dispatchId: 'DSP-5503',
+        alertType: 'ApproachingDelivery',
+        zoneName: 'Chicago Warehouse',
+        alertedAt: new Date(Date.now() - 8 * 60000),
+        isAcknowledged: false
+      }
+    ];
+
+    this.activeTrackersSubject.next(mockTrackers);
+    this.pendingAlertsSubject.next(mockAlerts);
   }
 
   /**

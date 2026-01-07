@@ -477,10 +477,11 @@ export class LiveTrackingDashboardComponent implements OnInit, OnDestroy {
       this.isConnected = true;
       this.startTracking();
     } catch (error) {
-      console.error('Failed to connect to tracking service:', error);
-      this.snackBar.open('Failed to connect to real-time tracking', 'Retry', {duration: 5000})
-        .onAction()
-        .subscribe(() => this.initializeTracking());
+      console.warn('Using mock tracking data:', error);
+      this.isConnected = false;
+      // Still start tracking to show mock data
+      this.startTracking();
+      this.snackBar.open('Using demo tracking data (backend offline)', 'OK', {duration: 5000});
     }
   }
 
