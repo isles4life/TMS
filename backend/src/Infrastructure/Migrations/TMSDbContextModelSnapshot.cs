@@ -1282,7 +1282,7 @@ namespace TMS.Infrastructure.Migrations
                     b.Property<DateTime>("CapturedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasDefaultValue(new DateTime(2026, 1, 8, 16, 31, 30, 755, DateTimeKind.Utc).AddTicks(7842));
+                        .HasDefaultValue(new DateTime(2026, 1, 8, 17, 30, 17, 605, DateTimeKind.Utc).AddTicks(5413));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
@@ -1409,6 +1409,395 @@ namespace TMS.Infrastructure.Migrations
                     b.HasIndex("TripId");
 
                     b.ToTable("ProofsOfDelivery");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("EngineHoursAtService")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("LaborCost")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("MaintenanceScheduleId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("MileageAtService")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("PartsCost")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RecordType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ServiceDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TechnicianName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("TractorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("TrailerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("VendorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WorkOrderNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaintenanceScheduleId");
+
+                    b.HasIndex("TractorId");
+
+                    b.HasIndex("TrailerId");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("MaintenanceRecordsNew");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceRecordItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ItemType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("MaintenanceRecordId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PartNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaintenanceRecordId");
+
+                    b.ToTable("MaintenanceRecordItems");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("CurrentEngineHours")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("CurrentMileage")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("DaysInterval")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("EngineHoursInterval")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("LastServiceDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("LastServiceEngineHours")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("LastServiceMileage")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("MileageInterval")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("NotificationDaysBefore")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ScheduleName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ScheduleType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("TractorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("TrailerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TractorId");
+
+                    b.HasIndex("TrailerId");
+
+                    b.ToTable("MaintenanceSchedules");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("EstimatedCost")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("EstimatedDurationMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("MaintenanceScheduleId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TaskName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaintenanceScheduleId");
+
+                    b.ToTable("MaintenanceTasks");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.Vendor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AccountNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AddressLine1")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AddressLine2")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("AverageCompletionTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("HasInsurance")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("InsuranceCoverageAmount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("InsuranceExpirationDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPreferred")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("LastServiceDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LicenseExpirationDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LicenseNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PaymentTermsDays")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Rating")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ServiceCapabilities")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SpecialtyAreas")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("State")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TaxId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TotalJobsCompleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VendorCode")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VendorName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("VendorType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Website")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ZipCode")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vendors");
                 });
 
             modelBuilder.Entity("TMS.Domain.Entities.MaintenanceRecord", b =>
@@ -2332,6 +2721,70 @@ namespace TMS.Infrastructure.Migrations
                     b.Navigation("ProofOfDelivery");
                 });
 
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceRecord", b =>
+                {
+                    b.HasOne("TMS.Domain.Entities.Maintenance.MaintenanceSchedule", "MaintenanceSchedule")
+                        .WithMany("MaintenanceRecords")
+                        .HasForeignKey("MaintenanceScheduleId");
+
+                    b.HasOne("TMS.Domain.Entities.Equipment.PowerOnlyTractor", "Tractor")
+                        .WithMany()
+                        .HasForeignKey("TractorId");
+
+                    b.HasOne("TMS.Domain.Entities.Trailer", "Trailer")
+                        .WithMany()
+                        .HasForeignKey("TrailerId");
+
+                    b.HasOne("TMS.Domain.Entities.Maintenance.Vendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorId");
+
+                    b.Navigation("MaintenanceSchedule");
+
+                    b.Navigation("Tractor");
+
+                    b.Navigation("Trailer");
+
+                    b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceRecordItem", b =>
+                {
+                    b.HasOne("TMS.Domain.Entities.Maintenance.MaintenanceRecord", "MaintenanceRecord")
+                        .WithMany("Items")
+                        .HasForeignKey("MaintenanceRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MaintenanceRecord");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceSchedule", b =>
+                {
+                    b.HasOne("TMS.Domain.Entities.Equipment.PowerOnlyTractor", "Tractor")
+                        .WithMany()
+                        .HasForeignKey("TractorId");
+
+                    b.HasOne("TMS.Domain.Entities.Trailer", "Trailer")
+                        .WithMany()
+                        .HasForeignKey("TrailerId");
+
+                    b.Navigation("Tractor");
+
+                    b.Navigation("Trailer");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceTask", b =>
+                {
+                    b.HasOne("TMS.Domain.Entities.Maintenance.MaintenanceSchedule", "MaintenanceSchedule")
+                        .WithMany("Tasks")
+                        .HasForeignKey("MaintenanceScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MaintenanceSchedule");
+                });
+
             modelBuilder.Entity("TMS.Domain.Entities.MaintenanceRecord", b =>
                 {
                     b.HasOne("TMS.Domain.Entities.Equipment.PowerOnlyTractor", "Equipment")
@@ -2468,6 +2921,18 @@ namespace TMS.Infrastructure.Migrations
             modelBuilder.Entity("TMS.Domain.Entities.Loads.ProofOfDelivery", b =>
                 {
                     b.Navigation("Photos");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceRecord", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("TMS.Domain.Entities.Maintenance.MaintenanceSchedule", b =>
+                {
+                    b.Navigation("MaintenanceRecords");
+
+                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("TMS.Domain.Entities.Notes.Note", b =>

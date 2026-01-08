@@ -97,6 +97,14 @@ builder.Services.AddScoped<TMS.Application.Services.Compliance.HOSService>();
 builder.Services.AddScoped<TMS.Application.Services.Compliance.ComplianceService>();
 builder.Services.AddScoped<TMS.Application.Services.Compliance.SafetyScoringService>();
 
+// Add Maintenance Services and Repositories
+builder.Services.AddScoped<TMS.Domain.Repositories.IMaintenanceScheduleRepository, TMS.Infrastructure.Repositories.MaintenanceScheduleRepository>();
+builder.Services.AddScoped<TMS.Domain.Repositories.IMaintenanceRecordRepository, TMS.Infrastructure.Repositories.MaintenanceRecordRepository>();
+builder.Services.AddScoped<TMS.Domain.Repositories.IVendorRepository, TMS.Infrastructure.Repositories.VendorRepository>();
+builder.Services.AddScoped<TMS.Application.Services.Maintenance.MaintenanceSchedulingService>();
+builder.Services.AddScoped<TMS.Application.Services.Maintenance.MaintenanceRecordService>();
+builder.Services.AddScoped<TMS.Application.Services.Maintenance.VendorService>();
+
 // Add SignalR for real-time tracking
 builder.Services.AddSignalR();
 
@@ -212,6 +220,7 @@ try
     app.MapInvoiceEndpoints();
     app.MapHOSEndpoints();
     app.MapComplianceEndpoints();
+    app.MapMaintenanceEndpoints();
 
     // Register SignalR hubs
     app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");

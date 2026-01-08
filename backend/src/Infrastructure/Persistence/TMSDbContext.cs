@@ -13,6 +13,7 @@ using TMS.Domain.Entities.Tracking;
 using TMS.Domain.Entities.Notes;
 using TMS.Domain.Entities.Billing;
 using TMS.Domain.Entities.Compliance;
+using TMS.Domain.Entities.Maintenance;
 
 /// <summary>
 /// Database context for TMS
@@ -28,7 +29,7 @@ public class TMSDbContext : DbContext
     public DbSet<Load> Loads { get; set; }
     public DbSet<Trip> Trips { get; set; }
     public DbSet<Document> Documents { get; set; }
-    public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; }
+    public DbSet<TMS.Domain.Entities.MaintenanceRecord> MaintenanceRecords { get; set; }
     public DbSet<ComplianceDocument> ComplianceDocuments { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Dispatch> Dispatches { get; set; }
@@ -51,6 +52,13 @@ public class TMSDbContext : DbContext
     public DbSet<DriverQualificationFile> DriverQualificationFiles { get; set; }
     public DbSet<DriverSafetyScore> DriverSafetyScores { get; set; }
     public DbSet<FMCSASMSData> FMCSASMSData { get; set; }
+    
+    // Maintenance
+    public DbSet<MaintenanceSchedule> MaintenanceSchedules { get; set; }
+    public DbSet<MaintenanceTask> MaintenanceTasks { get; set; }
+    public DbSet<Domain.Entities.Maintenance.MaintenanceRecord> MaintenanceRecordsNew { get; set; }
+    public DbSet<MaintenanceRecordItem> MaintenanceRecordItems { get; set; }
+    public DbSet<Vendor> Vendors { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
