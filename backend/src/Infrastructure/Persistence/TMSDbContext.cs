@@ -12,6 +12,7 @@ using TMS.Domain.Entities.Users;
 using TMS.Domain.Entities.Tracking;
 using TMS.Domain.Entities.Notes;
 using TMS.Domain.Entities.Billing;
+using TMS.Domain.Entities.Compliance;
 
 /// <summary>
 /// Database context for TMS
@@ -42,6 +43,14 @@ public class TMSDbContext : DbContext
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<InvoiceLineItem> InvoiceLineItems { get; set; }
     public DbSet<Payment> Payments { get; set; }
+    
+    // Compliance & Safety
+    public DbSet<HOSLog> HOSLogs { get; set; }
+    public DbSet<HOSViolation> HOSViolations { get; set; }
+    public DbSet<ComplianceAlert> ComplianceAlerts { get; set; }
+    public DbSet<DriverQualificationFile> DriverQualificationFiles { get; set; }
+    public DbSet<DriverSafetyScore> DriverSafetyScores { get; set; }
+    public DbSet<FMCSASMSData> FMCSASMSData { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
