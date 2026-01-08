@@ -85,6 +85,10 @@ builder.Services.AddScoped<IProofOfDeliveryService, ProofOfDeliveryService>();
 // Add Analytics Service
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
+// Add Invoice Service and Repository
+builder.Services.AddScoped<TMS.Domain.Repositories.IInvoiceRepository, TMS.Infrastructure.Repositories.InvoiceRepository>();
+builder.Services.AddScoped<InvoiceService>();
+
 // Add SignalR for real-time tracking
 builder.Services.AddSignalR();
 
@@ -197,6 +201,7 @@ try
     app.RegisterNoteEndpoints();
     app.RegisterLoadStatusEndpoints();
     app.MapAnalyticsEndpoints();
+    app.MapInvoiceEndpoints();
 
     // Register SignalR hubs
     app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");

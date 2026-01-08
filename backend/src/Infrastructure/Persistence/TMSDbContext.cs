@@ -11,6 +11,7 @@ using TMS.Domain.Entities.Trips;
 using TMS.Domain.Entities.Users;
 using TMS.Domain.Entities.Tracking;
 using TMS.Domain.Entities.Notes;
+using TMS.Domain.Entities.Billing;
 
 /// <summary>
 /// Database context for TMS
@@ -38,6 +39,9 @@ public class TMSDbContext : DbContext
     public DbSet<CheckCall> CheckCalls { get; set; }
     public DbSet<Note> Notes { get; set; }
     public DbSet<LoadStatusHistory> LoadStatusHistories { get; set; }
+    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InvoiceLineItem> InvoiceLineItems { get; set; }
+    public DbSet<Payment> Payments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -10,9 +10,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 interface KPIDashboardResponse {
   generatedAt: string;
@@ -101,7 +105,8 @@ interface ApiResponse<T> {
     MatFormFieldModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatInputModule
+    MatInputModule,
+    MatMenuModule
   ],
   templateUrl: './analytics-dashboard.component.html',
   styleUrls: ['./analytics-dashboard.component.scss']
@@ -259,6 +264,163 @@ export class AnalyticsDashboardComponent implements OnInit {
   toggleOfflineMode(): void {
     this.useOfflineMode = !this.useOfflineMode;
     this.loadDashboard();
+  }
+
+  exportToPDF(): void {
+    if (!this.dashboard) return;
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Title
+    doc.setFontSize(20);
+    doc.setTextColor(215, 25, 32); // TMS Red
+    doc.text('Analytics & KPI Report', pageWidth / 2, 20, { align: 'center' });
+    
+    // Date Range
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    const startDate = this.dateForm.get('startDate')?.value;
+    const endDate = this.dateForm.get('endDate')?.value;
+    doc.text(
+      `Generated: ${new Date().toLocaleDateString()} | Period: ${startDate?.toLocaleDateString()} - ${endDate?.toLocaleDateString()}`,
+      pageWidth / 2,
+      28,
+      { align: 'center' }
+    );
+
+    // KPI Metrics Section
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text('Key Performance Indicators', 14, 40);
+    
+    const kpiData = [
+      ['On-Time Delivery', `${this.metrics?.onTimeDeliveryPercentage.toFixed(1)}%`, `${this.metrics?.onTimeDeliveries} / ${this.metrics?.totalDeliveries}`],
+      ['Driver Utilization', `${this.metrics?.driverUtilizationPercentage.toFixed(1)}%`, `${this.metrics?.activeDrivers} active drivers`],
+      ['Equipment Utilization', `${this.metrics?.equipmentUtilizationPercentage.toFixed(1)}%`, `${this.metrics?.activeVehicles} active vehicles`],
+      ['Total Revenue', `$${this.metrics?.totalRevenue.toLocaleString()}`, `$${this.metrics?.revenuePerMile.toFixed(2)}/mile`],
+      ['Load Performance', `${this.metrics?.totalLoads} loads`, `${this.metrics?.completedLoads} completed`],
+      ['Total Miles', `${this.metrics?.totalMilesDriven.toLocaleString()}`, `${this.metrics?.averageLoadedMilesPerVehicle.toFixed(0)} avg/vehicle`]
+    ];
+
+    autoTable(doc, {
+      startY: 45,
+      head: [['Metric', 'Value', 'Details']],
+      body: kpiData,
+      theme: 'striped',
+      headStyles: { fillColor: [215, 25, 32] }
+    });
+
+    // Top Drivers Section
+    const finalY = (doc as any).lastAutoTable.finalY || 45;
+    doc.setFontSize(14);
+    doc.text('Top Performing Drivers', 14, finalY + 15);
+
+    const driverData = this.topDrivers.map(d => [
+      d.driverName,
+      d.completedLoads.toString(),
+      `${d.onTimeDeliveryRate.toFixed(1)}%`,
+      `$${d.revenue.toLocaleString()}`,
+      d.overallScore.toFixed(0)
+    ]);
+
+    autoTable(doc, {
+      startY: finalY + 20,
+      head: [['Driver', 'Loads', 'OTD%', 'Revenue', 'Score']],
+      body: driverData,
+      theme: 'striped',
+      headStyles: { fillColor: [215, 25, 32] }
+    });
+
+    // Equipment Section
+    const equipY = (doc as any).lastAutoTable.finalY || finalY + 20;
+    doc.setFontSize(14);
+    doc.text('Equipment Performance', 14, equipY + 15);
+
+    const equipData = this.equipmentStats.map(e => [
+      e.equipmentNumber,
+      `${e.utilizationPercentage.toFixed(1)}%`,
+      e.tripsCompleted.toString(),
+      `$${e.revenue.toLocaleString()}`,
+      `$${e.revenuePerMile.toFixed(2)}`
+    ]);
+
+    autoTable(doc, {
+      startY: equipY + 20,
+      head: [['Unit', 'Utilization', 'Trips', 'Revenue', '$/Mile']],
+      body: equipData,
+      theme: 'striped',
+      headStyles: { fillColor: [215, 25, 32] }
+    });
+
+    // Save PDF
+    doc.save(`analytics-report-${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
+  exportToExcel(): void {
+    if (!this.dashboard) return;
+
+    const startDate = this.dateForm.get('startDate')?.value;
+    const endDate = this.dateForm.get('endDate')?.value;
+
+    // KPI Metrics Worksheet
+    const kpiData = [
+      ['Analytics & KPI Report'],
+      [`Generated: ${new Date().toLocaleDateString()}`],
+      [`Period: ${startDate?.toLocaleDateString()} - ${endDate?.toLocaleDateString()}`],
+      [],
+      ['Key Performance Indicators'],
+      ['Metric', 'Value', 'Details'],
+      ['On-Time Delivery', `${this.metrics?.onTimeDeliveryPercentage.toFixed(1)}%`, `${this.metrics?.onTimeDeliveries} / ${this.metrics?.totalDeliveries}`],
+      ['Driver Utilization', `${this.metrics?.driverUtilizationPercentage.toFixed(1)}%`, `${this.metrics?.activeDrivers} active drivers`],
+      ['Equipment Utilization', `${this.metrics?.equipmentUtilizationPercentage.toFixed(1)}%`, `${this.metrics?.activeVehicles} active vehicles`],
+      ['Total Revenue', `$${this.metrics?.totalRevenue.toLocaleString()}`, `$${this.metrics?.revenuePerMile.toFixed(2)}/mile`],
+      ['Load Performance', `${this.metrics?.totalLoads} loads`, `${this.metrics?.completedLoads} completed`],
+      ['Total Miles', `${this.metrics?.totalMilesDriven.toLocaleString()}`, `${this.metrics?.averageLoadedMilesPerVehicle.toFixed(0)} avg/vehicle`]
+    ];
+
+    const kpiWS = XLSX.utils.aoa_to_sheet(kpiData);
+
+    // Top Drivers Worksheet
+    const driverData = [
+      ['Top Performing Drivers'],
+      [],
+      ['Driver', 'Loads', 'OTD%', 'Revenue', 'Score'],
+      ...this.topDrivers.map(d => [
+        d.driverName,
+        d.completedLoads,
+        `${d.onTimeDeliveryRate.toFixed(1)}%`,
+        d.revenue,
+        d.overallScore.toFixed(0)
+      ])
+    ];
+
+    const driverWS = XLSX.utils.aoa_to_sheet(driverData);
+
+    // Equipment Worksheet
+    const equipData = [
+      ['Equipment Performance'],
+      [],
+      ['Unit', 'Utilization', 'Trips', 'Revenue', '$/Mile'],
+      ...this.equipmentStats.map(e => [
+        e.equipmentNumber,
+        `${e.utilizationPercentage.toFixed(1)}%`,
+        e.tripsCompleted,
+        e.revenue,
+        e.revenuePerMile.toFixed(2)
+      ])
+    ];
+
+    const equipWS = XLSX.utils.aoa_to_sheet(equipData);
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, kpiWS, 'KPI Metrics');
+    XLSX.utils.book_append_sheet(wb, driverWS, 'Top Drivers');
+    XLSX.utils.book_append_sheet(wb, equipWS, 'Equipment');
+
+    // Save file
+    XLSX.writeFile(wb, `analytics-report-${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
   get metrics(): KPIMetrics | null {

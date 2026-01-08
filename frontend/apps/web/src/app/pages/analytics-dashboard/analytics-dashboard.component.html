@@ -40,6 +40,20 @@
           <mat-icon>{{ useOfflineMode ? 'cloud' : 'cloud_off' }}</mat-icon>
           {{ useOfflineMode ? 'Go Online' : 'Use Mock Data' }}
         </button>
+
+        <button mat-button [matMenuTriggerFor]="exportMenu" [disabled]="!dashboard">
+          <mat-icon>download</mat-icon> Export
+        </button>
+        <mat-menu #exportMenu="matMenu">
+          <button mat-menu-item (click)="exportToPDF()">
+            <mat-icon>picture_as_pdf</mat-icon>
+            <span>Export to PDF</span>
+          </button>
+          <button mat-menu-item (click)="exportToExcel()">
+            <mat-icon>table_chart</mat-icon>
+            <span>Export to Excel</span>
+          </button>
+        </mat-menu>
       </form>
     </div>
   </div>
