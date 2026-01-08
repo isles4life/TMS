@@ -39,6 +39,9 @@ export const APP_ROUTES: Routes = [
   { path: 'invoices/view/:id', canActivate: [AuthGuard, RoleGuard], data: { title: 'View Invoice', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/invoices/invoice-view.component').then(m => m.InvoiceViewComponent) },
   { path: 'invoices/edit/:id', canActivate: [AuthGuard, RoleGuard], data: { title: 'Edit Invoice', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/invoices/create-invoice.component').then(m => m.CreateInvoiceComponent) },
 
+  // Analytics routes (available to Broker and SuperAdmin)
+  { path: 'analytics', canActivate: [AuthGuard, RoleGuard], data: { title: 'Analytics & KPIs', roles: ['Broker', 'SuperAdmin'], preload: true }, loadComponent: () => import('./pages/analytics-dashboard/analytics-dashboard.component').then(m => m.AnalyticsDashboardComponent) },
+
   // Admin routes (SuperAdmin only)
   { path: 'admin', canActivate: [AuthGuard, RoleGuard], data: { title: 'System Administration', roles: ['SuperAdmin'] }, loadComponent: () => import('./pages/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
 ];

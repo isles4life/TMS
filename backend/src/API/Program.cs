@@ -82,6 +82,9 @@ builder.Services.AddScoped<TMS.Domain.Repositories.IProofOfDeliveryRepository, T
 builder.Services.AddScoped<TMS.Domain.Repositories.IPODPhotoRepository, TMS.Infrastructure.Repositories.PODPhotoRepository>();
 builder.Services.AddScoped<IProofOfDeliveryService, ProofOfDeliveryService>();
 
+// Add Analytics Service
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+
 // Add SignalR for real-time tracking
 builder.Services.AddSignalR();
 
@@ -193,6 +196,7 @@ try
     app.RegisterCheckCallEndpoints();
     app.RegisterNoteEndpoints();
     app.RegisterLoadStatusEndpoints();
+    app.MapAnalyticsEndpoints();
 
     // Register SignalR hubs
     app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");
