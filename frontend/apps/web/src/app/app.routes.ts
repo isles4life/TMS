@@ -42,6 +42,11 @@ export const APP_ROUTES: Routes = [
   // Analytics routes (available to Broker and SuperAdmin)
   { path: 'analytics', canActivate: [AuthGuard, RoleGuard], data: { title: 'Analytics & KPIs', roles: ['Broker', 'SuperAdmin'], preload: true }, loadComponent: () => import('./pages/analytics-dashboard/analytics-dashboard.component').then(m => m.AnalyticsDashboardComponent) },
 
+  // Maintenance routes (available to Broker and SuperAdmin)
+  { path: 'maintenance/vendors', canActivate: [AuthGuard, RoleGuard], data: { title: 'Vendors', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/maintenance/vendors-list.component').then(m => m.VendorsListComponent) },
+  { path: 'maintenance/schedules', canActivate: [AuthGuard, RoleGuard], data: { title: 'PM Schedules', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/maintenance/schedules-list.component').then(m => m.SchedulesListComponent) },
+  { path: 'maintenance/work-orders', canActivate: [AuthGuard, RoleGuard], data: { title: 'Work Orders', roles: ['Broker', 'SuperAdmin'] }, loadComponent: () => import('./pages/maintenance/work-orders-list.component').then(m => m.WorkOrdersListComponent) },
+
   // Admin routes (SuperAdmin only)
   { path: 'admin', canActivate: [AuthGuard, RoleGuard], data: { title: 'System Administration', roles: ['SuperAdmin'] }, loadComponent: () => import('./pages/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
 ];
