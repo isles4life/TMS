@@ -89,6 +89,14 @@ builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<TMS.Domain.Repositories.IInvoiceRepository, TMS.Infrastructure.Repositories.InvoiceRepository>();
 builder.Services.AddScoped<InvoiceService>();
 
+// Add Compliance Services and Repositories
+builder.Services.AddScoped<TMS.Domain.Repositories.IHOSRepository, TMS.Infrastructure.Repositories.HOSRepository>();
+builder.Services.AddScoped<TMS.Domain.Repositories.IComplianceRepository, TMS.Infrastructure.Repositories.ComplianceRepository>();
+builder.Services.AddScoped<TMS.Application.Services.Compliance.HOSRulesEngine>();
+builder.Services.AddScoped<TMS.Application.Services.Compliance.HOSService>();
+builder.Services.AddScoped<TMS.Application.Services.Compliance.ComplianceService>();
+builder.Services.AddScoped<TMS.Application.Services.Compliance.SafetyScoringService>();
+
 // Add SignalR for real-time tracking
 builder.Services.AddSignalR();
 
@@ -202,6 +210,8 @@ try
     app.RegisterLoadStatusEndpoints();
     app.MapAnalyticsEndpoints();
     app.MapInvoiceEndpoints();
+    app.MapHOSEndpoints();
+    app.MapComplianceEndpoints();
 
     // Register SignalR hubs
     app.MapHub<TMS.API.Hubs.TrackingHub>("/hubs/tracking");
